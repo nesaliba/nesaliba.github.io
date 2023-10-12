@@ -114,6 +114,23 @@
 
         }
 
+        nav .dropdown {
+            display: inline-block;
+        }
+
+        nav .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        nav .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
     </style>
     <!-- Link to Pacifico font from Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
@@ -156,6 +173,15 @@
                 <li>Stoichiometry Games:</li>
                 <!-- Add more subjects as needed -->
             </ul>
+
+        <div class="dropdown">
+            <a href="index.html">Forms</a>
+            <div class="dropdown-content">
+                <form action="https://nesaliba.github.io/Chemical%20Bonding%20Intro%20Chemtile%20compressed/index.html">Form 1</a>
+                <a href="#form2">Form 2</a>
+                <!-- Add more form links as needed -->
+            </div>
+        </div>
 
         </div>
 
