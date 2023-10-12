@@ -1,33 +1,167 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<style>
-    h1 { color: yellow; 
-text-align: center;
-background-color: blue;
-font-size: 37px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scitriad - Science Games</title>
+    <link rel="icon" href="Faticon.png" type="image/x-icon">
+    <style>
+
+        .alberta-button {
+             background-color: #9B870C; /* Green */
+             color: white;
+             padding: 15px 20px;
+             text-align: center;
+             text-decoration: none;
+             display: inline-block;
+             font-size: 16px;
+             margin: 10px;
+             cursor: pointer;
+             border-radius: 8px;
+             transition: background-color 0.3s;
+         }
+ 
+         .alberta-button:hover {
+             background-color: #1565c0; /* Darker green on hover */
+         }
+ 
+         body {
+             font-family: 'Arial', sans-serif;
+             margin: 0;
+             padding: 0;
+             background-color: #e6e6e6; /* Light Gray */
+             animation: fadeIn 0.2s ease-in-out; /* Adjust the duration and easing function as needed */
+         }
+ 
+         @keyframes fadeIn {
+             from {
+                 opacity: 0;
+             }
+             to {
+                 opacity: 1;
+             }
+         }
+ 
+         header {
+             background-color: #38B6FF; /* Dark Blue */
+             color: #fff;
+             text-align: center;
+             padding: 0.48em;
+             border-bottom: 10px solid #ffeb3b; /* Yellow */
+             font-family: 'Roboto', cursive; /* Fancier Font */
+             font-size: xx-large;
+             position: fixed;
+             width: 100%;
+             top: 0;
+             z-index: 1000;
+         }
+ 
+         body {
+             margin-top: 170px; /* Adjust this value to match the height of your fixed header */
+         }
+ 
+         nav {
+             background-color: #2196F3; /* Blue */
+             color: #fff;
+             padding: 0.5em;
+             text-align: center;
+             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+             position: fixed;
+             width: 100%;
+             top: 100;
+             z-index: 1000;
+         }
+ 
+         nav a {
+             color: #fff;
+             text-decoration: none;
+             padding: 1em;
+             display: inline-block;
+             transition: background-color 0.3s ease;
+         }
+ 
+         nav a:hover {
+             background-color: #1565c0; /* Dark Blue */
+         }
+ 
+         section {
+             padding: 150px 20px 20px; /* Adjusted padding to accommodate fixed navbar and space for main header */
+         }
+ 
+         footer {
+             background-color: #1565c0; /* Dark Blue */
+             color: #fff;
+             text-align: center;
+             padding: 1em;
+             position: fixed;
+             bottom: 0;
+             width: 100%;
+             border-top: 10px solid #ffeb3b; /* Yellow */
+             opacity: 0; /* Initially hidden */
+             transition: opacity 0.3s;
+ 
+         }
+ 
+         #logo {
+             width: 300px; /* Adjust the width as needed */
+             height: auto; /* Maintain aspect ratio */
+             border-radius: 10px;
+             display: inline-block;
+             margin: 0 auto; /* Center the image */
+             border-radius: 10px;
+             cursor: pointer;
+ 
+         }
+ 
+     </style>
+    <!-- Link to Pacifico font from Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
 </head>
 <body>
-<h1> Interactive Online Activities</h1>
 
-<a href="index.html">Home</a><br><br>
-<p> </p> <p> </p>
-    <form action="https://nesaliba.github.io/Chemical%20Bonding%20Intro%20Chemtile%20compressed/index.html">
-    <input type="submit" value="Chemical Bonding" />
-</form>
-    <form action="https://nesaliba.github.io/Thermochemistry%20exo%20endo%20comparison%20ChemTile%20compressed/index.html">
-    <input type="submit" value="Thermochemistry exo endo" />
-</form>
-    <form action="https://nesaliba.github.io/Electrochemistry%20LEO%20GER%20comparison%20ChemTile%20compressed/index.html">
-    <input type="submit" value="Electrochemistry LEO GER" /> 
-</form>
-    <form action="https://nesaliba.github.io/Chemistry%2030/index.html">
-    <input type="submit" value="Organic Flipping Ester ChemTile" /> 
-    </form>
-    <form action="https://nesaliba.github.io/Photosynthesis%20Cellular%20Respiration%20intro/index.html">
-    <input type="submit" value="Photosynthesis Cellular Respiration intro" />
-</form>
+    
+    <header>
+        <a href="index.html">
+            <img id="logo" src="Scitriad.png" alt="Scitriad Logo">
+        </a>
+        <!-- Your header content -->
+    </header>
+    
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="ChemistryHome.html">Chemistry</a>
+        <!-- Add more links as needed for additional pages -->
+    </nav>
+
+    <section>
+        <h2>Welcome to Scitriad!</h2>
+        <p>Unlock the Codes of Reality: SciTriad Games — Where Biology, Chemistry, and Physics Collide</p>
+    </section>
+
+
+    <!-- Add more sections for Chemistry, Biology, and Physics -->
+
+    <footer>
+        &copy; 2023 Scitriad - Science Games - Coded By ArshbirBhamra - TEST
+    </footer>
+
+    <script>
+        var lastScrollTop = 0;
+
+        window.addEventListener("scroll", function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop){
+                // Scrolling down
+                document.querySelector('footer').style.opacity = '0';
+            } else {
+                // Scrolling up
+                document.querySelector('footer').style.opacity = '1';
+            }
+            lastScrollTop = st;
+        });
+    </script>
+
+    
+
 </body>
 </html>
