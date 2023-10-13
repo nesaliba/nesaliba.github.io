@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scitriad - Science Games Website</title>
+    <link rel="icon" href="Faticon.png" type="image/x-icon">
+
+    <style>
+
+       .alberta-button {
+            background-color: #9B870C; /* Green */
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .alberta-button:hover {
+            background-color: #4a6741; /* Darker green on hover */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e6e6e6; /* Light Gray */
+            animation: fadeIn 0.2s ease-in-out; /* Adjust the duration and easing function as needed */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        header {
+            background-color: #38B6FF; /* Dark Blue */
+            color: #fff;
+            text-align: center;
+            padding: 0.48em;
+            border-bottom: 10px solid #ffeb3b; /* Yellow */
+            font-family: 'Roboto', cursive; /* Fancier Font */
+            font-size: xx-large;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        body {
+            margin-top: 170px; /* Adjust this value to match the height of your fixed header */
+        }
+
+        nav {
+            background-color: #2196F3; /* Blue */
+            color: #fff;
+            padding: 0.5em;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 100;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 1em;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #1565c0; /* Dark Blue */
+        }
+
+        section {
+            padding: 150px 20px 20px; /* Adjusted padding to accommodate fixed navbar and space for main header */
+        }
+
+        footer {
+            background-color: #1565c0; /* Dark Blue */
+            color: #fff;
+            text-align: center;
+            padding: 1em;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            border-top: 10px solid #ffeb3b; /* Yellow */
+            opacity: 0; /* Initially hidden */
+            transition: opacity 0.3s;
+
+        }
+
+        #logo {
+            width: 300px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 10px;
+            display: inline-block;
+            margin: 0 auto; /* Center the image */
+            border-radius: 10px;
+            cursor: pointer;
+
+        }
+
+    </style>
+    <!-- Link to Pacifico font from Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+</head>
+<body>
+
+    <header>
+        <a href="index.html">
+            <img id="logo" src="Scitriad.png" alt="Scitriad Logo">
+        </a>
+        <!-- Your header content -->
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="ChemistryHome.html">Chemistry</a>
+        <a href="Biology.html">Biology</a>
+
+        <!-- Add more links as needed for additional pages -->
+    </nav>
+
+    <section>
+        <h2>Explore Biology Games</h2>
+        <p>Discover fun and educational games related to Biology.</p>
+
+        <h2>Biology - Alberta Curriculum</h2>
+        
+        <!-- Buttons for grades 10-12 -->
+        <a href="#grade10" class="alberta-button">Grade 10</a>
+        <a href="#grade11" class="alberta-button">Grade 11</a>
+        <a href="#grade12" class="alberta-button">Grade 12</a>
+
+        <!-- Add specific content for each grade -->
+        <div id="grade10">
+            <h3>Grade 10 Biology</h3>
+            <p>Introduction to biology, covering basic characteristics of living organisms, cell biology with a focus on cell structure and division, principles of genetics and inheritance, and an exploration of ecological concepts such as ecosystems and population interactions.</p>
+
+            <ul>
+                <li>Introduction to Biology Games:</li>
+                <li>Cell Biology Games:</li>
+                <li>Genetics Games:</li>
+                <li>Ecology Games:</li>
+                <!-- Add more subjects as needed -->
+            </ul>
+
+        </div>
+
+        <div id="grade11">
+            <h3>Grade 11 Biology</h3>
+            <p>Dive deeper into biology with an exploration of biochemistry, biodiversity, human biology including anatomy and physiology, and an introduction to microbiology, covering a wide array of topics from molecular structures to the study of microorganisms.</p>
+
+            <ul>
+                <li>Biochemistry Games:</li>
+                <li>Biodiversity Games:</li>
+                <li>Human Biology Games:</li>
+                <li>Microbiology Games:</li>
+                <!-- Add more subjects as needed -->
+            </ul>
+        </div>
+
+        <div id="grade12">
+            <h3>Grade 12 Biology</h3>
+            <p>Advanced topics in biology, including plant and animal biology, cellular and molecular biology with a focus on DNA processes and gene expression, and environmental biology, examining the impact of human activities on the environment and principles of conservation.</p>
+            <ul>
+                <li>Plant Biology Games:</li>
+                <li>Animal Biology Games:</li>
+                <li>Cellular and Molecular Biology Games:</li>
+                <li>Environmental Biology Games:</li>
+
+                <!-- Add more subjects as needed -->
+            </ul>
+        </div>
+
+
+
+
+        <h3>Advanced Placement (AP) Biology (30/35)</h3>
+        <p>An in-depth study of biology at a college level, covering biochemistry and cellular structure and function, advanced genetics and evolutionary processes, ecology with an emphasis on population dynamics, and physiology exploring cellular energetics and homeostasis.</p>
+        <!-- Add specific content related to AP Biology -->
+    </section>
+
+    
+
+    <footer>
+        &copy; 2023 Scitriad - Science Games - Coded By ArshbirBhamra
+    </footer>
+    <script>
+        var lastScrollTop = 0;
+
+        window.addEventListener("scroll", function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop){
+                // Scrolling down
+                document.querySelector('footer').style.opacity = '0';
+            } else {
+                // Scrolling up
+                document.querySelector('footer').style.opacity = '1';
+            }
+            lastScrollTop = st;
+        });
+    </script>
+
+</body>
+</html>
