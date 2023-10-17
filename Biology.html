@@ -111,6 +111,46 @@
             margin: 0 auto; /* Center the image */
             border-radius: 10px;
             cursor: pointer;
+  }
+
+        nav .dropdown {
+            display: inline-block;
+        }
+
+        nav .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0);
+            z-index: 1;
+        }
+
+        nav .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        form {
+            text-align: left;
+            margin: 25px;
+            max-width: 400px;
+            background-color: #e6e6e6; /* White */
+            border-radius: 10px;
+            padding: 0px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50; /* Green */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049; /* Darker Green on Hover */
+        
 
         }
 
