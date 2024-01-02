@@ -316,6 +316,25 @@ document.addEventListener('DOMContentLoaded', function () {
             lastScrollTop = st;
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+
+        // Smooth scroll to the target section with an offset when the arrow is clicked
+        document.getElementById('scrollArrow').addEventListener('click', function () {
+            // Get the target section
+            var targetSection = document.getElementById('scrollTarget');
+            
+            // Calculate the offset by subtracting 180 pixels
+            var offset = -180;
+
+            // Get the top position of the target section
+            var targetSectionTop = targetSection.getBoundingClientRect().top;
+
+            // Scroll to the target section with smooth behavior and the specified offset
+            window.scrollTo({
+                top: targetSectionTop + window.scrollY + offset,
+                behavior: 'smooth'
+            });
+
         });
     });
     </script>
