@@ -296,6 +296,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     
         var lastScrollTop = 0;
+
+           window.addEventListener("scroll", function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            var header = document.querySelector('header');
+            var footer = document.querySelector('footer');
+            var nav = document.querySelector('nav');
+    
+            if (st > lastScrollTop) {
+                nav.style.top = '-170px'; // Adjust this value to match the height of your fixed header
+
+                footer.style.opacity = '0';
+            } else {
+                // Scrolling up
+                nav.style.top = '170px'; // Adjust this value to match the height of your fixed header
+                footer.style.opacity = '1';
+            }
+    
+            lastScrollTop = st;
+        });
+
+
     
         document.addEventListener('DOMContentLoaded', function () {
 
