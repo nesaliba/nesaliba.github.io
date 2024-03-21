@@ -260,35 +260,7 @@
 document.addEventListener('DOMContentLoaded', function () {
         // ... Your existing code ...
 
-        var header = document.querySelector('header');
-        var nav = document.querySelector('nav');
-        var isScrolling = false;
-
-        // Function to handle scroll events
-        function handleScroll() {
-            if (!isScrolling) {
-                isScrolling = true;
-                // Reveal the header and footer
-                header.style.opacity = '1';
-                nav.style.opacity = '1';
-                setTimeout(function () {
-                    isScrolling = false;
-                }, 300); // Adjust the timeout to your preference
-            }
-        }
-
-        // Event listener for scroll events
-        window.addEventListener('scroll', handleScroll);
     });
-        document.addEventListener('DOMContentLoaded', function () {
-            // Check if the animation has already played
-            if (!localStorage.getItem('animationPlayed')) {
-                // If not, play the animation
-                playAnimation();
-                // Mark the animation as played in local storage
-                localStorage.setItem('animationPlayed', 'true');
-            }
-        });
     
         function playAnimation() {
             // Display the animation container
