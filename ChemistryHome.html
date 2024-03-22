@@ -1,70 +1,731 @@
-<section>
-    <h1>Explore Chemistry Concepts</h1>
-    <p>Discover fun and educational games related to chemistry.</p>
+@ -1,364 +1,364 @@
 
-    <div class="grid-container">
-        <div class="grid-item">
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scitriad - Science Games Website</title>
+
+    <link rel="icon" href="Faticon.png" type="image/x-icon">
+
+ 
+
+    <style>
+
+ 
+
+       .alberta-button {
+
+            background-color: #9B870C; /* Green */
+
+            color: white;
+
+            padding: 15px 20px;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            display: inline-block;
+
+            font-size: 16px;
+
+            margin: 10px;
+
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            transition: background-color 0.3s;
+
+        }
+
+ 
+
+        .alberta-button:hover {
+
+            background-color: #1565c0; /* Darker green on hover */
+
+        }
+
+ 
+
+        body {
+
+            font-family: 'Arial', sans-serif;
+
+            margin: 0;
+
+            padding: 0;
+
+            background-color: #e6e6e6; /* Light Gray */
+
+            animation: fadeIn 0.2s ease-in-out; /* Adjust the duration and easing function as needed */
+
+        }
+
+ 
+
+        @keyframes fadeIn {
+
+            from {
+
+                opacity: 0;
+
+            }
+
+            to {
+
+                opacity: 1;
+
+            }
+
+        }
+
+ 
+
+        header {
+
+            background-color: #38B6FF; /* Dark Blue */
+
+            color: #fff;
+
+            text-align: center;
+
+            padding: 0.48em;
+
+            border-bottom: 10px solid #ffeb3b; /* Yellow */
+
+            font-family: 'Roboto', cursive; /* Fancier Font */
+
+            font-size: xx-large;
+
+            position: fixed;
+
+            width: 100%;
+
+            top: 0;
+
+            z-index: 1000;
+
+        }
+
+ 
+
+        body {
+
+            margin-top: 170px; /* Adjust this value to match the height of your fixed header */
+
+        }
+
+ 
+
+        nav {
+
+            background-color: #2196F3; /* Blue */
+
+            color: #fff;
+
+            padding: 0.5em;
+
+            text-align: center;
+
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+            position: fixed;
+
+            width: 100%;
+
+            top: 100;
+
+            z-index: 1000;
+
+        }
+
+ 
+
+        nav a {
+
+            color: #fff;
+
+            text-decoration: none;
+
+            padding: 1em;
+
+            display: inline-block;
+
+            transition: background-color 0.3s ease;
+
+        }
+
+ 
+
+        nav a:hover {
+
+            background-color: #1565c0; /* Dark Blue */
+
+        }
+
+ 
+
+            nav a.home {
+
+                background-color: #C4A484; /* Brownn */
+
+            }
+
+   
+
+            nav a.ChemistryHome {
+
+                background-color: #00008B; /* Blue */
+
+            }
+
+ 
+
+ 
+
+   
+
+            nav a.Biology {
+
+                background-color: #013220; /* Green */
+
+            }
+
+            nav a.Math {
+
+                background-color: #8B0000; /* Red */
+
+            }
+
+            nav a.Physics {
+
+                background-color: #301934; /* Purple */
+
+            }
+
+            nav a.English {
+
+                background-color: #8B8000; /* Yellow */
+
+            }
+
+ 
+
+ 
+
+ 
+
+ 
+
+        section {
+
+            padding: 150px 20px 20px; /* Adjusted padding to accommodate fixed navbar and space for main header */
+
+        }
+
+ 
+
+        footer {
+
+            background-color: #1565c0; /* Dark Blue */
+
+            color: #fff;
+
+            text-align: center;
+
+            padding: 1em;
+
+            position: fixed;
+
+            bottom: 0;
+
+            width: 100%;
+
+            border-top: 10px solid #ffeb3b; /* Yellow */
+
+            opacity: 0; /* Initially hidden */
+
+            transition: opacity 0.3s;
+
+ 
+
+        }
+
+ 
+
+        #logo {
+
+            width: 300px; /* Adjust the width as needed */
+
+            height: auto; /* Maintain aspect ratio */
+
+            border-radius: 10px;
+
+            display: inline-block;
+
+            margin: 0 auto; /* Center the image */
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+ 
+
+        }
+
+ 
+
+        nav .dropdown {
+
+            display: inline-block;
+
+        }
+
+ 
+
+        nav .dropdown-content {
+
+            display: none;
+
+            position: absolute;
+
+            background-color: #f9f9f9;
+
+            min-width: 160px;
+
+            box-shadow: 0 8px 16px rgba(0,0,0,0);
+
+            z-index: 1;
+
+        }
+
+ 
+
+        nav .dropdown:hover .dropdown-content {
+
+            display: block;
+
+        }
+
+ 
+
+        form {
+
+            text-align: left;
+
+            margin: 25px;
+
+            max-width: 400px;
+
+            background-color: #e6e6e6; /* White */
+
+            border-radius: 10px;
+
+            padding: 0px;
+
+        }
+
+ 
+
+        input[type="submit"] {
+
+            background-color: #4CAF50; /* Green */
+
+            color: #fff;
+
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            transition: background-color 0.3s ease;
+
+        }
+
+ 
+
+        input[type="submit"]:hover {
+
+            background-color: #45a049; /* Darker Green on Hover */
+
+        }
+
+ 
+
+    </style>
+
+    <!-- Link to Pacifico font from Google Fonts -->
+
+    <link rel="stylesheet" href=https://fonts.googleapis.com/css2?family=Pacifico&display=swap>
+
+</head>
+
+<body>
+
+ 
+
+    <header>
+
+        <a href="index.html">
+
+            <img id="logo" src="Scitriad.png" alt="Scitriad Logo">
+
+        </a>
+
+        <!-- Your header content -->
+
+    </header>
+
+ 
+
+    <nav>
+
+        <a href="index.html" class="home">Home</a>
+
+        <a href="ChemistryHome.html" class="ChemistryHome">Chemistry</a>
+
+        <a href="Biology.html" class="Biology">Biology</a>
+
+        <a href="Physics.html" class="Physics">Physics</a>
+
+        <a href="Math.html" class="Math">Math</a>
+
+        <a href="English.html" class="English">English</a>
+
+ 
+
+ 
+
+       
+
+        <!-- Add more links as needed for additional pages -->
+
+    </nav>
+
+ 
+
+    <section>
+
+        <h1>Explore Chemistry Concepts</h1>
+
+        <p>Discover fun and educational games related to chemistry.</p>
+
+ 
+
+       
+
+ 
+
+        <!-- Add specific content for each grade -->
+
+        <div id="grade10">
+
             <h3>Introductory Chemistry Topics</h3>
-            <ul class="game-list">
-                <!-- Dropdown for Introductory Chemistry Games -->
-                <li class="dropdown">
-                    <a href="#">Introductory Games</a>
-                    <div class="dropdown-content">
-                        <form action="https://nesaliba.github.io/Metal%20Non%20Metal%20Properties%20Comparison%20Intro/index.html">
-                            <input type="submit" value="Metal Non Metal Properties Comparison Intro Chemtile" />
-                        </form>
-                        <!-- Add more game links here -->
-                    </div>
-                </li>
-            </ul>
+
+            <p>In Introductory Chemistry level, students explore fundamental concepts such as periodic table, atomic structure, chemical bonding, and basic principles of chemical reactions.  </p>
+
+  </ul>
+
+ 
+
+ 
+
+                <li>Metal Non Metal Properties Comparison Intro:</li>
+
+                        <form action=https://nesaliba.github.io/Metal%20Non%20Metal%20Properties%20Comparison%20Intro/index.html>
+
+                        <input type="submit" value="Metal Non Metal Properties Comparison Intro Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+           
+
+                <li>Physical vs Chemical Change Intro:</li>
+
+                        <form action=https://nesaliba.github.io/Physical%20vs%20Chemical%20Change%20Intro/index.html>
+
+                        <input type="submit" value="Physical vs Chemical Change Intro" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+ 
+
+                 <li>Periodic Table Groups Intro:</li>
+
+                        <form action=https://nesaliba.github.io/Periodic%20Table%20Groups%20Intro/index.html>
+
+                        <input type="submit" value="Periodic Table Groups Intro Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+             <li>Ionic Molecular Compounds Intro:</li>
+
+                        <form action=https://nesaliba.github.io/Ionic%20Molecular%20Compounds%20Intro/index.html>
+
+                        <input type="submit" value="Ionic Molecular Compounds Intro Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+            <li>Predicting Ionic Compounds Mixed IUPAC Names Oct 2023:</li>
+
+                        <form action=https://nesaliba.github.io/Predicting%20Ionic%20Compounds%20Mixed%20IUPAC%20Names%20Oct%202023/index.html>
+
+                        <input type="submit" value="Predicting Ionic Compounds Mixed IUPAC Names Oct 2023" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+             <li>Predicting Ionic Compound Formulas Mixed October 2023:</li>
+
+                        <form action=https://nesaliba.github.io/Predicting%20Ionic%20Compound%20Formulas%20Mixed%20October%202023/index.html>
+
+                        <input type="submit" value="Predicting Ionic Compound Formulas Mixed October 2023" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+           
+
         </div>
-        
-        <div class="grid-item">
-            <h3>Intermediate Chemistry Topics</h3>
-            <ul class="game-list">
-                <!-- Dropdown for Intermediate Chemistry Games -->
-                <li class="dropdown">
-                    <a href="#">Intermediate Games</a>
-                    <div class="dropdown-content">
-                        <form action="https://nesaliba.github.io/New%20Advanced%20Chemical%20Bonding%20Part%20B%20expanded%20octet%20October%202023/index.html">
-                            <input type="submit" value="Chemical Bonding Intro Chemtile" />
-                        </form>
-                        <!-- Add more game links here -->
-                    </div>
-                </li>
+
+ 
+
+        <div id="grade11">
+
+            <h3>Intermediate and Advanced Chemistry Topics</h3>
+
+            <p>Intermediate and Advanced Chemistry delves deeper into topics like Chemical Bonding, Gas Chemistry, Solutions/Acids and Bases, Equilibrium/Acid Base, Organic Chemistry, Thermochemistry and Stoichometry. </p>
+
+ 
+
+            <ul>
+
+                <li>Chemical Bonding:</li>
+
+                       <form action=https://nesaliba.github.io/New%20Advanced%20Chemical%20Bonding%20Part%20B%20expanded%20octet%20October%202023/index.html>
+
+                        <input type="submit" value="Chemical Bonding Intro Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+                 <li>Electrochemistry:</li>
+
+                        <form action=https://nesaliba.github.io/Electrochemistry%20LEO%20GER%20comparison%20ChemTile%20compressed/index.html>
+
+                        <input type="submit" value="Electrochemistry LEO/GER Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+                <li>Electrochemical Cell Six Cell Comparison:</li>
+
+                        <form action=https://nesaliba.github.io/Electrochemical%20Cell%20Six%20Cell%20Comparison%20with%20Timer%20Nov%202023/index.html>
+
+                        <input type="submit" value="Electrochemical Cell Six Cell Comparison" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+ 
+
+                </li>Organic Chemistry:</li>
+
+                        <form action=https://nesaliba.github.io/Chemistry%2030/index.html>
+
+                        <input type="submit" value="Organic Flipping Ester ChemTile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+                 <li>Thermochemistry Chemistry:</li>
+
+                        <form action=https://nesaliba.github.io/Thermochemistry%20exo%20endo%20comparison%20ChemTile%20compressed/index.html>
+
+                        <input type="submit" value="Thermochemistry Exo/Endo Chemtile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+ 
+
+                 <li>Interpreting Equilibrium Graphs Version A November 2023:</li>
+
+                        <form action=https://nesaliba.github.io/Interpreting%20Equilibrium%20Graphs%20Version%20A%20November%202023/index.html>
+
+                        <input type="submit" value="Interpreting Equilibrium Graphs Version A November 2023" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+               
+
+                <li>Interpreting Equilibrium Graphs 4X6 Version B November 2023:</li>
+
+                        <form action=https://nesaliba.github.io/Interpreting%20Equilibrium%20Graphs%204X6%20Version%20B%20November%202023/index.html>
+
+                        <input type="submit" value="Interpreting Equilibrium Graphs 4X6 Version B November 2023" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+               
+
             </ul>
+
         </div>
-        
-        <div class="grid-item">
-            <h3>Advanced Chemistry Topics</h3>
-            <ul class="game-list">
-                <!-- Dropdown for Advanced Chemistry Games -->
-                <li class="dropdown">
-                    <a href="#">Advanced Games</a>
-                    <div class="dropdown-content">
-                        <form action="https://nesaliba.github.io/Advanced%20Chemical%20Bonding%20%20Part%20A%20up%20to%20steric%204/index.html">
-                            <input type="submit" value="Chemical Bonding Part A up to steric 4" />
-                        </form>
-                        <!-- Add more game links here -->
-                    </div>
-                </li>
+
+ 
+
+        <div id="grade12">
+
+            <h3>Advanced Chemistry</h3>
+
+            <p>Advanced Chemistry curriculum introduces advanced concepts such as organic chemistry, chemical kinetics, and equilibrium. Students engage in more complex experiments and gain a comprehensive understanding of chemical principles.</p>
+
+            <ul>
+
+              
+
+                 <li>Advanced Chemical Bonding Part A up to steric 4:</li>
+
+                       <form action=https://nesaliba.github.io/Advanced%20Chemical%20Bonding%20%20Part%20A%20up%20to%20steric%204/index.html>
+
+                        <input type="submit" value="Chemical Bonding Part A up to steric 4" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+              
+
+                <li>Advanced Chemical Bonding Part B expanded octed:</li>
+
+                       <form action=https://nesaliba.github.io/Advanced%20Chemical%20Bonding%20Part%20B%20expanded%20octet/index.html>
+
+                        <input type="submit" value="Advanced Chemical Bonding Part B expanded octed" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+               
+
+                <li>Electrochemistry LEO GER comparison ChemTile:</li>
+
+                       <form action=https://nesaliba.github.io/Electrochemistry%20LEO%20GER%20comparison%20ChemTile/index.html>
+
+                        <input type="submit" value="Electrochemistry LEO GER comparison ChemTile" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+               
+
+                 <li>New LEO GER Comparison ChemTile with Timer November 1 2023:</li>
+
+                       <form action=https://nesaliba.github.io/New%20LEO%20GER%20Comparison%20ChemTile%20with%20Timer%20November%201%202023/index.html>
+
+                        <input type="submit" value="New LEO GER Comparison ChemTile with Timer November 1 2023" />
+
+                    </form>
+
+                    <p> </p> <p> </p>
+
+ 
+
+            
+
             </ul>
+
         </div>
-        
-        <div class="grid-item">
-            <h3>AP/IB Chemistry</h3>
-            <ul class="game-list">
-                <!-- Dropdown for AP/IB Chemistry Games -->
-                <li class="dropdown">
-                    <a href="#">AP/IB Games</a>
-                    <div class="dropdown-content">
-                        <form action="https://nesaliba.github.io/Electrochemistry%20LEO%20GER%20comparison%20ChemTile/index.html">
-                            <input type="submit" value="Electrochemistry LEO GER comparison ChemTile" />
-                        </form>
-                        <!-- Add more game links here -->
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</section>
+
+ 
+
+        <h3>Advanced Placement (AP) and Intermnational Baccalaureate (IB) Chemistry</h3>
+
+        <h3>Advanced Placement (AP) and International Baccalaureate® (IB) Chemistry</h3>
+
+        <p>Prepare for AP/IB Chemistry with our interactive games that cover advanced concepts like...</p>
+
+        <!-- Add specific content related to AP Chemistry -->
+
+    </section>
+
+ 
+
+   
+
+ 
+
+    <footer>
+
+        &copy; 2023 Scitriad - Science Games - Coded By Nebal Saliba and ArshbirBhamra
+
+    </footer>
+
+    <script>
+
+        var lastScrollTop = 0;
+
+ 
+
+        window.addEventListener("scroll", function() {
+
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (st > lastScrollTop){
+
+                // Scrolling down
+
+                document.querySelector('footer').style.opacity = '0';
+
+            } else {
+
+                // Scrolling up
+
+                document.querySelector('footer').style.opacity = '1';
+
+            }
+
+            lastScrollTop = st;
+
+        });
+
+    </script>
+
+ 
+
+</body>
+
+</html>
+
+ 
