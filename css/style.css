@@ -25,6 +25,7 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     background-color: var(--bg-light);
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* --- Navigation --- */
@@ -50,6 +51,7 @@ body {
     font-weight: 800;
     font-size: 1.5rem;
     color: var(--primary-dark);
+    z-index: 1001; /* Ensure logo stays above mobile menu */
 }
 
 .nav-logo img {
@@ -75,6 +77,21 @@ body {
 .nav-links a:hover {
     background-color: var(--primary-blue);
     color: white;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it stays above the slide-out menu */
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-dark);
+    margin: 5px;
+    transition: all 0.3s ease;
 }
 
 /* --- Hero Section --- */
@@ -148,10 +165,12 @@ body {
 
 .scroll-indicator {
     position: absolute;
-    bottom: -200px;
+    bottom: 10px;
     animation: bounce 2s infinite;
     cursor: pointer;
     color: var(--primary-blue);
+    z-index: 2;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 /* --- Subjects Grid --- */
@@ -268,4 +287,99 @@ details[open] summary { border-bottom: 1px solid #e2e8f0; }
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: all 0.2s;
     border-left: 5px solid var(--primary-blue);
+}
+
+.game-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.game-icon { opacity: 0; transition: opacity 0.2s; }
+.game-link:hover .game-icon { opacity: 1; }
+
+/* Subject Theme Accents for Game Links */
+.theme-chem .game-link { border-left-color: var(--chem-color); }
+.theme-bio .game-link { border-left-color: var(--bio-color); }
+.theme-phys .game-link { border-left-color: var(--phys-color); }
+.theme-math .game-link { border-left-color: var(--math-color); }
+.theme-eng .game-link { border-left-color: var(--eng-color); }
+
+/* Theme H1 fixes */
+.theme-chem h1, .theme-bio h1, .theme-phys h1, .theme-math h1, .theme-eng h1 {
+    -webkit-text-fill-color: white;
+}
+
+/* --- Footer --- */
+footer {
+    background-color: var(--primary-dark);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    border-top: 4px solid var(--accent-yellow);
+}
+
+/* --- Animations --- */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-10px);}
+    60% {transform: translateY(-5px);}
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        right: 0px;
+        height: 100vh;
+        top: 0px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 65%;
+        transform: translateX(100%);
+        transition: transform 0.4s ease-in;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        padding-top: 60px;
+    }
+
+    .nav-links.nav-active {
+        transform: translateX(0%);
+    }
+
+    .nav-links a {
+        opacity: 0; /* JS handles the fade in */
+        margin: 1.5rem 0;
+        font-size: 1.2rem;
+    }
+
+    .hero h1 { font-size: 2.5rem; }
+}
+
+/* Navbar Toggle Animation Classes */
+.toggle .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+.toggle .line2 {
+    opacity: 0;
+}
+.toggle .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
