@@ -3,314 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scitriad - Science Games Website</title>
+    <title>Mathematics | Scitriad</title>
     <link rel="icon" href="Faticon.png" type="image/x-icon">
-
-    <style>
-
-       .alberta-button {
-            background-color: #9B870C; /* Green */
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .alberta-button:hover {
-            background-color: #4a6741; /* Darker green on hover */
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #e6e6e6; /* Light Gray */
-            animation: fadeIn 0.2s ease-in-out; /* Adjust the duration and easing function as needed */
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        header {
-            background-color: #38B6FF; /* Dark Blue */
-            color: #fff;
-            text-align: center;
-            padding: 0.48em;
-            border-bottom: 10px solid #ffeb3b; /* Yellow */
-            font-family: 'Roboto', cursive; /* Fancier Font */
-            font-size: xx-large;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        body {
-            margin-top: 170px; /* Adjust this value to match the height of your fixed header */
-        }
-
-        nav {
-            background-color: #2196F3; /* Blue */
-            color: #fff;
-            padding: 0.5em;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 100%;
-            top: 100;
-            z-index: 1000;
-        }
-
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            padding: 1em;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-
-        nav a:hover {
-            background-color: #1565c0; /* Dark Blue */
-        }
-
-        nav a.home {
-            background-color: #C4A484; /* Brownn */
-        }
-
-        nav a.ChemistryHome {
-            background-color: #00008B; /* Blue */
-        }
-
-
-
-        nav a.Biology {
-            background-color: #013220; /* Green */
-        }
-        nav a.Math {
-            background-color: #8B0000; /* Red */
-        }
-        nav a.Physics {
-            background-color: #301934; /* Purple */
-        }
-        nav a.English {
-            background-color: #8B8000; /* Yellow */
-        }
-
-        section {
-            padding: 150px 20px 20px; /* Adjusted padding to accommodate fixed navbar and space for main header */
-        }
-
-        footer {
-            background-color: #1565c0; /* Dark Blue */
-            color: #fff;
-            text-align: center;
-            padding: 1em;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            border-top: 10px solid #ffeb3b; /* Yellow */
-            opacity: 0; /* Initially hidden */
-            transition: opacity 0.3s;
-
-        }
-
-        #logo {
-            width: 300px; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
-            border-radius: 10px;
-            display: inline-block;
-            margin: 0 auto; /* Center the image */
-            border-radius: 10px;
-            cursor: pointer;
-  }
-
-        nav .dropdown {
-            display: inline-block;
-        }
-
-        nav .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0);
-            z-index: 1;
-        }
-
-        nav .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        nav a.home {
-            background-color: #C4A484; /* Brownn */
-        }
-
-        nav a.ChemistryHome {
-            background-color: #00008B; /* Blue */
-        }
-
-
-
-        nav a.Biology {
-            background-color: #013220; /* Green */
-        }
-        nav a.Math {
-            background-color: #8B0000; /* Red */
-        }
-        nav a.Physics {
-            background-color: #301934; /* Purple */
-        }
-        nav a.English {
-            background-color: #8B8000; /* Yellow */
-        }
-
-        form {
-            text-align: left;
-            margin: 25px;
-            max-width: 400px;
-            background-color: #e6e6e6; /* White */
-            border-radius: 10px;
-            padding: 0px;
-        }
-
-        input[type="submit"] {
-            background-color: #4CAF50; /* Green */
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049; /* Darker Green on Hover */
-        
-
-        }
-
-    </style>
-    <!-- Link to Pacifico font from Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="theme-math">
 
-    <header>
-        <a href="index.html">
-            <img id="logo" src="Scitriad.png" alt="Scitriad Logo">
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo">
+            <img src="Scitriad.png" alt="Scitriad Logo">
+            Scitriad
         </a>
-        <!-- Your header content -->
-    </header>
-
-    <nav>
-        <a href="index.html" class="home">Home</a>
-        <a href="ChemistryHome.html" class="ChemistryHome">Chemistry</a>
-        <a href="Biology.html" class="Biology">Biology</a>
-        <a href="Physics.html" class="Physics">Physics</a>
-        <a href="Math.html" class="Math">Math</a>
-        <a href="English.html" class="English">English</a>
-
-        <!-- Add more links as needed for additional pages -->
+        <div class="nav-links">
+            <a href="ChemistryHome.html">Chemistry</a>
+            <a href="Biology.html">Biology</a>
+            <a href="Physics.html">Physics</a>
+            <a href="Math.html">Math</a>
+            <a href="English.html">English</a>
+        </div>
     </nav>
 
-    <section>
-        <h2>Explore Math Concepts</h2>
-        <p>Discover fun and educational games related to Math.</p>
+    <header class="hero hero-small theme-math">
+        <h1>Mathematics</h1>
+        <p>Unlock the power of numbers and logic.</p>
+    </header>
 
+    <main class="container" id="explore">
         
+        <details open>
+            <summary>Introductory Math Topics</summary>
+            <div class="details-content">
+                <a href="https://nesaliba.github.io/Math%20Addition%20Subtraction%20Practice%20A/index.html" class="game-link">
+                    <span>Addition & Subtraction Practice A</span>
+                    <span class="game-icon">➜</span>
+                </a>
+                <a href="https://nesaliba.github.io/Math%20Multipilation%20Division%20Practice%20B/index.html" class="game-link">
+                    <span>Multiplication & Division Practice B</span>
+                    <span class="game-icon">➜</span>
+                </a>
+                <a href="https://nesaliba.github.io/New%20Math%20Addition%20Subtration%20Skils%20Practice%20A%20with%20Timer%20November%202023/index.html" class="game-link">
+                    <span>Addition & Subtraction Skills (with Timer)</span>
+                    <span class="game-icon">➜</span>
+                </a>
+                <a href="https://nesaliba.github.io/New%20Math%20Mixed%20with%20Brackets%20Practice%20C%20with%20Timer%20Nov%202023/index.html" class="game-link">
+                    <span>Mixed Math with Brackets Practice C</span>
+                    <span class="game-icon">➜</span>
+                </a>
+                <a href="https://nesaliba.github.io/Math%20Skills%20Distributions%20Part%201%20Nov%202%202023/index.html" class="game-link">
+                    <span>Math Skills Distributions Part 1</span>
+                    <span class="game-icon">➜</span>
+                </a>
+            </div>
+        </details>
 
-        <!-- Add specific content for each grade -->
-        <div id="grade10">
-            <h3>Introductory Math Topics</h3>
-            <p>Introduction to Math, .</p>
+        <details>
+            <summary>Intermediate and Advanced Math</summary>
+            <div class="details-content">
+                <p style="color: #64748b;">Content coming soon...</p>
+            </div>
+        </details>
 
-         <li>Math Addition Subtraction Practice A:</li>
-                        <form action="https://nesaliba.github.io/Math%20Addition%20Subtraction%20Practice%20A/index.html">
-                        <input type="submit" value="Math Addition Subtraction Practice A" /> 
-                    </form>
-                    <p> </p> <p> </p>
-            
-            <li>Math Multipilation Division Practice B:</li>
-                        <form action="https://nesaliba.github.io/Math%20Multipilation%20Division%20Practice%20B/index.html">
-                        <input type="submit" value="Math Multipilation Division Practice B" /> 
-                    </form>
-                    <p> </p> <p> </p>
-
-             <li>New Math Addition Subtration Skils Practice A with Timer November 2023:</li>
-                        <form action="https://nesaliba.github.io/New%20Math%20Addition%20Subtration%20Skils%20Practice%20A%20with%20Timer%20November%202023/index.html">
-                        <input type="submit" value="New Math Addition Subtration Skils Practice A with Timer November 2023" /> 
-                    </form>
-                    <p> </p> <p> </p>
-
-             <li>New Math Mixed with Brackets Practice C with Timer Nov 2023:</li>
-                        <form action="https://nesaliba.github.io/New%20Math%20Mixed%20with%20Brackets%20Practice%20C%20with%20Timer%20Nov%202023/index.html">
-                        <input type="submit" value="New Math Mixed with Brackets Practice C with Timer Nov 2023" /> 
-                    </form>
-                    <p> </p> <p> </p>
-
-             <li>Math Skills Distributions Part 1 Nov 2 2023:</li>
-                        <form action="https://nesaliba.github.io/Math%20Skills%20Distributions%20Part%201%20Nov%202%202023/index.html">
-                        <input type="submit" value="Math Skills Distributions Part 1 Nov 2 2023" /> 
-                    </form>
-                    <p> </p> <p> </p>
-        </div>
-
-        <div id="grade11">
-            <h3>Intermediate and Advanced Math</h3>
-            <p>Dive deeper into Math with an exploration .</p>
-
-            
-                <!-- Add more subjects as needed -->
-           
-        </div>
-
-        <div id="grade12">
-            <h3>Advanced Math</h3>
-            <p>Advanced topics in Math, .</p>
-           
-
-                <!-- Add more subjects as needed -->
-           
-        </div>
-
-
-
-
-        <h3>Advanced Placement (AP) and International Baccalaureate® (IB) Math </h3>
-        <p>An in-depth study of Math at a college level, .</p>
-        <!-- Add specific content related to AP Biology -->
-    </section>
-
-    
+    </main>
 
     <footer>
-        &copy; 2023 Scitriad - Science Games - Coded By Nebal Saliba/ArshbirBhamra
+        &copy; 2026 Scitriad - Science Games
     </footer>
-    <script>
-        var lastScrollTop = 0;
 
-        window.addEventListener("scroll", function() {
-            var st = window.pageYOffset || document.documentElement.scrollTop;
-            if (st > lastScrollTop){
-                // Scrolling down
-                document.querySelector('footer').style.opacity = '0';
-            } else {
-                // Scrolling up
-                document.querySelector('footer').style.opacity = '1';
-            }
-            lastScrollTop = st;
-        });
-    </script>
-
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -77,13 +77,6 @@ body {
     color: white;
 }
 
-/* Mobile Menu (Hidden on desktop) */
-.hamburger {
-    display: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-}
-
 /* --- Hero Section --- */
 .hero {
     height: 100vh;
@@ -98,8 +91,16 @@ body {
     position: relative;
 }
 
+/* Sub-page Hero Variant */
+.hero-small {
+    height: 40vh;
+    min-height: 300px;
+    justify-content: flex-end;
+    padding-bottom: 4rem;
+}
+
 .hero h1 {
-    font-size: 4rem;
+    font-size: 3.5rem;
     margin-bottom: 1rem;
     background: -webkit-linear-gradient(left, var(--primary-blue), var(--accent-yellow));
     -webkit-background-clip: text;
@@ -107,7 +108,7 @@ body {
 }
 
 .hero p {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     max-width: 600px;
     margin-bottom: 2rem;
     color: #cbd5e1;
@@ -123,7 +124,7 @@ body {
 
 /* --- Subjects Grid --- */
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 4rem 2rem;
 }
@@ -176,12 +177,117 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Subject Specific Colors */
-.card.chem .card-header { background-color: var(--chem-color); }
-.card.bio .card-header { background-color: var(--bio-color); }
-.card.phys .card-header { background-color: var(--phys-color); }
-.card.math .card-header { background-color: var(--math-color); }
-.card.eng .card-header { background-color: var(--eng-color); }
+/* --- Subject Page Specifics --- */
+
+/* Accordions */
+details {
+    background: white;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+summary {
+    padding: 1.5rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background-color: white;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--primary-dark);
+    transition: background-color 0.2s;
+}
+
+summary:hover {
+    background-color: #f8fafc;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--text-dark);
+}
+
+details[open] summary::after {
+    content: '-';
+}
+
+details[open] summary {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.details-content {
+    padding: 1.5rem;
+    background-color: #fafafa;
+}
+
+/* Game Links (Replacing Forms) */
+.game-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    border-left: 5px solid var(--primary-blue);
+}
+
+.game-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background-color: white;
+}
+
+.game-link span {
+    font-weight: 600;
+}
+
+.game-icon {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.game-link:hover .game-icon {
+    opacity: 1;
+}
+
+/* Subject Colors & Themes */
+.card.chem .card-header, .theme-chem.hero-small { background-color: var(--chem-color); }
+.card.bio .card-header, .theme-bio.hero-small { background-color: var(--bio-color); }
+.card.phys .card-header, .theme-phys.hero-small { background-color: var(--phys-color); }
+.card.math .card-header, .theme-math.hero-small { background-color: var(--math-color); }
+.card.eng .card-header, .theme-eng.hero-small { background-color: var(--eng-color); }
+
+/* Theme Accents */
+.theme-chem .game-link { border-left-color: var(--chem-color); }
+.theme-chem h1 { -webkit-text-fill-color: white; }
+
+.theme-bio .game-link { border-left-color: var(--bio-color); }
+.theme-bio h1 { -webkit-text-fill-color: white; }
+
+.theme-phys .game-link { border-left-color: var(--phys-color); }
+.theme-phys h1 { -webkit-text-fill-color: white; }
+
+.theme-math .game-link { border-left-color: var(--math-color); }
+.theme-math h1 { -webkit-text-fill-color: white; }
+
+.theme-eng .game-link { border-left-color: var(--eng-color); }
+.theme-eng h1 { -webkit-text-fill-color: white; }
 
 /* --- Footer --- */
 footer {
