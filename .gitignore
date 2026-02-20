@@ -16,20 +16,3 @@ yarn-error.log
 .vscode/
 .idea/
 *.swp
-
-# Chemistry / Math content directories
-
-/Advanced\ Chemical\ Bonding\ \ Part\ A\ up\ to\ steric\ 4/
-/Advanced\ Chemical\ Bonding\ Part\ B\ expanded\ octet/
-/Bio\ 30\ Mitosis\ Meiosis\ Dec\ 2023/
-/Chemical\ Bonding\ Intro\ Chemtile\ compressed/
-/Chemistry\ 30/
-/Electrochemical\ Cell\ Six\ Cell\ Comparison\ with\ Timer\ Nov\ 2023/
-/Electrochemistry\ LEO\ GER\ comparison\ ChemTile\ compressed/
-/Interpreting\ Equilibrium\ Graphs\ 4X6\ Version\ B\ November\ 2023/
-/Interpreting\ Equilibrium\ Graphs\ Version\ A\ November\ 2023/
-/Ionic\ Molecular\ Compounds\ Intro/
-/Math\ Addition\ Subtraction\ Practice\ A/
-/Math\ Multipilation\ Division\ Practice\ B/
-/Math\ Skills\ Distributions\ Part\ 1\ Nov\ 2\ 2023/
-/Metal\ Non\ Metal\ Properties\ Comparison\ Intro/
