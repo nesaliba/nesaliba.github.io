@@ -6,12 +6,21 @@
     --text-dark: #334155;
     --bg-light: #f1f5f9;
     
-    /* Subject Colors */
+    /* Subject Colors (Hex and RGB for Glow Effects) */
     --chem-color: #1e40af; /* Deep Blue */
+    --chem-rgb: 30, 64, 175;
+    
     --bio-color: #166534;  /* Forest Green */
+    --bio-rgb: 22, 101, 52;
+    
     --phys-color: #581c87; /* Purple */
+    --phys-rgb: 88, 28, 135;
+    
     --math-color: #991b1b; /* Red */
+    --math-rgb: 153, 27, 27;
+    
     --eng-color: #854d0e;  /* Bronze */
+    --eng-rgb: 133, 77, 14;
 }
 
 * {
@@ -26,11 +35,19 @@ body {
     color: var(--text-dark);
     background-color: var(--bg-light);
     overflow-x: hidden; /* Prevent horizontal scroll */
+    min-height: 100vh;
 }
+
+/* Theme Backgrounds for Pages (Soft glowing ambient background) */
+body.theme-chem { background: radial-gradient(circle at top center, rgba(var(--chem-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-bio { background: radial-gradient(circle at top center, rgba(var(--bio-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-phys { background: radial-gradient(circle at top center, rgba(var(--phys-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-math { background: radial-gradient(circle at top center, rgba(var(--math-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-eng { background: radial-gradient(circle at top center, rgba(var(--eng-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
 
 /* --- Navigation --- */
 .navbar {
-    position: sticky; /* Changed from fixed to sticky so it stays in the document flow */
+    position: sticky; 
     top: 0;
     width: 100%;
     background: rgba(255, 255, 255, 0.95);
@@ -97,7 +114,6 @@ body {
 
 /* --- Hero Section --- */
 .hero {
-    /* Adjusted from 100vh to account for the navbar's physical height (~92px) */
     height: calc(100vh - 92px);
     background-color: var(--primary-dark); 
     color: white;
@@ -131,12 +147,35 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.5); 
 }
 
+/* Hero Small (Subject Pages) */
 .hero-small {
     height: 40vh;
     min-height: 300px;
     justify-content: flex-end;
     padding-bottom: 4rem;
-    background: linear-gradient(135deg, var(--primary-dark), #1e293b);
+    background-color: var(--primary-dark);
+}
+
+/* Hero Small Backgrounds with Glow */
+.theme-chem.hero-small {
+    background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--chem-rgb), 0.85));
+    box-shadow: 0 10px 40px rgba(var(--chem-rgb), 0.4);
+}
+.theme-bio.hero-small {
+    background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--bio-rgb), 0.85));
+    box-shadow: 0 10px 40px rgba(var(--bio-rgb), 0.4);
+}
+.theme-phys.hero-small {
+    background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--phys-rgb), 0.85));
+    box-shadow: 0 10px 40px rgba(var(--phys-rgb), 0.4);
+}
+.theme-math.hero-small {
+    background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--math-rgb), 0.85));
+    box-shadow: 0 10px 40px rgba(var(--math-rgb), 0.4);
+}
+.theme-eng.hero-small {
+    background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--eng-rgb), 0.85));
+    box-shadow: 0 10px 40px rgba(var(--eng-rgb), 0.4);
 }
 
 .hero h1 {
@@ -224,13 +263,19 @@ body {
     flex-direction: column;
     width: 300px;
     flex-shrink: 0;
-    white-space: normal; /* Restore text wrapping in card */
+    white-space: normal; 
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
+
+/* Colored glow hover effect for main page cards */
+.card.chem:hover { box-shadow: 0 10px 25px rgba(var(--chem-rgb), 0.4); }
+.card.bio:hover { box-shadow: 0 10px 25px rgba(var(--bio-rgb), 0.4); }
+.card.phys:hover { box-shadow: 0 10px 25px rgba(var(--phys-rgb), 0.4); }
+.card.math:hover { box-shadow: 0 10px 25px rgba(var(--math-rgb), 0.4); }
+.card.eng:hover { box-shadow: 0 10px 25px rgba(var(--eng-rgb), 0.4); }
 
 .card-header {
     height: 120px;
@@ -250,18 +295,18 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Subject Specific Colors for Cards */
+.card.chem .card-header { background-color: var(--chem-color); }
+.card.bio .card-header { background-color: var(--bio-color); }
+.card.phys .card-header { background-color: var(--phys-color); }
+.card.math .card-header { background-color: var(--math-color); }
+.card.eng .card-header { background-color: var(--eng-color); }
+
 /* Infinite Scroll Keyframes */
 @keyframes scrollCarousel {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
-
-/* Subject Specific Colors */
-.card.chem .card-header, .theme-chem.hero-small { background-color: var(--chem-color); }
-.card.bio .card-header, .theme-bio.hero-small { background-color: var(--bio-color); }
-.card.phys .card-header, .theme-phys.hero-small { background-color: var(--phys-color); }
-.card.math .card-header, .theme-math.hero-small { background-color: var(--math-color); }
-.card.eng .card-header, .theme-eng.hero-small { background-color: var(--eng-color); }
 
 /* --- Accordion Styles (for sub pages) --- */
 details {
@@ -361,7 +406,6 @@ footer {
     }
 
     .nav-links {
-        /* Changed to fixed so it anchors to the viewport, rather than the sticky navbar wrapper */
         position: fixed;
         right: 0px;
         height: 100vh;
