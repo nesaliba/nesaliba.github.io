@@ -48,16 +48,17 @@ body {
     display: flex;
     align-items: center;
     text-decoration: none;
-    font-weight: 800;
-    font-size: 1.5rem;
-    color: var(--primary-dark);
     z-index: 1001; /* Ensure logo stays above mobile menu */
 }
 
 .nav-logo img {
-    height: 40px;
-    margin-right: 10px;
+    height: 60px; /* Scaled up for better visibility */
     border-radius: 5px;
+    transition: transform 0.3s ease;
+}
+
+.nav-logo img:hover {
+    transform: scale(1.05);
 }
 
 .nav-links {
@@ -83,7 +84,7 @@ body {
 .hamburger {
     display: none;
     cursor: pointer;
-    z-index: 1001; /* Ensure it stays above the slide-out menu */
+    z-index: 1001;
 }
 
 .hamburger div {
@@ -97,7 +98,6 @@ body {
 /* --- Hero Section --- */
 .hero {
     height: 100vh;
-    /* Fallback background color */
     background-color: var(--primary-dark); 
     color: white;
     display: flex;
@@ -107,32 +107,29 @@ body {
     text-align: center;
     padding: 2rem;
     position: relative;
-    overflow: hidden; /* Prevents image from spilling out */
+    overflow: hidden; 
 }
 
-/* New class for the GIF background */
+/* Custom Canvas Background */
 .hero-bg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures the image covers the whole area */
     z-index: 0;
-    opacity: 0.6; /* Slight transparency to make text readable */
-    filter: brightness(0.7); /* Darken slightly for contrast */
+    background-color: var(--primary-dark);
+    display: block;
 }
 
-/* Ensure content sits on top of the image */
 .hero h1, 
 .hero p, 
 .hero .scroll-indicator {
     position: relative;
     z-index: 2;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5); /* Adds contrast to text */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5); 
 }
 
-/* Keep the sub-page headers simple (no GIF) */
 .hero-small {
     height: 40vh;
     min-height: 300px;
@@ -144,16 +141,17 @@ body {
 .hero h1 {
     font-size: 4rem;
     margin-bottom: 1rem;
-    background: -webkit-linear-gradient(left, var(--primary-blue), var(--accent-yellow));
+    /* 3-Color Interactive Gradient without Blue/Purple */
+    background: linear-gradient(90deg, #ff416c, #f7b733, #00b09b); 
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    transition: background-position 0.4s ease-in-out;
+    cursor: default;
 }
 
-/* Fix text fill for hero with background image so text is visible */
-.hero:not(.hero-small) h1 {
-    background: none;
-    -webkit-text-fill-color: white;
-    color: white;
+.hero h1:hover {
+    background-position: 100% center;
 }
 
 .hero p {
@@ -165,7 +163,7 @@ body {
 
 .scroll-indicator {
     position: absolute;
-    bottom: 10px;
+    bottom: -150px;
     animation: bounce 2s infinite;
     cursor: pointer;
     color: var(--primary-blue);
@@ -173,7 +171,7 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-/* --- Subjects Grid --- */
+/* --- Subjects Container --- */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -187,10 +185,29 @@ body {
     color: var(--primary-dark);
 }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+/* --- Carousel Grid Styles --- */
+.carousel-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 0;
+    white-space: nowrap; 
+    position: relative;
+}
+
+.carousel-track {
+    display: flex;
+    width: max-content;
+    animation: scrollCarousel 25s linear infinite;
+}
+
+.carousel-track:hover {
+    animation-play-state: paused;
+}
+
+.carousel-group {
+    display: flex;
     gap: 2rem;
+    padding-right: 2rem; /* Matches the gap for seamless looping */
 }
 
 .card {
@@ -203,6 +220,9 @@ body {
     color: inherit;
     display: flex;
     flex-direction: column;
+    width: 300px;
+    flex-shrink: 0;
+    white-space: normal; /* Restore text wrapping in card */
 }
 
 .card:hover {
@@ -226,6 +246,12 @@ body {
 
 .card-body h3 {
     margin-bottom: 0.5rem;
+}
+
+/* Infinite Scroll Keyframes */
+@keyframes scrollCarousel {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 /* Subject Specific Colors */
@@ -304,7 +330,7 @@ details[open] summary { border-bottom: 1px solid #e2e8f0; }
 .theme-math .game-link { border-left-color: var(--math-color); }
 .theme-eng .game-link { border-left-color: var(--eng-color); }
 
-/* Theme H1 fixes */
+/* Theme H1 fixes to override the gradient inside sub-pages */
 .theme-chem h1, .theme-bio h1, .theme-phys h1, .theme-math h1, .theme-eng h1 {
     -webkit-text-fill-color: white;
 }
@@ -354,7 +380,7 @@ footer {
     }
 
     .nav-links a {
-        opacity: 0; /* JS handles the fade in */
+        opacity: 0; 
         margin: 1.5rem 0;
         font-size: 1.2rem;
     }
