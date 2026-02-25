@@ -30,7 +30,7 @@ body {
 
 /* --- Navigation --- */
 .navbar {
-    position: fixed;
+    position: sticky; /* Changed from fixed to sticky so it stays in the document flow */
     top: 0;
     width: 100%;
     background: rgba(255, 255, 255, 0.95);
@@ -41,14 +41,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nav-logo {
     display: flex;
     align-items: center;
     text-decoration: none;
-    z-index: 1001; /* Ensure logo stays above mobile menu */
+    z-index: 1002; /* Ensure logo stays above mobile menu overlay */
 }
 
 .nav-logo img {
@@ -84,7 +84,7 @@ body {
 .hamburger {
     display: none;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 1002; /* Ensure hamburger stays above mobile menu overlay */
 }
 
 .hamburger div {
@@ -97,7 +97,8 @@ body {
 
 /* --- Hero Section --- */
 .hero {
-    height: 100vh;
+    /* Adjusted from 100vh to account for the navbar's physical height (~92px) */
+    height: calc(100vh - 92px);
     background-color: var(--primary-dark); 
     color: white;
     display: flex;
@@ -144,6 +145,7 @@ body {
     /* 3-Color Interactive Gradient without Blue/Purple */
     background: linear-gradient(90deg, #ff416c, #f7b733, #00b09b); 
     background-size: 200% auto;
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     transition: background-position 0.4s ease-in-out;
@@ -163,7 +165,7 @@ body {
 
 .scroll-indicator {
     position: absolute;
-    bottom: -150px;
+    bottom: 10px;
     animation: bounce 2s infinite;
     cursor: pointer;
     color: var(--primary-blue);
@@ -359,7 +361,8 @@ footer {
     }
 
     .nav-links {
-        position: absolute;
+        /* Changed to fixed so it anchors to the viewport, rather than the sticky navbar wrapper */
+        position: fixed;
         right: 0px;
         height: 100vh;
         top: 0px;
@@ -373,6 +376,7 @@ footer {
         transition: transform 0.4s ease-in;
         box-shadow: -2px 0 10px rgba(0,0,0,0.1);
         padding-top: 60px;
+        z-index: 1001; 
     }
 
     .nav-links.nav-active {
