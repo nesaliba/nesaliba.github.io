@@ -204,7 +204,7 @@ body.theme-eng { background: radial-gradient(circle at top center, rgba(var(--en
 
 .scroll-indicator {
     position: absolute;
-    bottom: 10px;
+    bottom: -150px;
     animation: bounce 2s infinite;
     cursor: pointer;
     color: var(--primary-blue);
