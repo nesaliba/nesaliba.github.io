@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Physical vs Chemical Change",
-    backUrl: "../../../Chemistry.html",
+    backUrl: "../../../../Chemistry.html",
     minWidth: 600, // Optimal for 2 data columns
     columns: ["", "Physical Change", "Chemical Change"],
     rows:["Reversibility", "Description", "Example 1", "Example 2", "Example 3", "Example 4"],

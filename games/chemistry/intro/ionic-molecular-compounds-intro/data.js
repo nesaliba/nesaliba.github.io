@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Ionic & Molecular Compounds",
-    backUrl: "../../../Chemistry.html",
+    backUrl: "../../../../Chemistry.html",
     minWidth: 1000, // Make it wide enough to comfortably fit 7 columns
     columns:["", "H₂O", "P₄O₁₀", "MgS", "CO₂", "CCl₄", "NaBr"],
     rows:[
