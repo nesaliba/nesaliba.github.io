@@ -83,7 +83,7 @@ class ScitriadTileGame {
         this.config.columns.forEach(col => {
             const cell = document.createElement('div');
             cell.className = 'grid-cell grid-header';
-            cell.textContent = col;
+            cell.innerHTML = col; 
             board.appendChild(cell);
         });
 
@@ -94,7 +94,7 @@ class ScitriadTileGame {
         this.config.rows.forEach(rowHeader => {
             const headerCell = document.createElement('div');
             headerCell.className = 'grid-cell grid-header';
-            headerCell.textContent = rowHeader;
+            headerCell.innerHTML = rowHeader; 
             board.appendChild(headerCell);
 
             for(let i = 0; i < dataColsCount; i++) {
@@ -113,12 +113,12 @@ class ScitriadTileGame {
 
     buildBank() {
         const bank = document.getElementById('tileBank');
-        const shuffledData = [...this.config.data].sort(() => Math.random() - 0.5);
+        const shuffledData =[...this.config.data].sort(() => Math.random() - 0.5);
         
         shuffledData.forEach(item => {
             const tile = document.createElement('div');
             tile.className = 'tile';
-            tile.textContent = item.text;
+            tile.innerHTML = item.text;
             tile.dataset.matchId = item.matchId;
             tile.addEventListener('click', () => {
                 this.initAudio();
@@ -143,12 +143,12 @@ class ScitriadTileGame {
         
         if (selectedMatchId === targetId) {
             this.playCorrect();
-            slotElement.textContent = activeTile.textContent;
+            slotElement.innerHTML = activeTile.innerHTML;
             slotElement.classList.remove('grid-empty-slot');
             slotElement.style.backgroundColor = 'var(--cell-color)';
             slotElement.style.borderStyle = 'solid';
             
-            slotElement.replaceWith(slotElement.cloneNode(true)); // remove click listener
+            slotElement.replaceWith(slotElement.cloneNode(true));
             activeTile.remove(); // Remove from bank
             this.matchedCount++;
             this.checkWinCondition();
@@ -158,7 +158,7 @@ class ScitriadTileGame {
             setTimeout(() => slotElement.classList.remove('shake'), 300);
         }
     }
-
+    
     checkWinCondition() {
         if (this.matchedCount === this.totalMatches) {
             this.playFinished();
