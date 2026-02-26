@@ -1,0 +1,33 @@
+new ScitriadTileGame({
+    title: "Periodic Table Groups",
+    backUrl: "../../../Chemistry.html",
+    minWidth: 900, // Optimal for 4 data columns with larger text
+    columns: ["", "Alkali Metals", "Halogens", "Alkaline Earth Metals", "Noble Gases"],
+    rows:["Group or Family", "Property of Metal or Non-Metal", "Number of Valence e-", "Relative Reactivity", "Example Element: Smbol", "Example Element: Name"],
+    data:[
+        { matchId: "am-grp", text: "Group 1 Column 1" },
+        { matchId: "hal-grp", text: "Group 17 Column 17" },
+        { matchId: "aem-grp", text: "Group 2 Column 2" },
+        { matchId: "ng-grp", text: "Group 18 Column 18" },
+        { matchId: "am-prop", text: "shiny, solid, conductor of electricity" },
+        { matchId: "hal-prop", text: "non-malleable, non-shiny, solid, liquid, or gas" },
+        { matchId: "aem-prop", text: "malleable, ductile, conductor of electricity" },
+        { matchId: "ng-prop", text: "solid, liquid, gas, non-shiny" },
+        { matchId: "am-val", text: "1 valence e-" },
+        { matchId: "hal-val", text: "7 valence e-" },
+        { matchId: "aem-val", text: "2 valence e-" },
+        { matchId: "ng-val", text: "8 valence e-" },
+        { matchId: "am-react", text: "metal with high reactivity" },
+        { matchId: "hal-react", text: "Non-metal with very high reactivity" },
+        { matchId: "aem-react", text: "Metal with very high reactivity" },
+        { matchId: "ng-react", text: "Non-reactive non-metal" },
+        { matchId: "am-sym", text: "Li" },
+        { matchId: "hal-sym", text: "F" },
+        { matchId: "aem-sym", text: "Mg" },
+        { matchId: "ng-sym", text: "He" },
+        { matchId: "am-name", text: "potassium" },
+        { matchId: "hal-name", text: "chlorine" },
+        { matchId: "aem-name", text: "calcium" },
+        { matchId: "ng-name", text: "neon" }
+    ]
+});
