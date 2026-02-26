@@ -1,32 +1,33 @@
 // --- Data Setup ---
 const columns = ["", "Physical Change", "Chemical Change"];
-const rows =["Reversibility", "Description", "Example A", "Example B", "Example C", "Example D"];
+const rows =["Reversibility", "Description", "Example 1", "Example 2", "Example 3", "Example 4"];
 
-// Data is ordered left-to-right, top-to-bottom relative to the 2 data columns
+// Data is ordered left-to-right, top-to-bottom relative to the 2 data columns.
+// Examples now use shared 'p-ex' and 'c-ex' match IDs so they can be placed in any example row.
 const propertyData =[
     // Reversibility
-    { id: "p-rev", text: "Reversible Reaction" },
-    { id: "c-rev", text: "Difficult to reverse the reaction" },
+    { matchId: "p-rev", text: "Reversible Reaction" },
+    { matchId: "c-rev", text: "Difficult to reverse the reaction" },
     
     // Description
-    { id: "p-desc", text: "substance changes state (s, l, g)" },
-    { id: "c-desc", text: "new substance formed" },
+    { matchId: "p-desc", text: "substance changes state (s, l, g)" },
+    { matchId: "c-desc", text: "new substance formed" },
     
-    // Example A
-    { id: "p-exA", text: "water condenses on the window" },
-    { id: "c-exA", text: "two clear solutions mix together to produce a white solid" },
+    // Example 1
+    { matchId: "p-ex", text: "water condenses on the window" },
+    { matchId: "c-ex", text: "two clear solutions mix together to produce a white solid" },
     
-    // Example B
-    { id: "p-exB", text: "melting ice" },
-    { id: "c-exB", text: "heat produced or absorbed" },
+    // Example 2
+    { matchId: "p-ex", text: "melting ice" },
+    { matchId: "c-ex", text: "heat produced or absorbed" },
     
-    // Example C
-    { id: "p-exC", text: "chopping carrots" },
-    { id: "c-exC", text: "indicator changes from yellow to blue colour" },
+    // Example 3
+    { matchId: "p-ex", text: "chopping carrots" },
+    { matchId: "c-ex", text: "indicator changes from yellow to blue colour" },
     
-    // Example D
-    { id: "p-exD", text: "green coloured solution" },
-    { id: "c-exD", text: "cooking eggs" }
+    // Example 4
+    { matchId: "p-ex", text: "green coloured solution" },
+    { matchId: "c-ex", text: "cooking eggs" }
 ];
 
 // --- Audio API Setup ---
@@ -69,7 +70,6 @@ function playFinished() {
 }
 
 // --- Game Logic ---
-let selectedTileId = null;
 let matchedCount = 0;
 
 function initGame() {
@@ -99,7 +99,7 @@ function initGame() {
         for(let i = 0; i < dataColumnsCount; i++) {
             const slot = document.createElement('div');
             slot.className = 'grid-cell grid-empty-slot';
-            slot.dataset.targetId = propertyData[dataIndex].id;
+            slot.dataset.targetId = propertyData[dataIndex].matchId;
             slot.addEventListener('click', () => handleSlotClick(slot));
             board.appendChild(slot);
             dataIndex++;
@@ -109,11 +109,13 @@ function initGame() {
     // 3. Build & Shuffle Tile Bank
     const shuffledData = [...propertyData].sort(() => Math.random() - 0.5);
     
-    shuffledData.forEach(item => {
+    shuffledData.forEach((item, index) => {
         const tile = document.createElement('div');
         tile.className = 'tile';
         tile.textContent = item.text;
-        tile.dataset.id = item.id;
+        tile.dataset.matchId = item.matchId;
+        // Use a unique ID just for DOM identification if needed, but we rely on .selected
+        tile.id = `tile-${index}`;
         tile.addEventListener('click', () => handleTileSelection(tile));
         bank.appendChild(tile);
     });
@@ -126,20 +128,22 @@ function handleTileSelection(tileElement) {
     
     // Select new
     tileElement.classList.add('selected');
-    selectedTileId = tileElement.dataset.id;
 }
 
 function handleSlotClick(slotElement) {
-    if (!selectedTileId) return; // Ignore if no tile selected
+    // Grab the actual DOM element that is currently selected
+    const activeTile = document.querySelector('.tile.selected');
+    
+    if (!activeTile) return; // Ignore if no tile is selected
     
     const targetId = slotElement.dataset.targetId;
+    const selectedMatchId = activeTile.dataset.matchId;
     
-    if (selectedTileId === targetId) {
+    if (selectedMatchId === targetId) {
         // Match Correct
         playCorrect();
         
         // Move text to slot and style it as filled
-        const activeTile = document.querySelector(`.tile[data-id="${selectedTileId}"]`);
         slotElement.textContent = activeTile.textContent;
         slotElement.classList.remove('grid-empty-slot');
         slotElement.style.backgroundColor = 'var(--cell-color)';
@@ -148,10 +152,9 @@ function handleSlotClick(slotElement) {
         // Remove click event so it can't be clicked again
         slotElement.replaceWith(slotElement.cloneNode(true));
         
-        // Remove from bank
+        // Remove the exact selected tile from the bank
         activeTile.remove();
         
-        selectedTileId = null;
         matchedCount++;
         
         checkWinCondition();
