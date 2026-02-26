@@ -29,8 +29,8 @@ new ScitriadTileGame({
         { matchId: "rxn-resp", text: "1C₆H₁₂O₆(s) + <u>6</u>O₂(g)<br>➔<br><u>6</u>CO₂(g) + <u>6</u>H₂O(l)" },
 
         // --- Row 5: Diagram of organelle where process occurs ---
-        { matchId: "diag-photo", text: '<img src="chloroplast-diagram.png" alt="Chloroplast Diagram" style="max-width: 100%; max-height: 100px; object-fit: contain; border-radius: 4px;">' },
-        { matchId: "diag-resp", text: '<img src="mitochondria-diagram.png" alt="Mitochondria Diagram" style="max-width: 100%; max-height: 100px; object-fit: contain; border-radius: 4px;">' },
+        { matchId: "diag-photo", text: '<img src="chloroplast.jpg" alt="Chloroplast Diagram" style="max-width: 100%; max-height: 100px; object-fit: contain; border-radius: 4px;">' },
+        { matchId: "diag-resp", text: '<img src="mitochondria.jpg" alt="Mitochondria Diagram" style="max-width: 100%; max-height: 100px; object-fit: contain; border-radius: 4px;">' },
 
         // --- Row 6: Process Description ---
         { matchId: "desc-photo", text: "<small>Solar energy, carbon dioxide gas and water are converted into glucose and oxygen gas by plants</small>" },
