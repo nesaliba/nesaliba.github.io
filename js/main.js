@@ -54,7 +54,7 @@ if (canvas) {
     resize();
 
     // 3 Triad Balls Configuration
-    const balls = [
+    const balls =[
         { angle: 0, color: '#ff416c', radius: 15, speed: 0.02, distX: 160, distY: 100 },
         { angle: Math.PI * 2 / 3, color: '#f7b733', radius: 15, speed: 0.025, distX: 110, distY: 160 },
         { angle: Math.PI * 4 / 3, color: '#00b09b', radius: 15, speed: 0.015, distX: 130, distY: 130 }
@@ -67,7 +67,7 @@ if (canvas) {
 
         const centerX = width / 2;
         const centerY = height / 2;
-        const positions = [];
+        const positions =[];
 
         // Move and draw each ball
         balls.forEach(ball => {
@@ -103,3 +103,112 @@ if (canvas) {
     }
     animate();
 }
+
+// --- Pre-Game Settings Modal ---
+function setupGameSettingsModal() {
+    const gameLinks = document.querySelectorAll('.game-link');
+    if (gameLinks.length === 0) return;
+
+    // Inject modal HTML
+    const modalHTML = `
+        <div class="modal-overlay" id="settingsModal" style="z-index: 2000;">
+            <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left;">
+                <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-dark);">Game Settings</h2>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Timer</label>
+                    <select id="setting-timer" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <option value="off">Off</option>
+                        <option value="on">On</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Timer Visibility</label>
+                    <select id="setting-timer-visible" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <option value="visible">Visible</option>
+                        <option value="hidden">Hidden</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Tile Mode</label>
+                    <select id="setting-tile-mode" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <option value="all">All Tiles Visible</option>
+                        <option value="one">One Tile At A Time</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Max Wrong Placements: <span id="mistakes-val">10</span></label>
+                    <input type="range" id="setting-mistakes" min="0" max="10" value="10" style="width: 100%;">
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button id="btn-cancel-settings" class="btn-secondary" style="margin-top: 0; padding: 0.5rem 1rem;">Cancel</button>
+                    <button id="btn-start-game" style="margin-top: 0; padding: 0.5rem 1rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Start Game</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    const settingsModal = document.getElementById('settingsModal');
+    const mistakesInput = document.getElementById('setting-mistakes');
+    const mistakesVal = document.getElementById('mistakes-val');
+    const btnCancel = document.getElementById('btn-cancel-settings');
+    const btnStart = document.getElementById('btn-start-game');
+    const timerSelect = document.getElementById('setting-timer');
+    const timerVisibleSelect = document.getElementById('setting-timer-visible');
+    
+    let pendingGameUrl = '';
+
+    // Disable timer visibility selection if timer is off
+    timerSelect.addEventListener('change', (e) => {
+        if(e.target.value === 'off') {
+            timerVisibleSelect.disabled = true;
+            timerVisibleSelect.style.opacity = '0.5';
+        } else {
+            timerVisibleSelect.disabled = false;
+            timerVisibleSelect.style.opacity = '1';
+        }
+    });
+    timerSelect.dispatchEvent(new Event('change')); // Trigger initial visual state
+    
+    mistakesInput.addEventListener('input', (e) => {
+        mistakesVal.textContent = e.target.value;
+    });
+    
+    btnCancel.addEventListener('click', () => {
+        settingsModal.style.display = 'none';
+    });
+    
+    btnStart.addEventListener('click', () => {
+        const timer = timerSelect.value;
+        const timerVisible = timerVisibleSelect.value;
+        const tileMode = document.getElementById('setting-tile-mode').value;
+        const maxMistakes = mistakesInput.value;
+        
+        const params = new URLSearchParams();
+        params.set('timer', timer);
+        params.set('timerVisible', timerVisible);
+        params.set('tileMode', tileMode);
+        params.set('maxMistakes', maxMistakes);
+        
+        window.location.href = pendingGameUrl + '?' + params.toString();
+    });
+    
+    gameLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            // If it's a real link that redirects to a game html file
+            if (href && href !== '#') {
+                e.preventDefault();
+                pendingGameUrl = href;
+                settingsModal.style.display = 'flex';
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', setupGameSettingsModal);

@@ -360,6 +360,7 @@ details[open] summary { border-bottom: 1px solid #e2e8f0; }
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: all 0.2s;
     border-left: 5px solid var(--primary-blue);
+    cursor: pointer;
 }
 
 .game-link:hover {
@@ -380,6 +381,47 @@ details[open] summary { border-bottom: 1px solid #e2e8f0; }
 /* Theme H1 fixes to override the gradient inside sub-pages */
 .theme-chem h1, .theme-bio h1, .theme-phys h1, .theme-math h1, .theme-eng h1 {
     -webkit-text-fill-color: white;
+}
+
+/* --- Pre-Game Settings Modal --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--text-dark);
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
 }
 
 /* --- Footer --- */
