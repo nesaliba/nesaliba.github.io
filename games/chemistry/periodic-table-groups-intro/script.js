@@ -5,8 +5,8 @@ const rows =[
     "Property of Metal or Non-Metal", 
     "Number of Valence e-", 
     "Relative Reactivity", 
-    "Example Element A Symbol", 
-    "Example Element B Name"
+    "Example Element: Symbol", 
+    "Example Element: Name"
 ];
 
 // Data is ordered left-to-right, top-to-bottom relative to the 4 data columns.
