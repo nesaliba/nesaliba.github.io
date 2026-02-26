@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical vs Chemical Change | Scitriad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="game-header">
+        <a href="../../../Chemistry.html" class="back-btn">← Back to Chemistry</a>
+        <h1>Physical vs Chemical Change</h1>
+        <p>Click a property tile from the bank below, then click the correct empty slot in the grid to place it!</p>
+    </header>
+
+    <main class="game-container">
+        <div class="table-wrapper">
+            <div class="grid-board" id="gameBoard">
+                <!-- Headers and slots are injected via JS -->
+            </div>
+        </div>
+
+        <div class="tile-bank-container">
+            <h2>Property Tiles</h2>
+            <div class="tile-bank" id="tileBank">
+                <!-- Tiles are injected via JS -->
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="winModal">
+        <div class="modal-content">
+            <h2>Activity Complete!</h2>
+            <p>You have successfully classified all the physical and chemical changes.</p>
+            <button onclick="location.reload()">Play Again</button>
+            <a href="../../../Chemistry.html" class="btn-secondary">Return to Menu</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
