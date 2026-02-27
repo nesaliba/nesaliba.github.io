@@ -1,4 +1,4 @@
-import { auth, db, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut, onAuthStateChanged, doc, setDoc } from './firebase-init.js';
+import { auth, sendSignInLinkToEmail, signOut, onAuthStateChanged } from './firebase-init.js';
 
 // Inject Auth Modal HTML dynamically into the DOM
 const authModalHTML = `
@@ -49,7 +49,6 @@ function openAuthModal() {
     authModalDesc.innerText = "Enter your email to receive a secure login link.";
     authEmailInput.value = window.localStorage.getItem('emailForSignIn') || '';
     
-    // Slight delay to ensure modal is visible before focusing
     setTimeout(() => authEmailInput.focus(), 100);
 }
 
@@ -65,14 +64,23 @@ async function loginWithEmail() {
         return;
     }
 
-    // Switch to loading state
     authInputContainer.style.display = 'none';
     authLoadingContainer.style.display = 'block';
     authLoadingText.innerText = "Sending link...";
     authCloseBtn.style.display = 'none'; 
 
+    // Dynamically build the URL for the new verification page
+    // This securely handles GitHub Pages subdirectories and local development
+    let verifyUrl = window.location.origin + '/auth-verify.html'; 
+    const scriptTag = document.querySelector('script[src$="auth.js"]');
+    if (scriptTag) {
+        const authJsUrl = new URL(scriptTag.src, window.location.href);
+        const basePath = authJsUrl.pathname.replace('/js/auth.js', '');
+        verifyUrl = authJsUrl.origin + basePath + '/auth-verify.html';
+    }
+
     const actionCodeSettings = {
-        url: window.location.href, 
+        url: verifyUrl, 
         handleCodeInApp: true,
     };
 
@@ -80,9 +88,8 @@ async function loginWithEmail() {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem('emailForSignIn', email);
         
-        // Switch to "Waiting" state
         authModalTitle.innerText = "Check your email!";
-        authModalDesc.innerHTML = `We sent a magic link to <strong>${email}</strong>.<br><br>Click the link in your email. You can open it in a new tab, and this window will automatically log you in!`;
+        authModalDesc.innerHTML = `We sent a magic link to <strong>${email}</strong>.<br><br>Click the link in your email. A new tab will open to verify, and this window will automatically log you in!`;
         authLoadingText.innerText = "Waiting for authorization...";
         
         authCloseBtn.style.display = 'inline-block';
@@ -92,35 +99,6 @@ async function loginWithEmail() {
         console.error("Error sending email link:", error);
         alert(`Error: ${error.message}`);
         closeAuthModal();
-    }
-}
-
-// Check if the user just clicked the email link to return to the site
-async function checkEmailLinkLogin() {
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailForSignIn');
-        
-        if (!email) {
-            email = prompt('Please provide your email for confirmation');
-        }
-
-        try {
-            const result = await signInWithEmailLink(auth, email, window.location.href);
-            window.localStorage.removeItem('emailForSignIn');
-            
-            // Save basic user profile securely
-            await setDoc(doc(db, "users", result.user.uid), {
-                email: result.user.email,
-                lastLogin: new Date()
-            }, { merge: true });
-            
-            // Clean up the messy URL Firebase generates in the browser bar
-            window.history.replaceState({}, document.title, window.location.pathname);
-            
-        } catch (error) {
-            console.error("Error signing in with link:", error);
-            alert(`Login error: ${error.message}`);
-        }
     }
 }
 
@@ -142,7 +120,6 @@ if (authBtn) {
 authSubmitBtn.addEventListener('click', loginWithEmail);
 authCloseBtn.addEventListener('click', closeAuthModal);
 
-// Allow pressing Enter in the input
 authEmailInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         loginWithEmail();
@@ -150,18 +127,15 @@ authEmailInput.addEventListener('keypress', (e) => {
 });
 
 // Update the text dynamically based on login state
+// Because Firebase syncs via IndexedDB, this will trigger the moment the user authenticates in the other tab
 onAuthStateChanged(auth, (user) => {
     if (user) {
         if (authText) authText.innerText = `${user.email}`;
         if (authBtn) authBtn.innerText = "Logout";
         
-        // Automatically close the modal if it's open (Firebase cross-tab sync magic!)
         closeAuthModal();
     } else {
         if (authText) authText.innerText = "";
         if (authBtn) authBtn.innerText = "Login";
     }
 });
-
-// Run immediately to catch returning users
-checkEmailLinkLogin();
