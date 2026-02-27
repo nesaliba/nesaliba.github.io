@@ -213,20 +213,28 @@ function setupGameSettingsModal() {
     
     gameLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            if (link.hasAttribute('data-no-modal')) return;
+            // Find and assign details index immediately before anything else
+            const detailsParent = link.closest('details');
+            let detailsIndex = -1;
+            if (detailsParent) {
+                const allDetails = document.querySelectorAll('details');
+                detailsIndex = Array.from(allDetails).indexOf(detailsParent);
+            }
+
+            // For non-modal games, set the sessionStorage property so scrolling functions properly upon return
+            if (link.hasAttribute('data-no-modal')) {
+                if (detailsIndex !== -1) {
+                    const pageName = window.location.pathname.split('/').pop() || 'index.html';
+                    sessionStorage.setItem('expandedDetails_' + pageName, detailsIndex);
+                }
+                return; // Allows standard href navigation
+            }
 
             const href = link.getAttribute('href');
             if (href && href !== '#') {
                 e.preventDefault();
                 pendingGameUrl = href;
-                
-                const detailsParent = link.closest('details');
-                if (detailsParent) {
-                    const allDetails = document.querySelectorAll('details');
-                    pendingDetailsIndex = Array.from(allDetails).indexOf(detailsParent);
-                } else {
-                    pendingDetailsIndex = -1;
-                }
+                pendingDetailsIndex = detailsIndex;
                 
                 if (window.userSettings) {
                     timerSelect.value = window.userSettings.timer || 'off';
