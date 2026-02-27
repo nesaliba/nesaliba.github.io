@@ -53,8 +53,8 @@
 }
 .dropdown-content button:hover { background-color: var(--details-bg); color: var(--primary-blue); }
 
-.hamburger { display: none; cursor: pointer; z-index: 1002; }
-.hamburger div { width: 25px; height: 3px; background-color: var(--text-dark); margin: 5px; transition: all 0.3s ease; }
+.hamburger { display: none; cursor: pointer; z-index: 1002; font-size: clamp(16px, 2vw, 24px); }
+.hamburger div { width: 1.6em; height: 0.2em; background-color: var(--text-dark); margin: 0.3em; transition: all 0.3s ease; }
 
 @media (max-width: 768px) {
     .hamburger { display: block; }
@@ -68,8 +68,8 @@
     .nav-links a { opacity: 0; margin: 1.5rem 0; font-size: 1.2rem; }
 }
 
-.toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
+.toggle .line1 { transform: rotate(-45deg) translate(-0.35em, 0.35em); }
 .toggle .line2 { opacity: 0; }
-.toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
+.toggle .line3 { transform: rotate(45deg) translate(-0.35em, -0.35em); }
 
 @keyframes navLinkFade { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }

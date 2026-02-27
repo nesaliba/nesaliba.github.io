@@ -159,6 +159,7 @@ function setupGameSettingsModal() {
     const timerVisibleSelect = document.getElementById('setting-timer-visible');
     
     let pendingGameUrl = '';
+    let pendingDetailsIndex = -1;
 
     timerSelect.addEventListener('change', (e) => {
         if(e.target.value === 'off') {
@@ -192,6 +193,12 @@ function setupGameSettingsModal() {
         if (document.getElementById('setting-save-default').checked && window.saveGameSettings) {
             window.saveGameSettings(settings);
         }
+
+        // Save the details index so that when we navigate back, the list remains expanded
+        if (pendingDetailsIndex !== -1) {
+            const pageName = window.location.pathname.split('/').pop() || 'index.html';
+            sessionStorage.setItem('expandedDetails_' + pageName, pendingDetailsIndex);
+        }
         
         const params = new URLSearchParams();
         params.set('timer', settings.timer);
@@ -210,6 +217,14 @@ function setupGameSettingsModal() {
             if (href && href !== '#') {
                 e.preventDefault();
                 pendingGameUrl = href;
+                
+                const detailsParent = link.closest('details');
+                if (detailsParent) {
+                    const allDetails = document.querySelectorAll('details');
+                    pendingDetailsIndex = Array.from(allDetails).indexOf(detailsParent);
+                } else {
+                    pendingDetailsIndex = -1;
+                }
                 
                 if (window.userSettings) {
                     timerSelect.value = window.userSettings.timer || 'off';
@@ -233,4 +248,25 @@ function setupGameSettingsModal() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', setupGameSettingsModal);
+function restoreExpandedDetails() {
+    const pageName = window.location.pathname.split('/').pop() || 'index.html';
+    const savedState = sessionStorage.getItem('expandedDetails_' + pageName);
+    
+    if (savedState !== null) {
+        const index = parseInt(savedState, 10);
+        const allDetails = document.querySelectorAll('details');
+        if (allDetails[index]) {
+            allDetails[index].setAttribute('open', 'true');
+            setTimeout(() => {
+                allDetails[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+        // Remove so it doesn't persistently trigger on manual returns in future sessions
+        sessionStorage.removeItem('expandedDetails_' + pageName);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupGameSettingsModal();
+    restoreExpandedDetails();
+});
