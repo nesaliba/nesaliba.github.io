@@ -13,12 +13,15 @@ class ScitriadTileGame {
             tileMode: params.get('tileMode') || 'all',
             maxMistakes: params.has('maxMistakes') ? parseInt(params.get('maxMistakes')) : 10,
             mute: params.get('mute') === 'true',
-            theme: params.get('theme') || 'light'
+            theme: params.get('theme') || localStorage.getItem('scitriad_theme') || 'light'
         };
         
-        // Apply Global Theme
+        // Apply Global Theme robustly avoiding FOUC
         if (this.settings.theme === 'dark') {
-            document.body.classList.add('dark-theme');
+            document.documentElement.classList.add('dark-theme');
+            if (document.body) {
+                document.body.classList.add('dark-theme');
+            }
         }
 
         this.mistakesCount = 0;

@@ -20,9 +20,13 @@ window.userSettings = null;
 // Expose global logic to apply themes/sounds universally
 window.applyThemeAndSound = function(settings) {
     if (settings?.darkMode) {
+        document.documentElement.classList.add('dark-theme');
         document.body.classList.add('dark-theme');
+        localStorage.setItem('scitriad_theme', 'dark');
     } else {
+        document.documentElement.classList.remove('dark-theme');
         document.body.classList.remove('dark-theme');
+        localStorage.setItem('scitriad_theme', 'light');
     }
 };
 

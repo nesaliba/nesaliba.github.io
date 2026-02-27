@@ -208,7 +208,7 @@ body {
 @media (max-width: 768px) { .back-btn { position: static; display: inline-block; margin-bottom: 1rem; } }
 
 /* --- Dark Theme Overrides --- */
-body.dark-theme {
+:root.dark-theme, body.dark-theme {
     --bg-color: #0f172a;
     --text-dark: #f8fafc;
     --tile-bg: #1e293b;
@@ -217,27 +217,27 @@ body.dark-theme {
     --border-color: #64748b;
 }
 
-body.dark-theme .tile {
+:root.dark-theme .tile, body.dark-theme .tile {
     color: #e0e7ff;
     border-color: #6366f1;
 }
 
-body.dark-theme .tile.upcoming {
+:root.dark-theme .tile.upcoming, body.dark-theme .tile.upcoming {
     background-color: #1e293b;
     border-color: #475569;
     color: #94a3b8;
 }
 
-body.dark-theme #one-tile-mode-container,
-body.dark-theme .tile-bank-container,
-body.dark-theme .modal-content {
+:root.dark-theme #one-tile-mode-container, body.dark-theme #one-tile-mode-container,
+:root.dark-theme .tile-bank-container, body.dark-theme .tile-bank-container,
+:root.dark-theme .modal-content, body.dark-theme .modal-content {
     background: #1e293b;
     color: #f8fafc;
 }
 
-body.dark-theme .grid-empty-slot {
+:root.dark-theme .grid-empty-slot, body.dark-theme .grid-empty-slot {
     background-color: rgba(51, 65, 85, 0.4);
 }
-body.dark-theme .grid-empty-slot:hover {
+:root.dark-theme .grid-empty-slot:hover, body.dark-theme .grid-empty-slot:hover {
     background-color: rgba(51, 65, 85, 0.8);
 }
