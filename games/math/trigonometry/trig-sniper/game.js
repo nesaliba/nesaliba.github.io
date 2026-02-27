@@ -33,7 +33,7 @@ class TrigSniper {
         this.timerInterval = null;
         this.audioCtx = null;
         
-        this.validTargets = [];
+        this.validTargets =[];
         this.effects =[];
         this.hoveredNode = -1;
 
@@ -89,7 +89,7 @@ class TrigSniper {
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
-        const modes =['rookie', 'marksman', 'sniper'];
+        const modes = ['rookie', 'marksman', 'sniper'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
                 this.initAudio();
@@ -118,8 +118,9 @@ class TrigSniper {
 
     resetGameReady() {
         this.isPlaying = false;
-        this.validTargets =[];
+        this.validTargets = [];
         this.effects =[];
+        this.hoveredNode = -1;
         document.getElementById('btn-start').disabled = false;
         this.updatePromptDisplay("\\text{Press Start to begin!}");
         document.getElementById('timer-display').innerText = `Time: 60`;
@@ -133,6 +134,7 @@ class TrigSniper {
         this.attempts = 0;
         this.timeRemaining = 60;
         this.effects =[];
+        this.hoveredNode = -1;
         
         document.getElementById('btn-start').disabled = true;
         document.getElementById('score-display').innerText = `Hits: 0`;
@@ -157,7 +159,7 @@ class TrigSniper {
             else if (type === 1) promptText = `\\text{Locate Angle: } ${pt.deg}`;
             else promptText = `\\text{Locate Point: } \\left(${pt.x}, ${pt.y}\\right)`;
             
-            this.validTargets =[pt.id];
+            this.validTargets = [pt.id];
         } 
         else if (this.mode === 'marksman') {
             const useSin = Math.random() > 0.5;
@@ -186,7 +188,7 @@ class TrigSniper {
             else promptText += ` \\text{ and } ${otherFuncStr} ${condSign} 0`;
         } 
         else if (this.mode === 'sniper') {
-            const funcs =['tan', 'csc', 'sec', 'cot'];
+            const funcs = ['tan', 'csc', 'sec', 'cot'];
             let chosenFunc = '';
             let val = 'undef';
             while(val === 'undef') {
@@ -307,9 +309,15 @@ class TrigSniper {
 
     handleMouseMove(e) {
         if (!this.isPlaying) return;
+        
+        // Map CSS display pixels to internal Canvas resolution
         const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        
         const originX = this.width / 2;
         const originY = this.height / 2;
 
@@ -317,7 +325,9 @@ class TrigSniper {
         for (const pt of UNIT_CIRCLE) {
             const cx = originX + this.radius * Math.cos(pt.val);
             const cy = originY - this.radius * Math.sin(pt.val);
-            if (Math.hypot(x - cx, y - cy) < 20) {
+            
+            // Increased hit detection radius to 30 for better usability
+            if (Math.hypot(x - cx, y - cy) < 30) {
                 this.hoveredNode = pt.id;
                 break;
             }
@@ -325,17 +335,39 @@ class TrigSniper {
     }
 
     handleClick(e) {
-        if (!this.isPlaying || this.hoveredNode === -1) return;
+        if (!this.isPlaying) return;
 
-        const pt = UNIT_CIRCLE[this.hoveredNode];
+        // Recalculate precisely on click ensuring touch/mobile works flawlessly
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        
         const originX = this.width / 2;
         const originY = this.height / 2;
+
+        let clickedNode = -1;
+        for (const pt of UNIT_CIRCLE) {
+            const cx = originX + this.radius * Math.cos(pt.val);
+            const cy = originY - this.radius * Math.sin(pt.val);
+            
+            if (Math.hypot(x - cx, y - cy) < 30) {
+                clickedNode = pt.id;
+                break;
+            }
+        }
+
+        if (clickedNode === -1) return;
+
+        const pt = UNIT_CIRCLE[clickedNode];
         const cx = originX + this.radius * Math.cos(pt.val);
         const cy = originY - this.radius * Math.sin(pt.val);
 
         this.attempts++;
 
-        if (this.validTargets.includes(this.hoveredNode)) {
+        if (this.validTargets.includes(clickedNode)) {
             // Hit!
             this.playHit();
             this.score++;
@@ -366,6 +398,8 @@ class TrigSniper {
         clearInterval(this.timerInterval);
         this.isPlaying = false;
         this.playFinished();
+        this.hoveredNode = -1; // Reset hover node
+        this.drawCanvas(); // Clear hover effect on game over
         
         const acc = this.attempts === 0 ? 0 : Math.round((this.score / this.attempts) * 100);
         
