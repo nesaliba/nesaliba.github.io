@@ -74,6 +74,11 @@ window.gameInfoData = {
         desc: 'An interactive graphing game focused on mathematical function transformations.',
         play: 'Adjust the a, b, h, and k sliders to apply transformations to the parent function until it matches the target graph.'
     },
+    'polynomial-arena': {
+        title: 'Polynomial Arena',
+        desc: 'Turn algebra into an RPG battle system! Defeat polynomials by factoring, expanding, identifying graph features, and constructing equations.',
+        play: 'Read the mathematical prompt to find the weak point of the enemy polynomial. Select the correct multiple choice option to deal damage. Defeat all bosses to win!'
+    },
     'trig-sniper': {
         title: 'Trig Sniper',
         desc: 'A fast-paced game to test your knowledge of the unit circle and trigonometric identities.',
