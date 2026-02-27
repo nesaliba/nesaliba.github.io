@@ -16,6 +16,17 @@ class FunctionFactory {
         this.currentParams = { type: 'quadratic', a: 1, b: 1, h: 0, k: 0 };
         this.targetParams = null;
 
+        // Listen for dark mode class toggles to dynamically redraw the canvas lines
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    this.updateGraphAndEquation();
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+        if (document.body) observer.observe(document.body, { attributes: true });
+
         this.initUI();
         this.generateTarget();
         this.updateGraphAndEquation();
@@ -24,7 +35,7 @@ class FunctionFactory {
     initAudio() {
         if (window.userSettings && window.userSettings.muteSounds) return;
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true') return;
+        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
 
         if (!this.audioCtx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -38,7 +49,7 @@ class FunctionFactory {
     playTone(frequency, type, duration, vol = 0.1) {
         if (window.userSettings && window.userSettings.muteSounds) return;
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true') return;
+        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
 
         if (!this.audioCtx) return;
         const oscillator = this.audioCtx.createOscillator();
@@ -89,9 +100,7 @@ class FunctionFactory {
             this.moves++;
             this.updateMoves();
             this.updateGraphAndEquation();
-        });
-
-        ['a', 'b', 'h', 'k'].forEach(param => {
+        });['a', 'b', 'h', 'k'].forEach(param => {
             this.sliders[param].addEventListener('input', (e) => {
                 this.initAudio();
                 let val = parseFloat(e.target.value);
@@ -122,7 +131,7 @@ class FunctionFactory {
         });
 
         // Mode Setup
-        const modes =['practice', 'timed', 'puzzle', 'challenge'];
+        const modes = ['practice', 'timed', 'puzzle', 'challenge'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
                 this.initAudio();
@@ -229,7 +238,8 @@ class FunctionFactory {
     }
 
     getColors() {
-        const isDark = document.body.classList.contains('dark-theme');
+        const isDark = document.documentElement.classList.contains('dark-theme') || 
+                       (document.body && document.body.classList.contains('dark-theme'));
         return {
             grid: isDark ? '#334155' : '#e2e8f0',
             axes: isDark ? '#94a3b8' : '#475569',

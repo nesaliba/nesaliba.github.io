@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="style.css">
     
     <script>
+        // Synchronously apply theme before the DOM fully parses
+        (function() {
+            if (localStorage.getItem('scitriad_theme') === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+
+    <script>
         window.MathJax = {
             tex: { inlineMath: [['$', '$'],['\\(', '\\)']] },
             svg: { fontCache: 'global' }
@@ -107,6 +116,9 @@
             </div>
         </div>
     </div>
+    
     <script src="game.js"></script>
+    <script type="module" src="../../../../js/firebase-init.js"></script>
+    <script type="module" src="../../../../js/auth.js"></script>
 </body>
 </html>

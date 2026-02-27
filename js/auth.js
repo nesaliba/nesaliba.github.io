@@ -21,12 +21,16 @@ window.userSettings = null;
 window.applyThemeAndSound = function(settings) {
     if (settings?.darkMode) {
         document.documentElement.classList.add('dark-theme');
-        document.body.classList.add('dark-theme');
+        if (document.body) document.body.classList.add('dark-theme');
         localStorage.setItem('scitriad_theme', 'dark');
     } else {
         document.documentElement.classList.remove('dark-theme');
-        document.body.classList.remove('dark-theme');
+        if (document.body) document.body.classList.remove('dark-theme');
         localStorage.setItem('scitriad_theme', 'light');
+    }
+
+    if (settings?.muteSounds !== undefined) {
+        localStorage.setItem('scitriad_mute', settings.muteSounds ? 'true' : 'false');
     }
 };
 
@@ -300,6 +304,7 @@ document.getElementById('account-dark-mode').addEventListener('change', async (e
 document.getElementById('account-mute-sounds').addEventListener('change', async (e) => {
     if (!window.userSettings) window.userSettings = {};
     window.userSettings.muteSounds = e.target.checked;
+    window.applyThemeAndSound(window.userSettings);
     if (window.saveGameSettings) await window.saveGameSettings(window.userSettings);
 });
 
