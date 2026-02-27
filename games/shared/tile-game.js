@@ -23,6 +23,15 @@ class ScitriadTileGame {
                 document.body.classList.add('dark-theme');
             }
         }
+        
+        // Auto-detect subject theme based on URL
+        if (document.body) {
+            if (window.location.href.includes('/chemistry/')) document.body.classList.add('theme-chem');
+            else if (window.location.href.includes('/biology/')) document.body.classList.add('theme-bio');
+            else if (window.location.href.includes('/physics/')) document.body.classList.add('theme-phys');
+            else if (window.location.href.includes('/math/')) document.body.classList.add('theme-math');
+            else if (window.location.href.includes('/english/')) document.body.classList.add('theme-eng');
+        }
 
         this.mistakesCount = 0;
         this.timerInterval = null;
@@ -205,7 +214,7 @@ class ScitriadTileGame {
 
     buildBank() {
         const bank = document.getElementById('tileBank');
-        const shuffledData =[...this.config.data].sort(() => Math.random() - 0.5);
+        const shuffledData = [...this.config.data].sort(() => Math.random() - 0.5);
         
         shuffledData.forEach(item => {
             const tile = document.createElement('div');
@@ -221,7 +230,7 @@ class ScitriadTileGame {
     }
 
     initOneTileMode() {
-        this.remainingTilesData =[...this.config.data].sort(() => Math.random() - 0.5);
+        this.remainingTilesData = [...this.config.data].sort(() => Math.random() - 0.5);
         this.advanceOneTileMode();
     }
     

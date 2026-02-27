@@ -212,6 +212,8 @@ async function handleAuth() {
 
 async function logout() {
     await signOut(auth);
+    localStorage.removeItem('scitriad_logged_in');
+    localStorage.removeItem('scitriad_user_email');
 }
 
 if (authBtn) {
@@ -329,6 +331,9 @@ function handleAccountError(error) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         window.isUserLoggedIn = true;
+        localStorage.setItem('scitriad_logged_in', 'true');
+        localStorage.setItem('scitriad_user_email', user.email);
+
         if (authBtn) authBtn.style.display = 'none';
         if (userMenu) userMenu.style.display = 'block';
         
@@ -350,6 +355,8 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         window.isUserLoggedIn = false;
         window.userSettings = null;
+        localStorage.removeItem('scitriad_logged_in');
+        localStorage.removeItem('scitriad_user_email');
 
         if (authBtn) authBtn.style.display = 'block';
         if (userMenu) userMenu.style.display = 'none';
