@@ -619,3 +619,23 @@ footer {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* --- Additional Auth Modal Styles --- */
+.auth-toggle-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.auth-toggle-link {
+    color: var(--primary-blue);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-toggle-link:hover {
+    color: #0284c7;
+    text-decoration: underline;
+}

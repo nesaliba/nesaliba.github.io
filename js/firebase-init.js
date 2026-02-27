@@ -1,9 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, 
-    sendSignInLinkToEmail, 
-    isSignInWithEmailLink, 
-    signInWithEmailLink, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
     signOut, 
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -28,9 +27,8 @@ const db = getFirestore(app);
 export { 
     auth, 
     db, 
-    sendSignInLinkToEmail, 
-    isSignInWithEmailLink, 
-    signInWithEmailLink, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
     signOut, 
     onAuthStateChanged, 
     doc, 
