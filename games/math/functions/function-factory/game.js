@@ -11,6 +11,7 @@ class FunctionFactory {
         this.moves = 0;
         this.timeRemaining = 0;
         this.timerInterval = null;
+        this.audioCtx = null;
         
         this.currentParams = { type: 'quadratic', a: 1, b: 1, h: 0, k: 0 };
         this.targetParams = null;
@@ -20,7 +21,51 @@ class FunctionFactory {
         this.updateGraphAndEquation();
     }
 
+    initAudio() {
+        if (window.userSettings && window.userSettings.muteSounds) return;
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mute') === 'true') return;
+
+        if (!this.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioCtx = new AudioContext();
+        }
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+    }
+
+    playTone(frequency, type, duration, vol = 0.1) {
+        if (window.userSettings && window.userSettings.muteSounds) return;
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mute') === 'true') return;
+
+        if (!this.audioCtx) return;
+        const oscillator = this.audioCtx.createOscillator();
+        const gainNode = this.audioCtx.createGain();
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(this.audioCtx.currentTime + duration);
+    }
+
+    playCorrect() { this.playTone(600, 'sine', 0.15); }
+    playWrong() { this.playTone(150, 'sawtooth', 0.3); }
+    playFinished() {
+        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
+        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
+        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
+        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
+    }
+
     initUI() {
+        // Init Audio on first interaction
+        document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
+
         // UI Elements
         this.sliders = {
             a: document.getElementById('slider-a'),
@@ -39,6 +84,7 @@ class FunctionFactory {
         
         // Listeners
         parentSelect.addEventListener('change', (e) => {
+            this.initAudio();
             this.currentParams.type = e.target.value;
             this.moves++;
             this.updateMoves();
@@ -47,6 +93,7 @@ class FunctionFactory {
 
         ['a', 'b', 'h', 'k'].forEach(param => {
             this.sliders[param].addEventListener('input', (e) => {
+                this.initAudio();
                 let val = parseFloat(e.target.value);
                 // Prevent a and b from being exactly 0
                 if ((param === 'a' || param === 'b') && val === 0) {
@@ -65,18 +112,20 @@ class FunctionFactory {
         });
 
         // Buttons
-        document.getElementById('btn-check').addEventListener('click', () => this.checkMatch());
-        document.getElementById('btn-next').addEventListener('click', () => this.nextTarget());
-        document.getElementById('btn-hint').addEventListener('click', () => this.showHint());
+        document.getElementById('btn-check').addEventListener('click', () => { this.initAudio(); this.checkMatch(); });
+        document.getElementById('btn-next').addEventListener('click', () => { this.initAudio(); this.nextTarget(); });
+        document.getElementById('btn-hint').addEventListener('click', () => { this.initAudio(); this.showHint(); });
         document.getElementById('btn-play-again').addEventListener('click', () => {
+            this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.setMode(this.mode);
         });
 
         // Mode Setup
-        const modes = ['practice', 'timed', 'puzzle', 'challenge'];
+        const modes =['practice', 'timed', 'puzzle', 'challenge'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
+                this.initAudio();
                 modes.forEach(m => document.getElementById(`btn-${m}`).classList.remove('active'));
                 e.target.classList.add('active');
                 this.setMode(mode);
@@ -133,7 +182,7 @@ class FunctionFactory {
     }
 
     generateTarget() {
-        const types = ['linear', 'quadratic', 'absolute', 'sqrt', 'cubic', 'reciprocal'];
+        const types =['linear', 'quadratic', 'absolute', 'sqrt', 'cubic', 'reciprocal'];
         
         // Randomly assign target parameters
         const randRange = (min, max, step) => {
@@ -179,11 +228,22 @@ class FunctionFactory {
         return (a * yBase) + k;
     }
 
+    getColors() {
+        const isDark = document.body.classList.contains('dark-theme');
+        return {
+            grid: isDark ? '#334155' : '#e2e8f0',
+            axes: isDark ? '#94a3b8' : '#475569',
+            target: isDark ? '#f87171' : '#ef4444',
+            current: isDark ? '#60a5fa' : '#2563eb'
+        };
+    }
+
     drawGrid() {
+        const colors = this.getColors();
         this.ctx.clearRect(0, 0, this.width, this.height);
         
         // Grid lines
-        this.ctx.strokeStyle = '#e2e8f0';
+        this.ctx.strokeStyle = colors.grid;
         this.ctx.lineWidth = 1;
         
         const originX = this.width / 2;
@@ -203,7 +263,7 @@ class FunctionFactory {
         }
 
         // Axes
-        this.ctx.strokeStyle = '#475569';
+        this.ctx.strokeStyle = colors.axes;
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         this.ctx.moveTo(originX, 0);
@@ -213,8 +273,9 @@ class FunctionFactory {
         this.ctx.stroke();
     }
 
-    drawFunction(params, color, isDashed = false) {
-        this.ctx.strokeStyle = color;
+    drawFunction(params, colorType, isDashed = false) {
+        const colors = this.getColors();
+        this.ctx.strokeStyle = colorType === 'target' ? colors.target : colors.current;
         this.ctx.lineWidth = 3;
         if (isDashed) this.ctx.setLineDash([5, 5]);
         else this.ctx.setLineDash([]);
@@ -259,13 +320,13 @@ class FunctionFactory {
     updateGraphAndEquation() {
         this.drawGrid();
         if (this.targetParams) {
-            this.drawFunction(this.targetParams, 'var(--target-color)', true);
+            this.drawFunction(this.targetParams, 'target', true);
         }
-        this.drawFunction(this.currentParams, 'var(--current-color)');
+        this.drawFunction(this.currentParams, 'current');
         this.updateEquation();
     }
 
-    formatTerm(coef, isFirst, isMultiplier = true) {
+    formatTermLatex(coef, isFirst, isMultiplier = true) {
         if (coef === 0 && !isMultiplier) return "";
         if (coef === 1 && isMultiplier) return isFirst ? "" : "+";
         if (coef === -1 && isMultiplier) return "-";
@@ -277,41 +338,74 @@ class FunctionFactory {
     updateEquation() {
         const { type, a, b, h, k } = this.currentParams;
         
-        let aStr = this.formatTerm(a, true, true);
+        let aStr = this.formatTermLatex(a, true, true);
         if (aStr === "" && a !== 1 && a !== -1) aStr = a; 
         
-        let bStr = "";
-        if (b !== 1) bStr = this.formatTerm(b, true, true);
-        
-        let inner = "x";
-        if (h > 0) inner = `(x - ${h})`;
-        else if (h < 0) inner = `(x + ${Math.abs(h)})`;
-        else if (b !== 1) inner = `x`; // just bx
+        let innerExp = "x";
+        let hStr = "";
+        if (h > 0) hStr = `- ${h}`;
+        else if (h < 0) hStr = `+ ${Math.abs(h)}`;
         
         if (b !== 1 && h !== 0) {
-            inner = `${bStr}[x ${h > 0 ? '-' : '+'} ${Math.abs(h)}]`;
+            innerExp = `${b}\\left(x ${hStr}\\right)`;
         } else if (b !== 1) {
-            inner = `${bStr}x`;
+            innerExp = `${b}x`;
+        } else if (h !== 0) {
+            innerExp = `x ${hStr}`;
         }
 
         let eq = "y = ";
+        let base = "";
         
         switch(type) {
-            case 'linear': eq += `${aStr}${aStr !== "" && inner !== "x" ? "" : ""}${inner}`; break;
-            case 'quadratic': eq += `${aStr}${inner !== "x" ? `(${inner})` : "x"}²`; break;
-            case 'absolute': eq += `${aStr}|${inner}|`; break;
-            case 'sqrt': eq += `${aStr}√(${inner})`; break;
-            case 'cubic': eq += `${aStr}${inner !== "x" ? `(${inner})` : "x"}³`; break;
-            case 'reciprocal': eq += `${aStr}(1 / ${inner === "x" ? "x" : `(${inner})`})`; break;
+            case 'linear': 
+                if ((a !== 1 && a !== -1) && innerExp !== "x" && innerExp !== `${b}x`) {
+                    base = `\\left(${innerExp}\\right)`;
+                } else if (a === -1 && innerExp !== "x" && innerExp !== `${b}x`) {
+                    base = `\\left(${innerExp}\\right)`;
+                } else {
+                    base = innerExp;
+                }
+                break;
+            case 'quadratic': 
+                base = innerExp === "x" ? `x^2` : `\\left(${innerExp}\\right)^2`; 
+                break;
+            case 'absolute': 
+                base = `\\left|${innerExp}\\right|`; 
+                break;
+            case 'sqrt': 
+                base = `\\sqrt{${innerExp}}`; 
+                break;
+            case 'cubic': 
+                base = innerExp === "x" ? `x^3` : `\\left(${innerExp}\\right)^3`; 
+                break;
+            case 'reciprocal': 
+                let num = "1";
+                if (a === -1) num = "-1";
+                else if (a !== 1) num = a.toString();
+                base = `\\frac{${num}}{${innerExp}}`;
+                aStr = ""; 
+                break;
         }
 
-        if (k !== 0) eq += ` ${k > 0 ? '+' : '-'} ${Math.abs(k)}`;
-        if (eq === "y = ") eq = "y = 0"; // Fallback
+        if (type !== 'reciprocal') {
+            eq += `${aStr}${base}`;
+        } else {
+            eq += base;
+        }
 
-        // Fix messy edge cases visually
-        eq = eq.replace("y = -(", "y = -(").replace("y = +", "y = ");
+        if (k !== 0) {
+            eq += ` ${k > 0 ? '+' : '-'} ${Math.abs(k)}`;
+        }
+        
+        if (eq === "y = ") eq = "y = 0";
 
-        document.getElementById('equation-display').innerText = eq;
+        const displayEl = document.getElementById('equation-display');
+        displayEl.innerText = `\\( ${eq} \\)`;
+        
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([displayEl]).catch(err => console.log('MathJax error:', err));
+        }
     }
 
     checkMatch() {
@@ -334,6 +428,7 @@ class FunctionFactory {
         }
 
         if (isMatch) {
+            this.playCorrect();
             feedback.innerText = "Excellent! Perfect Match!";
             feedback.className = "feedback-msg feedback-success";
             this.score++;
@@ -345,6 +440,7 @@ class FunctionFactory {
                 this.endGame();
             }
         } else {
+            this.playWrong();
             feedback.innerText = "Not quite. Check your transformations!";
             feedback.className = "feedback-msg feedback-error";
             
@@ -397,6 +493,7 @@ class FunctionFactory {
 
     endGame() {
         clearInterval(this.timerInterval);
+        this.playFinished();
         
         const modal = document.getElementById('report-modal');
         const details = document.getElementById('report-details');

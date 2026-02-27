@@ -213,6 +213,8 @@ function setupGameSettingsModal() {
     
     gameLinks.forEach(link => {
         link.addEventListener('click', (e) => {
+            if (link.hasAttribute('data-no-modal')) return;
+
             const href = link.getAttribute('href');
             if (href && href !== '#') {
                 e.preventDefault();

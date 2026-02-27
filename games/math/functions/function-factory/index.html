@@ -7,6 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../../css/style.css">
     <link rel="stylesheet" href="style.css">
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'],['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body class="theme-math">
     <div id="game-mount">
@@ -74,7 +82,7 @@
 
             <div class="graph-panel">
                 <div class="equation-display" id="equation-display">
-                    y = f(x)
+                    \( y = f(x) \)
                 </div>
                 <div class="canvas-container">
                     <canvas id="graph-canvas" width="600" height="600"></canvas>
