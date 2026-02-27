@@ -120,11 +120,19 @@ body.dark-theme {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 1.5rem;
-    padding: 1rem 2rem;
+    padding: 1rem;
     color: var(--text-dark);
-    font-size: 1.4rem;
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
     font-weight: 600;
     text-align: center;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+#prompt-display {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 5px; /* Gives slight room to prevent scrollbar clipping */
 }
 
 .options-grid {
@@ -135,7 +143,7 @@ body.dark-theme {
 
 .btn-option {
     padding: 1rem;
-    font-size: 1.15rem;
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
     font-weight: 600;
     background: #e2e8f0;
     color: #1e293b;
@@ -144,6 +152,11 @@ body.dark-theme {
     cursor: pointer;
     transition: all 0.2s;
     min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: auto;
+    word-wrap: break-word;
 }
 
 .btn-option:hover:not(:disabled) {
