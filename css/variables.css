@@ -29,6 +29,11 @@
     
     --eng-color: #854d0e;  
     --eng-rgb: 133, 77, 14;
+
+    /* Custom Scrollbar Colors */
+    --scrollbar-track: var(--bg-light);
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
 }
 
 :root.dark-theme, body.dark-theme {
@@ -40,4 +45,9 @@
     --border-color: #334155;
     --modal-bg: #0f172a;
     --input-border: #475569;
+
+    /* Custom Scrollbar Colors */
+    --scrollbar-track: var(--bg-light);
+    --scrollbar-thumb: #475569;
+    --scrollbar-thumb-hover: #64748b;
 }
