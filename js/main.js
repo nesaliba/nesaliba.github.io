@@ -90,6 +90,56 @@ if (canvas) {
     animate();
 }
 
+function setupInfoModal() {
+    const modalHTML = `
+        <div class="modal-overlay" id="infoModal" style="z-index: 3000;">
+            <div class="modal-content" style="max-width: 500px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
+                <h2 id="info-modal-title" style="margin-bottom: 1rem; color: var(--text-dark);">Game Title</h2>
+                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Premise</h4>
+                <p id="info-modal-desc" style="margin-bottom: 1.5rem; color: var(--text-dark); font-size: 0.95rem;"></p>
+                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">How to Play</h4>
+                <p id="info-modal-play" style="margin-bottom: 2rem; color: var(--text-dark); font-size: 0.95rem;"></p>
+                <div style="text-align: right;">
+                    <button id="btn-close-info" class="btn-action primary" style="padding: 0.5rem 1.5rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Got it!</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    if (!document.getElementById('infoModal')) {
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    const infoModal = document.getElementById('infoModal');
+    const btnCloseInfo = document.getElementById('btn-close-info');
+    const titleEl = document.getElementById('info-modal-title');
+    const descEl = document.getElementById('info-modal-desc');
+    const playEl = document.getElementById('info-modal-play');
+
+    btnCloseInfo.addEventListener('click', () => {
+        infoModal.style.display = 'none';
+    });
+
+    document.querySelectorAll('.info-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const gameId = btn.getAttribute('data-game');
+            const info = window.gameInfoData ? window.gameInfoData[gameId] : null;
+            
+            if (info) {
+                titleEl.textContent = info.title;
+                descEl.textContent = info.desc;
+                playEl.textContent = info.play;
+                infoModal.style.display = 'flex';
+            } else {
+                console.warn('No info found for game ID:', gameId);
+            }
+        });
+    });
+}
+
 function setupGameSettingsModal() {
     const gameLinks = document.querySelectorAll('.game-link');
     if (gameLinks.length === 0) return;
@@ -278,5 +328,6 @@ function restoreExpandedDetails() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupGameSettingsModal();
+    setupInfoModal();
     restoreExpandedDetails();
 });

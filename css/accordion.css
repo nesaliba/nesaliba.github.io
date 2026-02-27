@@ -26,3 +26,26 @@ details[open] summary { border-bottom: 1px solid var(--border-color); }
 .theme-phys .game-link { border-left-color: var(--phys-color); }
 .theme-math .game-link { border-left-color: var(--math-color); }
 .theme-eng .game-link { border-left-color: var(--eng-color); }
+
+/* Info Button Styles */
+.info-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0.2rem;
+    border-radius: 50%;
+}
+.info-btn:hover {
+    color: var(--primary-blue);
+    background: rgba(56, 182, 255, 0.1);
+    transform: scale(1.1);
+}
+.info-btn svg {
+    width: 18px;
+    height: 18px;
+}
