@@ -12,13 +12,20 @@ import {
     getDoc
 } from './firebase-init.js';
 
-let isLoginMode = true; // Track if user is signing in or signing up
+let isLoginMode = true;
 
-// Expose these globally so main.js can read/write data easily
 window.isUserLoggedIn = false;
 window.userSettings = null;
 
-// Expose save function to save preference configs globally
+// Expose global logic to apply themes/sounds universally
+window.applyThemeAndSound = function(settings) {
+    if (settings?.darkMode) {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
+    }
+};
+
 window.saveGameSettings = async (settings) => {
     if (!auth.currentUser) return;
     try {
@@ -31,7 +38,6 @@ window.saveGameSettings = async (settings) => {
     }
 };
 
-// Inject Auth Modal HTML dynamically into the DOM
 const authModalHTML = `
 <div class="auth-modal-overlay" id="auth-modal">
     <div class="auth-modal-content">
@@ -58,18 +64,28 @@ const authModalHTML = `
 </div>
 `;
 
-// Inject Account Settings Modal HTML dynamically into the DOM
 const accountModalHTML = `
 <div class="auth-modal-overlay" id="account-modal">
     <div class="auth-modal-content">
-        <h2 style="color: var(--primary-dark); margin-bottom: 1.5rem;">Account Settings</h2>
+        <h2 style="color: var(--text-dark); margin-bottom: 1.5rem;">Account Settings</h2>
+        
+        <div style="text-align: left; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <label style="font-weight:600; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; color: var(--text-dark);">
+                Dark Mode
+                <input type="checkbox" id="account-dark-mode" style="cursor: pointer; width: 16px; height: 16px;">
+            </label>
+            <label style="font-weight:600; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; color: var(--text-dark);">
+                Mute Sounds
+                <input type="checkbox" id="account-mute-sounds" style="cursor: pointer; width: 16px; height: 16px;">
+            </label>
+        </div>
         
         <div style="text-align: left; margin-bottom: 1rem;">
-            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Change Email</label>
+            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-dark);">Change Email</label>
             <input type="email" id="account-email-input" class="auth-input" placeholder="New Email" />
             <button id="btn-update-email" class="auth-btn-primary" style="margin-bottom: 1.5rem;">Update Email</button>
             
-            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Change Password</label>
+            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-dark);">Change Password</label>
             <input type="password" id="account-password-input" class="auth-input" placeholder="New Password" />
             <button id="btn-update-password" class="auth-btn-primary">Update Password</button>
         </div>
@@ -83,7 +99,6 @@ const accountModalHTML = `
 document.body.insertAdjacentHTML('beforeend', authModalHTML);
 document.body.insertAdjacentHTML('beforeend', accountModalHTML);
 
-// DOM Elements
 const authBtn = document.getElementById('auth-btn');
 const userMenu = document.getElementById('user-menu');
 const userAvatar = document.getElementById('user-avatar');
@@ -105,7 +120,6 @@ const authLoadingText = document.getElementById('auth-loading-text');
 const authModalTitle = document.getElementById('auth-modal-title');
 const authModalDesc = document.getElementById('auth-modal-desc');
 
-// Modal Control Functions
 function openAuthModal() {
     isLoginMode = true;
     updateModalUI();
@@ -141,7 +155,6 @@ function updateModalUI() {
     }
 }
 
-// Handle Authentication (Login / Register)
 async function handleAuth() {
     const email = authEmailInput.value.trim();
     const password = authPasswordInput.value;
@@ -156,7 +169,6 @@ async function handleAuth() {
         return;
     }
 
-    // Show loading state
     authInputContainer.style.display = 'none';
     authLoadingContainer.style.display = 'block';
     authLoadingText.innerText = isLoginMode ? "Signing in..." : "Creating account...";
@@ -164,12 +176,9 @@ async function handleAuth() {
 
     try {
         if (isLoginMode) {
-            // LOGIN
             await signInWithEmailAndPassword(auth, email, password);
         } else {
-            // REGISTER
             const result = await createUserWithEmailAndPassword(auth, email, password);
-            // Save basic user profile securely for new users
             await setDoc(doc(db, "users", result.user.uid), {
                 email: result.user.email,
                 createdAt: new Date(),
@@ -187,8 +196,6 @@ async function handleAuth() {
         }
 
         alert(errorMsg);
-        
-        // Revert UI to let them try again
         authInputContainer.style.display = 'block';
         authLoadingContainer.style.display = 'none';
         authCloseBtn.style.display = 'inline-block';
@@ -199,7 +206,6 @@ async function logout() {
     await signOut(auth);
 }
 
-// Event Listeners for Base Auth
 if (authBtn) {
     authBtn.addEventListener('click', openAuthModal);
 }
@@ -212,14 +218,12 @@ authToggleLink.addEventListener('click', () => {
     updateModalUI();
 });
 
-// Allow pressing Enter in the password input
 authPasswordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         handleAuth();
     }
 });
 
-// Dropdown UI Behaviors
 if(userAvatar) {
     userAvatar.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -240,7 +244,6 @@ if (btnLogout) {
     });
 }
 
-// Account Settings Modal Behaviors
 if (btnAccountSettings) {
     btnAccountSettings.addEventListener('click', () => {
         dropdownContent.classList.remove('show');
@@ -248,6 +251,9 @@ if (btnAccountSettings) {
         document.getElementById('account-email-input').value = auth.currentUser.email;
         document.getElementById('account-password-input').value = '';
         document.getElementById('account-status-msg').style.display = 'none';
+        
+        document.getElementById('account-dark-mode').checked = window.userSettings?.darkMode || false;
+        document.getElementById('account-mute-sounds').checked = window.userSettings?.muteSounds || false;
     });
 }
 
@@ -280,6 +286,19 @@ document.getElementById('btn-update-password').addEventListener('click', async (
     }
 });
 
+document.getElementById('account-dark-mode').addEventListener('change', async (e) => {
+    if (!window.userSettings) window.userSettings = {};
+    window.userSettings.darkMode = e.target.checked;
+    window.applyThemeAndSound(window.userSettings);
+    if (window.saveGameSettings) await window.saveGameSettings(window.userSettings);
+});
+
+document.getElementById('account-mute-sounds').addEventListener('change', async (e) => {
+    if (!window.userSettings) window.userSettings = {};
+    window.userSettings.muteSounds = e.target.checked;
+    if (window.saveGameSettings) await window.saveGameSettings(window.userSettings);
+});
+
 function showAccountStatus(msg) {
     const statusEl = document.getElementById('account-status-msg');
     statusEl.style.color = '#166534';
@@ -298,8 +317,6 @@ function handleAccountError(error) {
     statusEl.style.display = 'block';
 }
 
-
-// Firebase Real-time Auth State Change & Profile Data Sync
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         window.isUserLoggedIn = true;
@@ -309,12 +326,12 @@ onAuthStateChanged(auth, async (user) => {
         if (dropdownEmail) dropdownEmail.innerText = user.email;
         if (userAvatar) userAvatar.innerText = user.email.charAt(0).toUpperCase();
         
-        // Load user preferences dynamically
         try {
             const docRef = doc(db, "users", user.uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().settings) {
                 window.userSettings = docSnap.data().settings;
+                window.applyThemeAndSound(window.userSettings);
             }
         } catch (e) {
             console.error("Error fetching user settings:", e);

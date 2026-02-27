@@ -11,9 +11,16 @@ class ScitriadTileGame {
             timer: params.get('timer') || 'off',
             timerVisible: params.get('timerVisible') || 'visible',
             tileMode: params.get('tileMode') || 'all',
-            maxMistakes: params.has('maxMistakes') ? parseInt(params.get('maxMistakes')) : 10
+            maxMistakes: params.has('maxMistakes') ? parseInt(params.get('maxMistakes')) : 10,
+            mute: params.get('mute') === 'true',
+            theme: params.get('theme') || 'light'
         };
         
+        // Apply Global Theme
+        if (this.settings.theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+
         this.mistakesCount = 0;
         this.timerInterval = null;
         this.elapsedSeconds = 0;
@@ -27,6 +34,7 @@ class ScitriadTileGame {
     }
 
     initAudio() {
+        if (this.settings.mute) return;
         if (!this.audioCtx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioCtx = new AudioContext();
@@ -37,6 +45,7 @@ class ScitriadTileGame {
     }
 
     playTone(frequency, type, duration, vol = 0.1) {
+        if (this.settings.mute) return;
         if (!this.audioCtx) return;
         const oscillator = this.audioCtx.createOscillator();
         const gainNode = this.audioCtx.createGain();
@@ -161,7 +170,6 @@ class ScitriadTileGame {
     buildGrid() {
         const board = document.getElementById('gameBoard');
         
-        // Render Header Row
         this.config.columns.forEach(col => {
             const cell = document.createElement('div');
             cell.className = 'grid-cell grid-header';
@@ -169,7 +177,6 @@ class ScitriadTileGame {
             board.appendChild(cell);
         });
 
-        // Render Data Rows
         let dataIndex = 0;
         const dataColsCount = this.config.columns.length - 1;
 
@@ -195,7 +202,7 @@ class ScitriadTileGame {
 
     buildBank() {
         const bank = document.getElementById('tileBank');
-        const shuffledData = [...this.config.data].sort(() => Math.random() - 0.5);
+        const shuffledData =[...this.config.data].sort(() => Math.random() - 0.5);
         
         shuffledData.forEach(item => {
             const tile = document.createElement('div');
@@ -240,7 +247,7 @@ class ScitriadTileGame {
     }
 
     handleTileSelection(tileElement) {
-        if (this.settings.tileMode === 'one') return; // Selection is automatic in One Tile mode
+        if (this.settings.tileMode === 'one') return;
         const prevSelected = document.querySelector('.tile.selected');
         if (prevSelected) prevSelected.classList.remove('selected');
         tileElement.classList.add('selected');
@@ -274,7 +281,7 @@ class ScitriadTileGame {
             if (this.settings.tileMode === 'one') {
                 this.advanceOneTileMode();
             } else {
-                activeTile.remove(); // Remove from bank
+                activeTile.remove();
             }
             
             this.matchedCount++;
@@ -299,7 +306,6 @@ class ScitriadTileGame {
     triggerGameOver() {
         this.stopTimer();
         this.playGameOver();
-        // Disable clicking on empty slots
         document.querySelectorAll('.grid-empty-slot').forEach(slot => {
             slot.style.pointerEvents = 'none';
         });
@@ -309,50 +315,48 @@ class ScitriadTileGame {
     }
     
     checkWinCondition() {
-            if (this.matchedCount === this.totalMatches) {
-                this.stopTimer();
-                this.playFinished();
-                this.saveProgress(); // Automatically save score to cloud if logged in
-                
-                const winMessage = document.getElementById('win-message');
-                let msg = `You have successfully classified all the properties with ${this.mistakesCount} mistake(s).`;
-                if (this.settings.timer === 'on') {
-                    const mins = Math.floor(this.elapsedSeconds / 60).toString().padStart(2, '0');
-                    const secs = (this.elapsedSeconds % 60).toString().padStart(2, '0');
-                    msg += `<br><br>Time taken: <strong>${mins}:${secs}</strong>`;
-                }
-                winMessage.innerHTML = msg;
-                
-                setTimeout(() => {
-                    document.getElementById('winModal').style.display = 'flex';
-                }, 500);
+        if (this.matchedCount === this.totalMatches) {
+            this.stopTimer();
+            this.playFinished();
+            this.saveProgress();
+            
+            const winMessage = document.getElementById('win-message');
+            let msg = `You have successfully classified all the properties with ${this.mistakesCount} mistake(s).`;
+            if (this.settings.timer === 'on') {
+                const mins = Math.floor(this.elapsedSeconds / 60).toString().padStart(2, '0');
+                const secs = (this.elapsedSeconds % 60).toString().padStart(2, '0');
+                msg += `<br><br>Time taken: <strong>${mins}:${secs}</strong>`;
             }
-        }
-
-        async saveProgress() {
-            try {
-                // Find root URL dynamically based on script tag location to ensure Firebase path is always correct
-                const scriptTag = document.querySelector('script[src*="tile-game.js"]');
-                let rootUrl = '/';
-                if (scriptTag) {
-                    const scriptSrc = scriptTag.src;
-                    rootUrl = scriptSrc.split('games/shared/tile-game.js')[0];
-                }
-                
-                // Dynamically import Firebase so game HTML pages don't require manual script tag updates
-                const fbModule = await import(rootUrl + 'js/firebase-init.js');
-                const { auth, db, collection, addDoc } = fbModule;
-                
-                if (auth && auth.currentUser) {
-                    await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
-                        title: this.config.title,
-                        time: this.elapsedSeconds,
-                        mistakes: this.mistakesCount,
-                        date: new Date().toISOString()
-                    });
-                }
-            } catch (error) {
-                console.warn("Could not save game progress. Ensure you have an active internet connection.", error);
-            }
+            winMessage.innerHTML = msg;
+            
+            setTimeout(() => {
+                document.getElementById('winModal').style.display = 'flex';
+            }, 500);
         }
     }
+
+    async saveProgress() {
+        try {
+            const scriptTag = document.querySelector('script[src*="tile-game.js"]');
+            let rootUrl = '/';
+            if (scriptTag) {
+                const scriptSrc = scriptTag.src;
+                rootUrl = scriptSrc.split('games/shared/tile-game.js')[0];
+            }
+            
+            const fbModule = await import(rootUrl + 'js/firebase-init.js');
+            const { auth, db, collection, addDoc } = fbModule;
+            
+            if (auth && auth.currentUser) {
+                await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
+                    title: this.config.title,
+                    time: this.elapsedSeconds,
+                    mistakes: this.mistakesCount,
+                    date: new Date().toISOString()
+                });
+            }
+        } catch (error) {
+            console.warn("Could not save game progress. Ensure you have an active internet connection.", error);
+        }
+    }
+}

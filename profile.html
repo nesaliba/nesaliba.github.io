@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid var(--primary-blue); }
+        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid var(--primary-blue); border: 1px solid var(--border-color); }
         .stat-card h3 { color: var(--text-dark); font-size: 1rem; margin-bottom: 0.5rem; }
         .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--primary-blue); }
-        .history-list { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
-        .history-item { padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .history-list { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border-color); }
+        .history-item { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .history-item:last-child { border-bottom: none; }
-        .history-item .game-title { font-weight: 600; color: var(--primary-dark); }
+        .history-item .game-title { font-weight: 600; color: var(--text-dark); }
         .history-item .game-meta { font-size: 0.85rem; color: #64748b; }
         .history-item .game-score { font-weight: 600; text-align: right; }
         .history-item .game-score .mistakes { color: #ef4444; font-size: 0.85rem; }
@@ -32,7 +32,7 @@
 
     <main class="container">
         <div id="auth-warning" style="text-align: center; padding: 3rem; display: none;">
-            <h2>Please log in to view your dashboard.</h2>
+            <h2 style="color: var(--text-dark);">Please log in to view your dashboard.</h2>
         </div>
 
         <div id="dashboard-content" style="display: none;">

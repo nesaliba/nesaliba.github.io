@@ -4,32 +4,33 @@
 }
 
 .modal-content {
-    background: white; padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 8px;
+    background: var(--modal-bg); padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out forwards;
 }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 .btn-secondary {
-    background: #e2e8f0; color: var(--text-dark); border: none; border-radius: 4px;
+    background: var(--border-color); color: var(--text-dark); border: none; border-radius: 4px;
     font-weight: 600; cursor: pointer; transition: background 0.2s;
 }
-.btn-secondary:hover { background: #cbd5e1; }
+.btn-secondary:hover { opacity: 0.8; }
 
 .auth-modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);
     display: none; align-items: center; justify-content: center; z-index: 3000; backdrop-filter: blur(4px);
 }
 .auth-modal-content {
-    background: white; padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 12px;
+    background: var(--modal-bg); padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 400px; text-align: center;
     animation: slideUp 0.3s ease-out forwards;
 }
-.auth-modal-content h2 { margin-bottom: 1rem; color: var(--primary-dark); }
+.auth-modal-content h2 { margin-bottom: 1rem; color: var(--text-dark); }
 .auth-modal-content p { color: var(--text-dark); margin-bottom: 1.5rem; font-size: 0.95rem; }
 
 .auth-input {
-    width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 6px;
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--input-border); border-radius: 6px;
     margin-bottom: 1rem; font-size: 1rem; outline: none; transition: border-color 0.2s;
+    background-color: var(--card-bg); color: var(--text-dark);
 }
 .auth-input:focus { border-color: var(--primary-blue); }
 

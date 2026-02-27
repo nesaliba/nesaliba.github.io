@@ -6,6 +6,14 @@
     --text-dark: #334155;
     --bg-light: #f1f5f9;
     
+    /* Layout & Component Colors */
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --card-bg: #ffffff;
+    --details-bg: #fafafa;
+    --border-color: #e2e8f0;
+    --modal-bg: #ffffff;
+    --input-border: #cbd5e1;
+    
     /* Subject Colors (Hex and RGB for Glow Effects) */
     --chem-color: #1e40af; 
     --chem-rgb: 30, 64, 175;
@@ -21,4 +29,15 @@
     
     --eng-color: #854d0e;  
     --eng-rgb: 133, 77, 14;
+}
+
+body.dark-theme {
+    --text-dark: #f8fafc;
+    --bg-light: #020617;
+    --nav-bg: rgba(15, 23, 42, 0.95);
+    --card-bg: #0f172a;
+    --details-bg: #1e293b;
+    --border-color: #334155;
+    --modal-bg: #0f172a;
+    --input-border: #475569;
 }

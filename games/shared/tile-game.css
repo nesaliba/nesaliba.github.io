@@ -206,3 +206,38 @@ body {
 .shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; background-color: #fee2e2 !important; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 768px) { .back-btn { position: static; display: inline-block; margin-bottom: 1rem; } }
+
+/* --- Dark Theme Overrides --- */
+body.dark-theme {
+    --bg-color: #0f172a;
+    --text-dark: #f8fafc;
+    --tile-bg: #1e293b;
+    --cell-color: #334155;
+    --header-color: #4f46e5;
+    --border-color: #64748b;
+}
+
+body.dark-theme .tile {
+    color: #e0e7ff;
+    border-color: #6366f1;
+}
+
+body.dark-theme .tile.upcoming {
+    background-color: #1e293b;
+    border-color: #475569;
+    color: #94a3b8;
+}
+
+body.dark-theme #one-tile-mode-container,
+body.dark-theme .tile-bank-container,
+body.dark-theme .modal-content {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+body.dark-theme .grid-empty-slot {
+    background-color: rgba(51, 65, 85, 0.4);
+}
+body.dark-theme .grid-empty-slot:hover {
+    background-color: rgba(51, 65, 85, 0.8);
+}

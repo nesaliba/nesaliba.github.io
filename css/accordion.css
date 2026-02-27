@@ -1,17 +1,17 @@
-details { background: white; margin-bottom: 1.5rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+details { background: var(--card-bg); margin-bottom: 1.5rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
 summary {
     padding: clamp(1rem, 2vw, 1.5rem); cursor: pointer; font-weight: 700; font-size: clamp(1rem, 2vw, 1.2rem);
-    background-color: white; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark);
+    background-color: var(--card-bg); list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--text-dark);
 }
 summary::-webkit-details-marker { display: none; }
 summary::after { content: '+'; font-size: 1.5rem; font-weight: 400; }
 details[open] summary::after { content: '-'; }
-details[open] summary { border-bottom: 1px solid #e2e8f0; }
+details[open] summary { border-bottom: 1px solid var(--border-color); }
 
-.details-content { padding: clamp(1rem, 2vw, 1.5rem); background-color: #fafafa; }
+.details-content { padding: clamp(1rem, 2vw, 1.5rem); background-color: var(--details-bg); }
 
 .game-link {
-    display: flex; align-items: center; justify-content: space-between; background: white;
+    display: flex; align-items: center; justify-content: space-between; background: var(--card-bg);
     padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem); margin-bottom: 0.75rem;
     border-radius: 8px; text-decoration: none; color: var(--text-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: all 0.2s; border-left: 5px solid var(--primary-blue); cursor: pointer;

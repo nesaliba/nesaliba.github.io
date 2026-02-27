@@ -4,7 +4,7 @@
 .carousel-group { display: flex; gap: 2rem; padding-right: 2rem; }
 
 .card {
-    background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.3s, box-shadow 0.3s; text-decoration: none; color: inherit; display: flex;
     flex-direction: column; width: 300px; flex-shrink: 0; white-space: normal; 
 }
