@@ -19,6 +19,7 @@ class SiteNavbar extends HTMLElement {
                         <div class="dropdown-content" id="dropdown-content">
                             <p id="dropdown-email">user@example.com</p>
                             <hr>
+                            <button onclick="window.location.href='profile.html'">My Dashboard</button>
                             <button id="btn-account-settings">Account Settings</button>
                             <button id="btn-logout">Logout</button>
                         </div>

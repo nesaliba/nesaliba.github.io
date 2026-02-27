@@ -309,22 +309,50 @@ class ScitriadTileGame {
     }
     
     checkWinCondition() {
-        if (this.matchedCount === this.totalMatches) {
-            this.stopTimer();
-            this.playFinished();
-            
-            const winMessage = document.getElementById('win-message');
-            let msg = `You have successfully classified all the properties with ${this.mistakesCount} mistake(s).`;
-            if (this.settings.timer === 'on') {
-                const mins = Math.floor(this.elapsedSeconds / 60).toString().padStart(2, '0');
-                const secs = (this.elapsedSeconds % 60).toString().padStart(2, '0');
-                msg += `<br><br>Time taken: <strong>${mins}:${secs}</strong>`;
+            if (this.matchedCount === this.totalMatches) {
+                this.stopTimer();
+                this.playFinished();
+                this.saveProgress(); // Automatically save score to cloud if logged in
+                
+                const winMessage = document.getElementById('win-message');
+                let msg = `You have successfully classified all the properties with ${this.mistakesCount} mistake(s).`;
+                if (this.settings.timer === 'on') {
+                    const mins = Math.floor(this.elapsedSeconds / 60).toString().padStart(2, '0');
+                    const secs = (this.elapsedSeconds % 60).toString().padStart(2, '0');
+                    msg += `<br><br>Time taken: <strong>${mins}:${secs}</strong>`;
+                }
+                winMessage.innerHTML = msg;
+                
+                setTimeout(() => {
+                    document.getElementById('winModal').style.display = 'flex';
+                }, 500);
             }
-            winMessage.innerHTML = msg;
-            
-            setTimeout(() => {
-                document.getElementById('winModal').style.display = 'flex';
-            }, 500);
+        }
+
+        async saveProgress() {
+            try {
+                // Find root URL dynamically based on script tag location to ensure Firebase path is always correct
+                const scriptTag = document.querySelector('script[src*="tile-game.js"]');
+                let rootUrl = '/';
+                if (scriptTag) {
+                    const scriptSrc = scriptTag.src;
+                    rootUrl = scriptSrc.split('games/shared/tile-game.js')[0];
+                }
+                
+                // Dynamically import Firebase so game HTML pages don't require manual script tag updates
+                const fbModule = await import(rootUrl + 'js/firebase-init.js');
+                const { auth, db, collection, addDoc } = fbModule;
+                
+                if (auth && auth.currentUser) {
+                    await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
+                        title: this.config.title,
+                        time: this.elapsedSeconds,
+                        mistakes: this.mistakesCount,
+                        date: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.warn("Could not save game progress. Ensure you have an active internet connection.", error);
+            }
         }
     }
-}

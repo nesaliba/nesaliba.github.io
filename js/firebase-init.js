@@ -8,7 +8,10 @@ import {
     updateEmail,
     updatePassword
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { 
+    getFirestore, doc, setDoc, getDoc, updateDoc, 
+    collection, addDoc, query, orderBy, getDocs, limit 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDnif9fWax7OZVCVLUWQsmSNMTTn7ucBtc",
@@ -25,7 +28,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Export imports for use in auth.js
+// Export imports for use in other scripts
 export { 
     auth, 
     db, 
@@ -38,5 +41,11 @@ export {
     doc, 
     setDoc,
     getDoc,
-    updateDoc
+    updateDoc,
+    collection, 
+    addDoc, 
+    query, 
+    orderBy, 
+    getDocs, 
+    limit
 };
