@@ -144,6 +144,11 @@ function setupGameSettingsModal() {
                     <input type="range" id="setting-mistakes" min="0" max="10" value="10" style="width: 100%;">
                 </div>
                 
+                <div id="save-default-container" style="margin-bottom: 1.5rem; display: none; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="setting-save-default" style="cursor: pointer; width: 16px; height: 16px;">
+                    <label for="setting-save-default" style="font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--primary-blue);">Save as my default settings</label>
+                </div>
+
                 <div style="display: flex; justify-content: flex-end; gap: 1rem;">
                     <button id="btn-cancel-settings" class="btn-secondary" style="margin-top: 0; padding: 0.5rem 1rem;">Cancel</button>
                     <button id="btn-start-game" style="margin-top: 0; padding: 0.5rem 1rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Start Game</button>
@@ -184,16 +189,23 @@ function setupGameSettingsModal() {
     });
     
     btnStart.addEventListener('click', () => {
-        const timer = timerSelect.value;
-        const timerVisible = timerVisibleSelect.value;
-        const tileMode = document.getElementById('setting-tile-mode').value;
-        const maxMistakes = mistakesInput.value;
+        const settings = {
+            timer: timerSelect.value,
+            timerVisible: timerVisibleSelect.value,
+            tileMode: document.getElementById('setting-tile-mode').value,
+            maxMistakes: mistakesInput.value
+        };
+
+        // If the checkbox is checked, save the settings remotely
+        if (document.getElementById('setting-save-default').checked && window.saveGameSettings) {
+            window.saveGameSettings(settings);
+        }
         
         const params = new URLSearchParams();
-        params.set('timer', timer);
-        params.set('timerVisible', timerVisible);
-        params.set('tileMode', tileMode);
-        params.set('maxMistakes', maxMistakes);
+        params.set('timer', settings.timer);
+        params.set('timerVisible', settings.timerVisible);
+        params.set('tileMode', settings.tileMode);
+        params.set('maxMistakes', settings.maxMistakes);
         
         window.location.href = pendingGameUrl + '?' + params.toString();
     });
@@ -205,6 +217,24 @@ function setupGameSettingsModal() {
             if (href && href !== '#') {
                 e.preventDefault();
                 pendingGameUrl = href;
+                
+                // Pre-fill user defaults if available
+                if (window.userSettings) {
+                    timerSelect.value = window.userSettings.timer || 'off';
+                    timerVisibleSelect.value = window.userSettings.timerVisible || 'visible';
+                    document.getElementById('setting-tile-mode').value = window.userSettings.tileMode || 'all';
+                    mistakesInput.value = window.userSettings.maxMistakes || 10;
+                    mistakesVal.textContent = mistakesInput.value;
+                    timerSelect.dispatchEvent(new Event('change'));
+                }
+                
+                // Show "Save as my default settings" checkbox only if user is logged in
+                if (window.isUserLoggedIn) {
+                    document.getElementById('save-default-container').style.display = 'flex';
+                } else {
+                    document.getElementById('save-default-container').style.display = 'none';
+                }
+
                 settingsModal.style.display = 'flex';
             }
         });

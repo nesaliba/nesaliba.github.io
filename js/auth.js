@@ -4,12 +4,32 @@ import {
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged, 
+    onAuthStateChanged,
+    updateEmail,
+    updatePassword,
     doc, 
-    setDoc 
+    setDoc,
+    getDoc
 } from './firebase-init.js';
 
 let isLoginMode = true; // Track if user is signing in or signing up
+
+// Expose these globally so main.js can read/write data easily
+window.isUserLoggedIn = false;
+window.userSettings = null;
+
+// Expose save function to save preference configs globally
+window.saveGameSettings = async (settings) => {
+    if (!auth.currentUser) return;
+    try {
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+            settings: settings
+        }, { merge: true });
+        window.userSettings = settings;
+    } catch (e) {
+        console.error("Error saving settings:", e);
+    }
+};
 
 // Inject Auth Modal HTML dynamically into the DOM
 const authModalHTML = `
@@ -37,11 +57,40 @@ const authModalHTML = `
     </div>
 </div>
 `;
+
+// Inject Account Settings Modal HTML dynamically into the DOM
+const accountModalHTML = `
+<div class="auth-modal-overlay" id="account-modal">
+    <div class="auth-modal-content">
+        <h2 style="color: var(--primary-dark); margin-bottom: 1.5rem;">Account Settings</h2>
+        
+        <div style="text-align: left; margin-bottom: 1rem;">
+            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Change Email</label>
+            <input type="email" id="account-email-input" class="auth-input" placeholder="New Email" />
+            <button id="btn-update-email" class="auth-btn-primary" style="margin-bottom: 1.5rem;">Update Email</button>
+            
+            <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Change Password</label>
+            <input type="password" id="account-password-input" class="auth-input" placeholder="New Password" />
+            <button id="btn-update-password" class="auth-btn-primary">Update Password</button>
+        </div>
+        
+        <p id="account-status-msg" style="font-size: 0.85rem; color: #166534; display:none; margin-bottom: 1rem;"></p>
+        <button id="account-close-btn" class="auth-close" style="width: 100%;">Close</button>
+    </div>
+</div>
+`;
+
 document.body.insertAdjacentHTML('beforeend', authModalHTML);
+document.body.insertAdjacentHTML('beforeend', accountModalHTML);
 
 // DOM Elements
 const authBtn = document.getElementById('auth-btn');
-const authText = document.getElementById('auth-text');
+const userMenu = document.getElementById('user-menu');
+const userAvatar = document.getElementById('user-avatar');
+const dropdownContent = document.getElementById('dropdown-content');
+const dropdownEmail = document.getElementById('dropdown-email');
+const btnLogout = document.getElementById('btn-logout');
+const btnAccountSettings = document.getElementById('btn-account-settings');
 
 const authModal = document.getElementById('auth-modal');
 const authEmailInput = document.getElementById('auth-email-input');
@@ -127,12 +176,9 @@ async function handleAuth() {
                 lastLogin: new Date()
             }, { merge: true });
         }
-        
-        // Success! The onAuthStateChanged listener will handle closing the modal.
     } catch (error) {
         console.error("Authentication Error:", error);
         
-        // Make Firebase error messages a bit more user-friendly
         let errorMsg = error.message;
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
             errorMsg = "Incorrect email or password.";
@@ -153,15 +199,9 @@ async function logout() {
     await signOut(auth);
 }
 
-// Event Listeners
+// Event Listeners for Base Auth
 if (authBtn) {
-    authBtn.addEventListener('click', () => {
-        if (authBtn.innerText === "Login") {
-            openAuthModal();
-        } else {
-            logout();
-        }
-    });
+    authBtn.addEventListener('click', openAuthModal);
 }
 
 authSubmitBtn.addEventListener('click', handleAuth);
@@ -179,16 +219,113 @@ authPasswordInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Update the text dynamically based on login state
-onAuthStateChanged(auth, (user) => {
+// Dropdown UI Behaviors
+if(userAvatar) {
+    userAvatar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownContent.classList.toggle('show');
+    });
+}
+
+window.addEventListener('click', () => {
+    if(dropdownContent && dropdownContent.classList.contains('show')) {
+        dropdownContent.classList.remove('show');
+    }
+});
+
+if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+        dropdownContent.classList.remove('show');
+        logout();
+    });
+}
+
+// Account Settings Modal Behaviors
+if (btnAccountSettings) {
+    btnAccountSettings.addEventListener('click', () => {
+        dropdownContent.classList.remove('show');
+        document.getElementById('account-modal').style.display = 'flex';
+        document.getElementById('account-email-input').value = auth.currentUser.email;
+        document.getElementById('account-password-input').value = '';
+        document.getElementById('account-status-msg').style.display = 'none';
+    });
+}
+
+document.getElementById('account-close-btn').addEventListener('click', () => {
+    document.getElementById('account-modal').style.display = 'none';
+});
+
+document.getElementById('btn-update-email').addEventListener('click', async () => {
+    const newEmail = document.getElementById('account-email-input').value;
+    try {
+        await updateEmail(auth.currentUser, newEmail);
+        showAccountStatus("Email updated successfully.");
+    } catch(error) {
+        handleAccountError(error);
+    }
+});
+
+document.getElementById('btn-update-password').addEventListener('click', async () => {
+    const newPass = document.getElementById('account-password-input').value;
+    if(newPass.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+    }
+    try {
+        await updatePassword(auth.currentUser, newPass);
+        showAccountStatus("Password updated successfully.");
+        document.getElementById('account-password-input').value = '';
+    } catch(error) {
+        handleAccountError(error);
+    }
+});
+
+function showAccountStatus(msg) {
+    const statusEl = document.getElementById('account-status-msg');
+    statusEl.style.color = '#166534';
+    statusEl.innerText = msg;
+    statusEl.style.display = 'block';
+}
+
+function handleAccountError(error) {
+    const statusEl = document.getElementById('account-status-msg');
+    statusEl.style.color = '#dc2626';
+    if (error.code === 'auth/requires-recent-login') {
+        statusEl.innerText = "Security requires a recent login. Please logout and log back in to change this.";
+    } else {
+        statusEl.innerText = error.message;
+    }
+    statusEl.style.display = 'block';
+}
+
+
+// Firebase Real-time Auth State Change & Profile Data Sync
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        if (authText) authText.innerText = `${user.email}`;
-        if (authBtn) authBtn.innerText = "Logout";
+        window.isUserLoggedIn = true;
+        if (authBtn) authBtn.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'block';
         
-        // Close modal automatically upon successful auth
+        if (dropdownEmail) dropdownEmail.innerText = user.email;
+        if (userAvatar) userAvatar.innerText = user.email.charAt(0).toUpperCase();
+        
+        // Load user preferences dynamically
+        try {
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().settings) {
+                window.userSettings = docSnap.data().settings;
+            }
+        } catch (e) {
+            console.error("Error fetching user settings:", e);
+        }
+        
         closeAuthModal();
     } else {
-        if (authText) authText.innerText = "";
-        if (authBtn) authBtn.innerText = "Login";
+        window.isUserLoggedIn = false;
+        window.userSettings = null;
+
+        if (authBtn) authBtn.style.display = 'block';
+        if (userMenu) userMenu.style.display = 'none';
     }
 });

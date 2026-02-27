@@ -4,9 +4,11 @@ import {
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    updateEmail,
+    updatePassword
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDnif9fWax7OZVCVLUWQsmSNMTTn7ucBtc",
@@ -31,6 +33,10 @@ export {
     createUserWithEmailAndPassword, 
     signOut, 
     onAuthStateChanged, 
+    updateEmail,
+    updatePassword,
     doc, 
-    setDoc 
+    setDoc,
+    getDoc,
+    updateDoc
 };
