@@ -1,0 +1,38 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    overflow-x: hidden; 
+    min-height: 100vh;
+}
+
+body.theme-chem { background: radial-gradient(circle at top center, rgba(var(--chem-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-bio { background: radial-gradient(circle at top center, rgba(var(--bio-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-phys { background: radial-gradient(circle at top center, rgba(var(--phys-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-math { background: radial-gradient(circle at top center, rgba(var(--math-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+body.theme-eng { background: radial-gradient(circle at top center, rgba(var(--eng-rgb), 0.12) 0%, var(--bg-light) 800px) no-repeat var(--bg-light); }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--primary-dark);
+}
+
+footer {
+    background-color: var(--primary-dark);
+    color: white;
+    text-align: center;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    margin-top: 2rem;
+    border-top: 4px solid var(--accent-yellow);
+}

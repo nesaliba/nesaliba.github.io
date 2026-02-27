@@ -1,0 +1,24 @@
+:root {
+    --primary-dark: #0f172a;
+    --primary-blue: #38B6FF;
+    --accent-yellow: #ffeb3b;
+    --text-light: #f8fafc;
+    --text-dark: #334155;
+    --bg-light: #f1f5f9;
+    
+    /* Subject Colors (Hex and RGB for Glow Effects) */
+    --chem-color: #1e40af; 
+    --chem-rgb: 30, 64, 175;
+    
+    --bio-color: #166534;  
+    --bio-rgb: 22, 101, 52;
+    
+    --phys-color: #581c87; 
+    --phys-rgb: 88, 28, 135;
+    
+    --math-color: #991b1b; 
+    --math-rgb: 153, 27, 27;
+    
+    --eng-color: #854d0e;  
+    --eng-rgb: 133, 77, 14;
+}

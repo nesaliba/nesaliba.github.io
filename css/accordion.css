@@ -1,0 +1,28 @@
+details { background: white; margin-bottom: 1.5rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+summary {
+    padding: clamp(1rem, 2vw, 1.5rem); cursor: pointer; font-weight: 700; font-size: clamp(1rem, 2vw, 1.2rem);
+    background-color: white; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark);
+}
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '+'; font-size: 1.5rem; font-weight: 400; }
+details[open] summary::after { content: '-'; }
+details[open] summary { border-bottom: 1px solid #e2e8f0; }
+
+.details-content { padding: clamp(1rem, 2vw, 1.5rem); background-color: #fafafa; }
+
+.game-link {
+    display: flex; align-items: center; justify-content: space-between; background: white;
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem); margin-bottom: 0.75rem;
+    border-radius: 8px; text-decoration: none; color: var(--text-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s; border-left: 5px solid var(--primary-blue); cursor: pointer;
+}
+.game-link span { font-size: clamp(0.9rem, 1.5vw, 1rem); }
+.game-link:hover { transform: translateX(5px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.game-icon { opacity: 0; transition: opacity 0.2s; }
+.game-link:hover .game-icon { opacity: 1; }
+
+.theme-chem .game-link { border-left-color: var(--chem-color); }
+.theme-bio .game-link { border-left-color: var(--bio-color); }
+.theme-phys .game-link { border-left-color: var(--phys-color); }
+.theme-math .game-link { border-left-color: var(--math-color); }
+.theme-eng .game-link { border-left-color: var(--eng-color); }
