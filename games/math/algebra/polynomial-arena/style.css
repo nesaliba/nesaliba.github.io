@@ -175,6 +175,18 @@ body.dark-theme .btn-option:hover:not(:disabled) {
     background: #475569;
 }
 
+.btn-action {
+    padding: 0.75rem 2rem; border: none; border-radius: 6px;
+    font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    background: #e2e8f0; color: #1e293b;
+}
+
+.btn-action:hover { background: #cbd5e1; }
+
+.btn-action.primary { background: var(--math-primary); color: white; }
+
+.btn-action.primary:hover { background: var(--math-hover); }
+
 /* Animations */
 @keyframes shakeEnemy {
     0%, 100% { transform: translateX(0) rotate(0); filter: brightness(1) drop-shadow(0 15px 15px rgba(0,0,0,0.2)); }
