@@ -93,5 +93,10 @@ window.gameInfoData = {
         title: 'Syntax Surgeon',
         desc: 'A fast-paced editing simulator where players repair flawed writing under time pressure.',
         play: 'Read the flawed sentence on the monitor and select the correct revision or stylistic improvement to save the patient. Avoid penalties to keep them alive!'
+    },
+    'newtons-arena': {
+        title: 'Newton\'s Arena',
+        desc: 'A strategic problem-solving combat game grounded in Physics 20 principles.',
+        play: 'Construct free-body diagrams, calculate net force and acceleration across flat planes, inclines, and pulley systems to defeat opponents.'
     }
 };
