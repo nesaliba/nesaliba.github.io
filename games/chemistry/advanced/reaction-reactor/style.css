@@ -156,12 +156,14 @@ body {
     text-align: center;
 }
 
-.option-btn:hover:not(:disabled) {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+@media (hover: hover) {
+    .option-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+    }
 }
 
 .option-btn.correct { background: var(--success); border-color: var(--success); color: white; transform: none; box-shadow: none; }

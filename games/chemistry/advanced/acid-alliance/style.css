@@ -128,9 +128,11 @@ body {
     transition: all 0.2s;
 }
 
-.option-btn:hover:not(:disabled) {
-    background: var(--primary);
-    color: white;
+@media (hover: hover) {
+    .option-btn:hover:not(:disabled) {
+        background: var(--primary);
+        color: white;
+    }
 }
 
 .option-btn.correct { background: var(--success); border-color: var(--success); color: white; }
