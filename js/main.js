@@ -21,6 +21,8 @@ const navSlide = () => {
         burger.addEventListener('click', () => {
             nav.classList.toggle('nav-active');
             burger.classList.toggle('toggle');
+            document.body.classList.toggle('no-scroll');
+            
             navLinks.forEach((link, index) => {
                 if (link.style.animation) {
                     link.style.animation = '';
@@ -118,6 +120,7 @@ function setupInfoModal() {
 
     btnCloseInfo.addEventListener('click', () => {
         infoModal.style.display = 'none';
+        document.body.classList.remove('no-scroll');
     });
 
     document.querySelectorAll('.info-btn').forEach(btn => {
@@ -133,6 +136,7 @@ function setupInfoModal() {
                 descEl.textContent = info.desc;
                 playEl.textContent = info.play;
                 infoModal.style.display = 'flex';
+                document.body.classList.add('no-scroll');
             } else {
                 console.warn('No info found for game ID:', gameId);
             }
@@ -228,6 +232,7 @@ function setupGameSettingsModal() {
     
     btnCancel.addEventListener('click', () => {
         settingsModal.style.display = 'none';
+        document.body.classList.remove('no-scroll');
     });
     
     btnStart.addEventListener('click', () => {
@@ -258,6 +263,7 @@ function setupGameSettingsModal() {
         params.set('mute', settings.muteSounds);
         params.set('theme', settings.darkMode ? 'dark' : 'light');
         
+        document.body.classList.remove('no-scroll');
         window.location.href = pendingGameUrl + '?' + params.toString();
     });
     
@@ -303,6 +309,7 @@ function setupGameSettingsModal() {
                 }
 
                 settingsModal.style.display = 'flex';
+                document.body.classList.add('no-scroll');
             }
         });
     });

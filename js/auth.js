@@ -133,6 +133,7 @@ function openAuthModal() {
     updateModalUI();
     
     authModal.style.display = 'flex';
+    document.body.classList.add('no-scroll');
     authInputContainer.style.display = 'block';
     authLoadingContainer.style.display = 'none';
     authCloseBtn.style.display = 'inline-block';
@@ -145,6 +146,7 @@ function openAuthModal() {
 
 function closeAuthModal() {
     authModal.style.display = 'none';
+    document.body.classList.remove('no-scroll');
 }
 
 function updateModalUI() {
@@ -258,6 +260,8 @@ if (btnAccountSettings) {
     btnAccountSettings.addEventListener('click', () => {
         dropdownContent.classList.remove('show');
         document.getElementById('account-modal').style.display = 'flex';
+        document.body.classList.add('no-scroll');
+        
         document.getElementById('account-email-input').value = auth.currentUser.email;
         document.getElementById('account-password-input').value = '';
         document.getElementById('account-status-msg').style.display = 'none';
@@ -269,6 +273,7 @@ if (btnAccountSettings) {
 
 document.getElementById('account-close-btn').addEventListener('click', () => {
     document.getElementById('account-modal').style.display = 'none';
+    document.body.classList.remove('no-scroll');
 });
 
 document.getElementById('btn-update-email').addEventListener('click', async () => {
