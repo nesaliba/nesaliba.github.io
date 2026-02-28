@@ -88,5 +88,10 @@ window.gameInfoData = {
         title: 'Rhetoric Royale',
         desc: 'A competitive debate strategy game mapping ELA 20-1/30-1 concepts. Construct persuasive arguments, integrate evidence, and dismantle logical fallacies.',
         play: 'Read the opponent\'s argument or rhetorical challenge. Select the correct strategy, rhetorical appeal, or fallacy identification to deal damage and defeat them.'
+    },
+    'syntax-surgeon': {
+        title: 'Syntax Surgeon',
+        desc: 'A fast-paced editing simulator where players repair flawed writing under time pressure.',
+        play: 'Read the flawed sentence on the monitor and select the correct revision or stylistic improvement to save the patient. Avoid penalties to keep them alive!'
     }
 };
