@@ -117,186 +117,33 @@ class PolynomialArena {
         }, 300);
     }
 
-    rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    nonZeroRand(min, max) { let v = 0; while(v === 0) v = this.rand(min, max); return v; }
-
-    fmt(c, p) {
-        if (c === 0) return "";
-        let term = "";
-        if (p === 0) term = Math.abs(c);
-        else if (p === 1) term = (Math.abs(c) === 1 ? "x" : Math.abs(c) + "x");
-        else term = (Math.abs(c) === 1 ? "x^" + p : Math.abs(c) + "x^" + p);
-        return (c < 0 ? "- " : "+ ") + term;
-    }
-
-    buildPoly(coeffs) {
-        let s = "";
-        let deg = coeffs.length - 1;
-        for(let i=0; i<=deg; i++) {
-            let c = coeffs[i];
-            let p = deg - i;
-            if (c === 0) continue;
-            let term = this.fmt(c, p);
-            if (s === "") {
-                if (c < 0) s = "-" + term.substring(2);
-                else s = term.substring(2);
-            } else {
-                s += " " + term;
-            }
-        }
-        return s === "" ? "0" : s;
-    }
-
     generateQuestion(enemyType) {
-        let promptStr = "";
-        let correctAns = "";
-        let distractors =[];
-        let qType = this.rand(0, 2);
-
-        if (enemyType === 'quad') {
-            let r1 = this.nonZeroRand(-5, 5);
-            let r2 = this.nonZeroRand(-5, 5);
-            let b = -(r1 + r2);
-            let c = r1 * r2;
-            let poly = this.buildPoly([1, b, c]);
-
-            if (qType === 0) {
-                promptStr = `\\text{Find the zeros of } f(x) = ${poly}`;
-                correctAns = `x = ${r1}, x = ${r2}`;
-                if (r1 === r2) correctAns = `x = ${r1}`;
-                distractors =[
-                    `x = ${-r1}, x = ${-r2}`,
-                    `x = ${r1 + 1}, x = ${r2 - 1}`,
-                    `x = ${-r1}, x = ${r2}`
-                ];
-                if (r1 === r2) distractors =[`x = ${-r1}`, `x = ${r1+1}`, `x = ${r1-1}`];
-            } else if (qType === 1) {
-                promptStr = `\\text{Factor the expression } ${poly}`;
-                const f1 = r1 < 0 ? `(x + ${-r1})` : `(x - ${r1})`;
-                const f2 = r2 < 0 ? `(x + ${-r2})` : `(x - ${r2})`;
-                correctAns = r1 === r2 ? `${f1}^2` : `${f1}${f2}`;
-                
-                const d1 = r1 < 0 ? `(x - ${-r1})` : `(x + ${r1})`;
-                const d2 = r2 < 0 ? `(x - ${-r2})` : `(x + ${r2})`;
-                distractors =[
-                    r1 === r2 ? `${d1}^2` : `${d1}${d2}`,
-                    `${f1}${d2}`,
-                    `${d1}${f2}`
-                ];
-            } else {
-                let yInt = this.nonZeroRand(-6, 6);
-                promptStr = `\\text{Which equation represents a parabola opening upward with vertex at } (0, ${yInt})?`;
-                correctAns = `y = x^2 ${yInt > 0 ? '+' : '-'} ${Math.abs(yInt)}`;
-                distractors =[
-                    `y = -x^2 ${yInt > 0 ? '+' : '-'} ${Math.abs(yInt)}`,
-                    `y = (x ${yInt > 0 ? '-' : '+'} ${Math.abs(yInt)})^2`,
-                    `y = x^2 ${yInt > 0 ? '-' : '+'} ${Math.abs(yInt)}`
-                ];
-            }
-        } else if (enemyType === 'cubic') {
-            if (qType === 0) {
-                let a = this.nonZeroRand(-3, 3);
-                let poly = this.buildPoly([a, this.rand(-5,5), this.rand(-5,5), this.rand(-5,5)]);
-                promptStr = `\\text{Determine the end behavior of } f(x) = ${poly}`;
-                if (a > 0) {
-                    correctAns = `x \\to \\infty, y \\to \\infty \\text{ and } x \\to -\\infty, y \\to -\\infty`;
-                    distractors =[
-                        `x \\to \\infty, y \\to -\\infty \\text{ and } x \\to -\\infty, y \\to \\infty`,
-                        `x \\to \\pm\\infty, y \\to \\infty`,
-                        `x \\to \\pm\\infty, y \\to -\\infty`
-                    ];
-                } else {
-                    correctAns = `x \\to \\infty, y \\to -\\infty \\text{ and } x \\to -\\infty, y \\to \\infty`;
-                    distractors =[
-                        `x \\to \\infty, y \\to \\infty \\text{ and } x \\to -\\infty, y \\to -\\infty`,
-                        `x \\to \\pm\\infty, y \\to \\infty`,
-                        `x \\to \\pm\\infty, y \\to -\\infty`
-                    ];
-                }
-            } else if (qType === 1) {
-                let r1 = this.nonZeroRand(-4, 4);
-                let r2 = this.nonZeroRand(-4, 4);
-                let r3 = this.nonZeroRand(-4, 4);
-                const f1 = r1 < 0 ? `(x + ${-r1})` : `(x - ${r1})`;
-                const f2 = r2 < 0 ? `(x + ${-r2})` : `(x - ${r2})`;
-                const f3 = r3 < 0 ? `(x + ${-r3})` : `(x - ${r3})`;
-                promptStr = `\\text{Find the zeros of } f(x) = ${f1}${f2}${f3}`;
-                
-                let roots = [...new Set([r1, r2, r3])].sort((a,b)=>a-b);
-                correctAns = `x = ` + roots.join(", ");
-                distractors = [
-                    `x = ` + [...new Set([-r1, -r2, -r3])].sort((a,b)=>a-b).join(", "),
-                    `x = ` + [...new Set([r1+1, r2, r3])].sort((a,b)=>a-b).join(", "),
-                    `x = ` + [...new Set([-r1, r2, -r3])].sort((a,b)=>a-b).join(", ")
-                ];
-            } else {
-                let r1 = this.nonZeroRand(-3, 3);
-                let r2 = this.nonZeroRand(-3, 3);
-                promptStr = `\\text{Which cubic has roots } x=${r1} \\text{ (multiplicity 2) and } x=${r2}?`;
-                const f1 = r1 < 0 ? `(x + ${-r1})` : `(x - ${r1})`;
-                const f2 = r2 < 0 ? `(x + ${-r2})` : `(x - ${r2})`;
-                correctAns = `f(x) = ${f1}^2 ${f2}`;
-                
-                const d1 = r1 < 0 ? `(x - ${-r1})` : `(x + ${r1})`;
-                const d2 = r2 < 0 ? `(x - ${-r2})` : `(x + ${r2})`;
-                distractors =[
-                    `f(x) = ${f1} ${f2}^2`,
-                    `f(x) = ${d1}^2 ${d2}`,
-                    `f(x) = ${d1} ${d2}^2`
-                ];
-            }
-        } else {
-            if (qType === 0) {
-                let va = this.nonZeroRand(-5, 5);
-                let root = this.nonZeroRand(-5, 5);
-                if (va === root) root++;
-                const num = root < 0 ? `(x + ${-root})` : `(x - ${root})`;
-                const den = va < 0 ? `(x + ${-va})` : `(x - ${va})`;
-                promptStr = `\\text{Find the vertical asymptote of } f(x) = \\frac{${num}}{${den}}`;
-                correctAns = `x = ${va}`;
-                distractors =[`x = ${-va}`, `y = ${va}`, `x = ${root}`];
-            } else if (qType === 1) {
-                let a = this.nonZeroRand(1, 5);
-                let b = this.nonZeroRand(1, 5);
-                if (a===b) a++;
-                let polyNum = this.buildPoly([a, this.rand(-3,3), this.rand(-3,3)]);
-                let polyDen = this.buildPoly([b, this.rand(-3,3), this.rand(-3,3)]);
-                promptStr = `\\text{Find the horizontal asymptote of } f(x) = \\frac{${polyNum}}{${polyDen}}`;
-                
-                const gcd = (x, y) => y === 0 ? x : gcd(y, x % y);
-                let g = gcd(Math.abs(a), Math.abs(b));
-                let simpA = a/g; let simpB = b/g;
-                if (simpB < 0) { simpA = -simpA; simpB = -simpB; }
-                let ans = simpB === 1 ? `${simpA}` : `\\frac{${simpA}}{${simpB}}`;
-                
-                correctAns = `y = ${ans}`;
-                distractors =[`y = 0`, `\\text{No horizontal asymptote}`, `x = ${ans}`];
-            } else {
-                let va = this.nonZeroRand(-5, 5);
-                let root = this.nonZeroRand(-5, 5);
-                if (va === root) root++;
-                promptStr = `\\text{Which function has a vertical asymptote at } x=${va} \\text{ and an } x\\text{-intercept at } x=${root}?`;
-                const num = root < 0 ? `(x + ${-root})` : `(x - ${root})`;
-                const den = va < 0 ? `(x + ${-va})` : `(x - ${va})`;
-                correctAns = `f(x) = \\frac{${num}}{${den}}`;
-                
-                const dNum = va < 0 ? `(x + ${-va})` : `(x - ${va})`;
-                const dDen = root < 0 ? `(x + ${-root})` : `(x - ${root})`;
-                distractors =[
-                    `f(x) = \\frac{${dNum}}{${dDen}}`,
-                    `f(x) = \\frac{${num}^2}{${den}}`,
-                    `f(x) = \\frac{${dNum}}{${den}}`
-                ];
-            }
-        }
-
-        distractors =[...new Set(distractors)];
-        while (distractors.length < 3) distractors.push(distractors[0] + " + 1");
+        // 1. Get the list of generators for this enemy type from our external file
+        const generators = window.PolynomialQuestionBank[enemyType];
         
-        let options = [correctAns, distractors[0], distractors[1], distractors[2]];
+        // 2. Pick a random generator
+        const randomIndex = Math.floor(Math.random() * generators.length);
+        const selectedGenerator = generators[randomIndex];
+        
+        // 3. Generate the raw question data
+        const rawQ = selectedGenerator();
+        
+        // 4. Format it for the UI (ensure exactly 4 unique options)
+        let distractors = [...new Set(rawQ.distractors)];
+        while (distractors.length < 3) {
+            distractors.push(distractors[0] + " + 1");
+        }
+        
+        let options = [rawQ.answer, distractors[0], distractors[1], distractors[2]];
+        
+        // Shuffle options
         options.sort(() => Math.random() - 0.5);
 
-        return { prompt: promptStr, options: options, answer: correctAns };
+        return { 
+            prompt: rawQ.prompt, 
+            options: options, 
+            answer: rawQ.answer 
+        };
     }
 
     nextQuestion() {
