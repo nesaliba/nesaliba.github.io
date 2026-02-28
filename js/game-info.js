@@ -113,5 +113,10 @@ window.gameInfoData = {
         title: 'Reaction Reactor',
         desc: 'Manage an industrial chemical reactor under shifting conditions. Master equilibrium, Le Chatelier\'s principle, and kinetics concepts.',
         play: 'Analyze the incoming system shift on the reactor monitor. Use the displayed chemical equation to determine how changes to temperature, pressure, concentration, or catalysts affect the equilibrium or reaction rate. Make the correct adjustment before a meltdown occurs!'
+    },
+    'thermodynamic-trials' : {
+        title: 'Thermodynamic Trials',
+        desc: 'Engineer controlled chemical reactions to meet precise energy targets. Apply Chemistry 30 thermochemistry principles under pressure.',
+        play: 'Analyze the incoming thermodynamic data such as calorimetry values, Hess\'s Law equations, or potential energy profiles. Calculate the correct enthalpy change, activation energy, or heat transfer, and select the right option to stabilize the energy core.'
     }
 };
