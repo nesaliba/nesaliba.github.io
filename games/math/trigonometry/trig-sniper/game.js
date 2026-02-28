@@ -1,22 +1,3 @@
-const UNIT_CIRCLE =[
-    { id: 0, rad: "0", deg: "0^\\circ", val: 0, x: "1", y: "0", tan: "0", csc: "undef", sec: "1", cot: "undef", q: "axis" },
-    { id: 1, rad: "\\frac{\\pi}{6}", deg: "30^\\circ", val: Math.PI/6, x: "\\frac{\\sqrt{3}}{2}", y: "\\frac{1}{2}", tan: "\\frac{\\sqrt{3}}{3}", csc: "2", sec: "\\frac{2\\sqrt{3}}{3}", cot: "\\sqrt{3}", q: 1 },
-    { id: 2, rad: "\\frac{\\pi}{4}", deg: "45^\\circ", val: Math.PI/4, x: "\\frac{\\sqrt{2}}{2}", y: "\\frac{\\sqrt{2}}{2}", tan: "1", csc: "\\sqrt{2}", sec: "\\sqrt{2}", cot: "1", q: 1 },
-    { id: 3, rad: "\\frac{\\pi}{3}", deg: "60^\\circ", val: Math.PI/3, x: "\\frac{1}{2}", y: "\\frac{\\sqrt{3}}{2}", tan: "\\sqrt{3}", csc: "\\frac{2\\sqrt{3}}{3}", sec: "2", cot: "\\frac{\\sqrt{3}}{3}", q: 1 },
-    { id: 4, rad: "\\frac{\\pi}{2}", deg: "90^\\circ", val: Math.PI/2, x: "0", y: "1", tan: "undef", csc: "1", sec: "undef", cot: "0", q: "axis" },
-    { id: 5, rad: "\\frac{2\\pi}{3}", deg: "120^\\circ", val: 2*Math.PI/3, x: "-\\frac{1}{2}", y: "\\frac{\\sqrt{3}}{2}", tan: "-\\sqrt{3}", csc: "\\frac{2\\sqrt{3}}{3}", sec: "-2", cot: "-\\frac{\\sqrt{3}}{3}", q: 2 },
-    { id: 6, rad: "\\frac{3\\pi}{4}", deg: "135^\\circ", val: 3*Math.PI/4, x: "-\\frac{\\sqrt{2}}{2}", y: "\\frac{\\sqrt{2}}{2}", tan: "-1", csc: "\\sqrt{2}", sec: "-\\sqrt{2}", cot: "-1", q: 2 },
-    { id: 7, rad: "\\frac{5\\pi}{6}", deg: "150^\\circ", val: 5*Math.PI/6, x: "-\\frac{\\sqrt{3}}{2}", y: "\\frac{1}{2}", tan: "-\\frac{\\sqrt{3}}{3}", csc: "2", sec: "-\\frac{2\\sqrt{3}}{3}", cot: "-\\sqrt{3}", q: 2 },
-    { id: 8, rad: "\\pi", deg: "180^\\circ", val: Math.PI, x: "-1", y: "0", tan: "0", csc: "undef", sec: "-1", cot: "undef", q: "axis" },
-    { id: 9, rad: "\\frac{7\\pi}{6}", deg: "210^\\circ", val: 7*Math.PI/6, x: "-\\frac{\\sqrt{3}}{2}", y: "-\\frac{1}{2}", tan: "\\frac{\\sqrt{3}}{3}", csc: "-2", sec: "-\\frac{2\\sqrt{3}}{3}", cot: "\\sqrt{3}", q: 3 },
-    { id: 10, rad: "\\frac{5\\pi}{4}", deg: "225^\\circ", val: 5*Math.PI/4, x: "-\\frac{\\sqrt{2}}{2}", y: "-\\frac{\\sqrt{2}}{2}", tan: "1", csc: "-\\sqrt{2}", sec: "-\\sqrt{2}", cot: "1", q: 3 },
-    { id: 11, rad: "\\frac{4\\pi}{3}", deg: "240^\\circ", val: 4*Math.PI/3, x: "-\\frac{1}{2}", y: "-\\frac{\\sqrt{3}}{2}", tan: "\\sqrt{3}", csc: "-\\frac{2\\sqrt{3}}{3}", sec: "-2", cot: "\\frac{\\sqrt{3}}{3}", q: 3 },
-    { id: 12, rad: "\\frac{3\\pi}{2}", deg: "270^\\circ", val: 3*Math.PI/2, x: "0", y: "-1", tan: "undef", csc: "-1", sec: "undef", cot: "0", q: "axis" },
-    { id: 13, rad: "\\frac{5\\pi}{3}", deg: "300^\\circ", val: 5*Math.PI/3, x: "\\frac{1}{2}", y: "-\\frac{\\sqrt{3}}{2}", tan: "-\\sqrt{3}", csc: "-\\frac{2\\sqrt{3}}{3}", sec: "2", cot: "-\\frac{\\sqrt{3}}{3}", q: 4 },
-    { id: 14, rad: "\\frac{7\\pi}{4}", deg: "315^\\circ", val: 7*Math.PI/4, x: "\\frac{\\sqrt{2}}{2}", y: "-\\frac{\\sqrt{2}}{2}", tan: "-1", csc: "-\\sqrt{2}", sec: "\\sqrt{2}", cot: "-1", q: 4 },
-    { id: 15, rad: "\\frac{11\\pi}{6}", deg: "330^\\circ", val: 11*Math.PI/6, x: "\\frac{\\sqrt{3}}{2}", y: "-\\frac{1}{2}", tan: "-\\frac{\\sqrt{3}}{3}", csc: "-2", sec: "\\frac{2\\sqrt{3}}{3}", cot: "-\\sqrt{3}", q: 4 }
-];
-
 class TrigSniper {
     constructor() {
         this.canvas = document.getElementById('sniper-canvas');
@@ -89,7 +70,7 @@ class TrigSniper {
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
-        const modes = ['rookie', 'marksman', 'sniper'];
+        const modes =['rookie', 'marksman', 'sniper'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
                 this.initAudio();
@@ -118,7 +99,7 @@ class TrigSniper {
 
     resetGameReady() {
         this.isPlaying = false;
-        this.validTargets = [];
+        this.validTargets =[];
         this.effects =[];
         this.hoveredNode = -1;
         document.getElementById('btn-start').disabled = false;
@@ -150,74 +131,12 @@ class TrigSniper {
     }
 
     generateTarget() {
-        const pt = UNIT_CIRCLE[Math.floor(Math.random() * 16)];
-        let promptText = "";
-
-        if (this.mode === 'rookie') {
-            const type = Math.floor(Math.random() * 3);
-            if (type === 0) promptText = `\\text{Locate Angle: } ${pt.rad}`;
-            else if (type === 1) promptText = `\\text{Locate Angle: } ${pt.deg}`;
-            else promptText = `\\text{Locate Point: } \\left(${pt.x}, ${pt.y}\\right)`;
-            
-            this.validTargets = [pt.id];
-        } 
-        else if (this.mode === 'marksman') {
-            const useSin = Math.random() > 0.5;
-            const funcKey = useSin ? 'y' : 'x';
-            const val = pt[funcKey];
-
-            let condSign = '';
-            let isAxisCond = pt.q === 'axis';
-
-            if (!isAxisCond) {
-                const otherValNum = useSin ? Math.cos(pt.val) : Math.sin(pt.val);
-                condSign = otherValNum > 0 ? '>' : '<';
-            }
-
-            this.validTargets = UNIT_CIRCLE.filter(p => {
-                if (p[funcKey] !== val) return false;
-                if (isAxisCond) return p.q === 'axis';
-                const checkVal = useSin ? Math.cos(p.val) : Math.sin(p.val);
-                return condSign === '>' ? checkVal > 0.001 : checkVal < -0.001;
-            }).map(p => p.id);
-
-            const funcStr = useSin ? '\\sin(\\theta)' : '\\cos(\\theta)';
-            const otherFuncStr = useSin ? '\\cos(\\theta)' : '\\sin(\\theta)';
-            promptText = `\\text{Find } \\theta \\text{ where } ${funcStr} = ${val}`;
-            if (isAxisCond) promptText += ` \\text{ on an axis}`;
-            else promptText += ` \\text{ and } ${otherFuncStr} ${condSign} 0`;
-        } 
-        else if (this.mode === 'sniper') {
-            const funcs = ['tan', 'csc', 'sec', 'cot'];
-            let chosenFunc = '';
-            let val = 'undef';
-            while(val === 'undef') {
-                chosenFunc = funcs[Math.floor(Math.random() * funcs.length)];
-                val = pt[chosenFunc];
-            }
-
-            let checkFunc = Math.random() > 0.5 ? 'sin' : 'cos';
-            let condSign = '';
-            let isAxisCond = pt.q === 'axis';
-
-            if (!isAxisCond) {
-                const numVal = checkFunc === 'sin' ? Math.sin(pt.val) : Math.cos(pt.val);
-                condSign = numVal > 0 ? '>' : '<';
-            }
-
-            this.validTargets = UNIT_CIRCLE.filter(p => {
-                if (p[chosenFunc] !== val) return false;
-                if (isAxisCond) return p.q === 'axis';
-                const checkVal = checkFunc === 'sin' ? Math.sin(p.val) : Math.cos(p.val);
-                return condSign === '>' ? checkVal > 0.001 : checkVal < -0.001;
-            }).map(p => p.id);
-
-            promptText = `\\text{Find } \\theta \\text{ where } \\${chosenFunc}(\\theta) = ${val}`;
-            if (isAxisCond) promptText += ` \\text{ on an axis}`;
-            else promptText += ` \\text{ and } \\${checkFunc}(\\theta) ${condSign} 0`;
-        }
-
-        this.updatePromptDisplay(promptText);
+        const generators = window.TrigQuestionBank[this.mode];
+        const generator = generators[Math.floor(Math.random() * generators.length)];
+        const result = generator();
+        
+        this.validTargets = result.targets;
+        this.updatePromptDisplay(result.prompt);
     }
 
     updatePromptDisplay(latexString) {
@@ -271,7 +190,7 @@ class TrigSniper {
         this.ctx.stroke();
 
         // Draw Nodes
-        UNIT_CIRCLE.forEach(pt => {
+        window.UNIT_CIRCLE.forEach(pt => {
             const cx = originX + this.radius * Math.cos(pt.val);
             const cy = originY - this.radius * Math.sin(pt.val);
             const isHovered = (pt.id === this.hoveredNode);
@@ -322,7 +241,7 @@ class TrigSniper {
         const originY = this.height / 2;
 
         this.hoveredNode = -1;
-        for (const pt of UNIT_CIRCLE) {
+        for (const pt of window.UNIT_CIRCLE) {
             const cx = originX + this.radius * Math.cos(pt.val);
             const cy = originY - this.radius * Math.sin(pt.val);
             
@@ -349,7 +268,7 @@ class TrigSniper {
         const originY = this.height / 2;
 
         let clickedNode = -1;
-        for (const pt of UNIT_CIRCLE) {
+        for (const pt of window.UNIT_CIRCLE) {
             const cx = originX + this.radius * Math.cos(pt.val);
             const cy = originY - this.radius * Math.sin(pt.val);
             
@@ -361,7 +280,7 @@ class TrigSniper {
 
         if (clickedNode === -1) return;
 
-        const pt = UNIT_CIRCLE[clickedNode];
+        const pt = window.UNIT_CIRCLE[clickedNode];
         const cx = originX + this.radius * Math.cos(pt.val);
         const cy = originY - this.radius * Math.sin(pt.val);
 

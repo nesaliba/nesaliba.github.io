@@ -191,28 +191,9 @@ class FunctionFactory {
     }
 
     generateTarget() {
-        const types =['linear', 'quadratic', 'absolute', 'sqrt', 'cubic', 'reciprocal'];
-        
-        // Randomly assign target parameters
-        const randRange = (min, max, step) => {
-            const steps = Math.floor((max - min) / step);
-            return min + Math.floor(Math.random() * (steps + 1)) * step;
-        };
-
-        const type = types[Math.floor(Math.random() * types.length)];
-        let a = randRange(-3, 3, 0.5);
-        if (a === 0) a = 1;
-        
-        let b = 1;
-        if (this.mode === 'challenge') {
-            b = randRange(-2, 2, 0.5);
-            if (b === 0) b = 1;
-        }
-
-        const h = randRange(-8, 8, 1);
-        const k = randRange(-8, 8, 1);
-
-        this.targetParams = { type, a, b, h, k };
+        const generators = window.FunctionQuestionBank[this.mode];
+        const generator = generators[Math.floor(Math.random() * generators.length)];
+        this.targetParams = generator();
         
         // Hide next button, show check button
         document.getElementById('btn-check').style.display = 'block';
@@ -239,7 +220,7 @@ class FunctionFactory {
 
     getColors() {
         const isDark = document.documentElement.classList.contains('dark-theme') || 
-                       (document.body && document.body.classList.contains('dark-theme'));
+                    (document.body && document.body.classList.contains('dark-theme'));
         return {
             grid: isDark ? '#334155' : '#e2e8f0',
             axes: isDark ? '#94a3b8' : '#475569',
