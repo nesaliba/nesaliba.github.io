@@ -108,5 +108,10 @@ window.gameInfoData = {
         title: 'Acid Alliance',
         desc: 'Manage chemical crises by applying Chemistry 30 acids and bases principles. Stabilize systems using precise pH control and titration calculations.',
         play: 'Read the crisis report and solve the procedurally generated problem. Select the correct multiple-choice option to stabilize the system. Defeat all 10 crises to win!'
+    },
+    'reaction-reactor' : {
+        title: 'Reaction Reactor',
+        desc: 'Manage an industrial chemical reactor under shifting conditions. Master equilibrium, Le Chatelier\'s principle, and kinetics concepts.',
+        play: 'Analyze the incoming system shift on the reactor monitor. Use the displayed chemical equation to determine how changes to temperature, pressure, concentration, or catalysts affect the equilibrium or reaction rate. Make the correct adjustment before a meltdown occurs!'
     }
 };
