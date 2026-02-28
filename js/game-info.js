@@ -98,5 +98,10 @@ window.gameInfoData = {
         title: 'Newton\'s Arena',
         desc: 'A strategic problem-solving combat game grounded in Physics 20 principles.',
         play: 'Construct free-body diagrams, calculate net force and acceleration across flat planes, inclines, and pulley systems to defeat opponents.'
+    },
+    'field-commander': {
+        title: 'Field Commander',
+        desc: 'A physics-based tactical simulator focusing on electric and magnetic fields (Physics 30).',
+        play: 'Adjust the Electric (E) and Magnetic (B) fields to steer charged particles to their targets using the Right-Hand Rule and electromagnetic force equations.'
     }
 };
