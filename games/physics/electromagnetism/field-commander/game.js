@@ -5,7 +5,8 @@ class FieldCommander {
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         
-        this.missions = window.FieldMissions;
+        // Use generator to establish a 10-level campaign
+        this.missions = window.generateFieldMissions ? window.generateFieldMissions(10) :[];
         this.currentMissionIndex = 0;
         this.mistakes = 0;
         
@@ -101,6 +102,12 @@ class FieldCommander {
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
+            
+            // Re-generate fresh new missions
+            if (window.generateFieldMissions) {
+                this.missions = window.generateFieldMissions(10);
+            }
+            
             this.currentMissionIndex = 0;
             this.mistakes = 0;
             document.getElementById('mistakes-display').innerText = `Mistakes: 0`;
@@ -422,8 +429,9 @@ class FieldCommander {
                 this.ctx.moveTo(p.x, toCy(p.y));
                 this.ctx.lineTo(arrowTipX, arrowTipY);
                 this.ctx.stroke();
-                const headLen = 6;
-                const angle = Math.atan2(ny, nx);
+                // Arrowhead
+                const headLen = 8;
+                const angle = Math.atan2(arrowTipY - toCy(p.y), arrowTipX - p.x);
                 this.ctx.beginPath();
                 this.ctx.moveTo(arrowTipX, arrowTipY);
                 this.ctx.lineTo(arrowTipX - headLen * Math.cos(angle - Math.PI / 6), arrowTipY - headLen * Math.sin(angle - Math.PI / 6));
@@ -433,36 +441,47 @@ class FieldCommander {
             }
         }
 
-        // Draw target label
-        this.ctx.fillStyle = '#22c55e';
-        this.ctx.font = 'bold 12px Inter, sans-serif';
+        // Draw HUD labels
+        this.ctx.font = '12px Inter, sans-serif';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        this.ctx.fillText(`E_y = ${this.Ey} N/C`, 10, 10);
+        this.ctx.fillText(`B_z = ${this.Bz} T`, 10, 28);
+
+        // Draw Target label
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
+        this.ctx.fillStyle = '#22c55e';
+        this.ctx.font = 'bold 12px Inter, sans-serif';
         this.ctx.fillText('TARGET', m.target.x, toCy(m.target.y));
     }
 
     gameOver() {
         this.playFinished();
-        const stars = this.mistakes === 0 ? '\u2605\u2605\u2605' : this.mistakes <= 3 ? '\u2605\u2605\u2606' : '\u2605\u2606\u2606';
-        const rating = this.mistakes === 0 ? 'Perfect Commander!' : this.mistakes <= 3 ? 'Skilled Tactician' : 'Field Operative';
-
+        const total = this.missions.length;
+        const stars = this.mistakes === 0 ? '⭐⭐⭐' : this.mistakes <= 3 ? '⭐⭐' : '⭐';
+        
         document.getElementById('report-details').innerHTML = `
-            <div style="text-align:center; font-size: 2.5rem; margin-bottom: 1rem;">${stars}</div>
-            <p><strong>Rating:</strong> ${rating}</p>
-            <p><strong>Missions Completed:</strong> ${this.missions.length} / ${this.missions.length}</p>
+            <p><strong>Missions Completed:</strong> ${total} / ${total}</p>
             <p><strong>Total Mistakes:</strong> ${this.mistakes}</p>
-            <hr style="margin: 1rem 0; border-color: var(--border-color);">
-            <p style="font-size:0.9rem; color:#64748b;">
+            <p><strong>Rating:</strong> ${stars}</p>
+            <p style="margin-top:1rem; font-size:0.95rem; color:#64748b;">
                 ${this.mistakes === 0
-                    ? 'Flawless execution. You have mastered electromagnetic field manipulation.'
-                    : 'Every failure is a data point. Keep experimenting with the fields!'}
+                    ? 'Perfect campaign! You have mastered electromagnetic field control.'
+                    : this.mistakes <= 3
+                    ? 'Excellent work, Commander! Only a few miscalculations along the way.'
+                    : 'Mission complete, but review your Lorentz force equations for next time.'}
             </p>
         `;
+
         document.getElementById('report-modal').style.display = 'flex';
+        document.getElementById('report-modal').style.alignItems = 'center';
+        document.getElementById('report-modal').style.justifyContent = 'center';
     }
 }
 
-// Boot the game
-window.addEventListener('DOMContentLoaded', () => {
+// Boot the game once the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
     new FieldCommander();
 });
