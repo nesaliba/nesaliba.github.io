@@ -333,8 +333,58 @@ function restoreExpandedDetails() {
     }
 }
 
+function setupGameCounter() {
+    const mainExplore = document.getElementById('explore');
+    if (!mainExplore) return;
+
+    // Isolate only pages possessing the expandable detail components
+    const detailsElements = mainExplore.querySelectorAll('details');
+    if (detailsElements.length === 0) return;
+
+    // Filter by 'a.game-link' to ignore placeholders mapping to 'Coming Soon' div classes
+    const totalGames = mainExplore.querySelectorAll('a.game-link').length;
+    
+    const counterContainer = document.createElement('div');
+    counterContainer.className = 'game-counter-container';
+    
+    const counterText = document.createElement('span');
+    counterText.className = 'game-counter-text';
+    counterText.textContent = `Total Games Available: ${totalGames}`;
+
+    const infoIconContainer = document.createElement('div');
+    infoIconContainer.className = 'info-icon-container';
+    infoIconContainer.tabIndex = 0; // Accessibility
+    
+    const infoIcon = document.createElement('div');
+    infoIcon.className = 'game-counter-icon';
+    infoIcon.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'game-counter-tooltip';
+    
+    let tooltipContent = `<div class="tooltip-header">Games per section:</div>`;
+    
+    detailsElements.forEach(detail => {
+        const summary = detail.querySelector('summary');
+        const sectionName = summary ? summary.textContent.trim() : 'Section';
+        const sectionGames = detail.querySelectorAll('a.game-link').length;
+        tooltipContent += `<div class="tooltip-row"><span>${sectionName}</span> <span class="tooltip-count">${sectionGames}</span></div>`;
+    });
+
+    tooltip.innerHTML = tooltipContent;
+
+    infoIconContainer.appendChild(infoIcon);
+    infoIconContainer.appendChild(tooltip);
+
+    counterContainer.appendChild(counterText);
+    counterContainer.appendChild(infoIconContainer);
+
+    mainExplore.insertBefore(counterContainer, mainExplore.firstChild);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     setupGameSettingsModal();
     setupInfoModal();
+    setupGameCounter();
     restoreExpandedDetails();
 });
