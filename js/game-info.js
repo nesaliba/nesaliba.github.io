@@ -103,5 +103,10 @@ window.gameInfoData = {
         title: 'Field Commander',
         desc: 'A physics-based tactical simulator focusing on electric and magnetic fields (Physics 30).',
         play: 'Adjust the Electric (E) and Magnetic (B) fields to steer charged particles to their targets using the Right-Hand Rule and electromagnetic force equations.'
+    },
+    'acid-alliance' : {
+        title: 'Acid Alliance',
+        desc: 'Manage chemical crises by applying Chemistry 30 acids and bases principles. Stabilize systems using precise pH control and titration calculations.',
+        play: 'Read the crisis report and solve the procedurally generated problem. Select the correct multiple-choice option to stabilize the system. Defeat all 10 crises to win!'
     }
 };
