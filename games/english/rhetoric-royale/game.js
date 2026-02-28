@@ -1,3 +1,5 @@
+import { db, doc, getDoc, setDoc } from '../../../js/firebase-init.js';
+
 class RhetoricRoyale {
     constructor() {
         this.enemies =[
@@ -14,6 +16,7 @@ class RhetoricRoyale {
         this.audioCtx = null;
         this.isPlaying = false;
         this.currentQuestion = null;
+        this.questionBank = null;
 
         this.initUI();
     }
@@ -58,7 +61,7 @@ class RhetoricRoyale {
         setTimeout(() => this.playTone(200, 'sawtooth', 0.4), 400);
     }
 
-    initUI() {
+    async initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
         document.getElementById('btn-play-again').addEventListener('click', () => {
@@ -75,7 +78,52 @@ class RhetoricRoyale {
             });
         }
 
+        // Wait for questions to load before resetting the game
+        await this.loadQuestions();
         this.resetGame();
+    }
+
+    async loadQuestions() {
+        const promptDisplay = document.getElementById('prompt-display');
+        promptDisplay.innerHTML = "Connecting to Debate Archives...";
+        
+        try {
+            const docRef = doc(db, "questionBanks", "rhetoric-royale");
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                this.questionBank = docSnap.data();
+            } else {
+                // AUTO-MIGRATION SCRIPT
+                promptDisplay.innerHTML = "Uploading debate strategies to cloud...";
+                
+                // FIX: Temporarily define the missing buildQuestion function
+                window.buildQuestion = (prompt, answer, wrongOptions) => {
+                    return { prompt, answer, options: [answer, ...wrongOptions] };
+                };
+
+                const cloudData = { sophist: [], demagogue: [], master:[] };
+                
+                for (const type of['sophist', 'demagogue', 'master']) {
+                    const generators = window.RhetoricQuestionBank[type];
+                    cloudData[type] = generators.map(gen => {
+                        const q = gen();
+                        return {
+                            prompt: q.prompt,
+                            answer: q.answer,
+                            wrongOptions: q.options.filter(opt => opt !== q.answer)
+                        };
+                    });
+                }
+                
+                await setDoc(docRef, cloudData);
+                this.questionBank = cloudData;
+                console.log("Rhetoric Royale questions migrated!");
+            }
+        } catch (error) {
+            console.error("Error loading questions:", error);
+            promptDisplay.innerHTML = "Error accessing archives.";
+        }
     }
 
     resetGame() {
@@ -119,13 +167,23 @@ class RhetoricRoyale {
     }
 
     nextQuestion() {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying || !this.questionBank) return; 
         
         const enemy = this.enemies[this.currentEnemyIndex];
-        const generators = window.RhetoricQuestionBank[enemy.type];
-        const generator = generators[Math.floor(Math.random() * generators.length)];
         
-        this.currentQuestion = generator();
+        // Read from Firestore bank
+        const rawList = this.questionBank[enemy.type];
+        const rawQuestion = rawList[Math.floor(Math.random() * rawList.length)];
+        
+        // Shuffle dynamically
+        let distractors = rawQuestion.wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
+        let options =[rawQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
+        
+        this.currentQuestion = {
+            prompt: rawQuestion.prompt,
+            answer: rawQuestion.answer,
+            options: options
+        };
         
         document.getElementById('prompt-display').innerHTML = this.currentQuestion.prompt;
         

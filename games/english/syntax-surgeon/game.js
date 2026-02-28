@@ -1,3 +1,5 @@
+import { db, doc, getDoc, setDoc } from '../../../js/firebase-init.js';
+
 class SyntaxSurgeon {
     constructor() {
         this.mode = 'novice';
@@ -8,6 +10,7 @@ class SyntaxSurgeon {
         this.timerInterval = null;
         this.audioCtx = null;
         this.currentQuestion = null;
+        this.questionBank = null;
 
         this.initUI();
     }
@@ -80,6 +83,51 @@ class SyntaxSurgeon {
                 this.checkAnswer(btn, btn.dataset.correct === 'true');
             });
         }
+
+        this.loadQuestions();
+    }
+
+    async loadQuestions() {
+        const promptDisplay = document.getElementById('prompt-display');
+        const startBtn = document.getElementById('btn-start');
+        
+        promptDisplay.innerText = "Connecting to hospital database...";
+        startBtn.disabled = true;
+
+        try {
+            const docRef = doc(db, "questionBanks", "syntax-surgeon");
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                this.questionBank = docSnap.data();
+            } else {
+                // AUTO-MIGRATION: If cloud data is missing, build it from the local JS file and upload it!
+                promptDisplay.innerText = "First-time setup: Uploading patient files to cloud...";
+                const cloudData = { novice: [], resident: [], attending: [] };
+                
+                for (const mode of['novice', 'resident', 'attending']) {
+                    const generators = window.SyntaxQuestionBank[mode];
+                    cloudData[mode] = generators.map(gen => {
+                        const q = gen();
+                        return {
+                            prompt: q.prompt,
+                            answer: q.answer,
+                            wrongOptions: q.options.filter(opt => opt !== q.answer) // strips the answer out of the options array
+                        };
+                    });
+                }
+                
+                await setDoc(docRef, cloudData);
+                this.questionBank = cloudData;
+                console.log("Syntax Surgeon questions successfully migrated to Firestore!");
+            }
+            
+            promptDisplay.innerText = "Patient files loaded. Ready to operate.";
+            startBtn.disabled = false;
+        } catch (error) {
+            console.error("Error loading questions:", error);
+            promptDisplay.innerText = "Database offline. Please check your connection.";
+        }
     }
 
     resetGameReady() {
@@ -143,10 +191,19 @@ class SyntaxSurgeon {
         const monitor = document.getElementById('monitor-container');
         monitor.classList.remove('error', 'success');
 
-        const generators = window.SyntaxQuestionBank[this.mode];
-        const generator = generators[Math.floor(Math.random() * generators.length)];
+        // Changed: Read from Firestore bank instead of window.SyntaxQuestionBank
+        const rawList = this.questionBank[this.mode];
+        const rawQuestion = rawList[Math.floor(Math.random() * rawList.length)];
         
-        this.currentQuestion = generator();
+        // Shuffle options dynamically on the client side
+        let distractors = rawQuestion.wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
+        let options = [rawQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
+        
+        this.currentQuestion = {
+            prompt: rawQuestion.prompt,
+            answer: rawQuestion.answer,
+            options: options
+        };
         
         document.getElementById('prompt-display').innerText = `[Flawed Syntax Detected]\n"${this.currentQuestion.prompt}"`;
         
@@ -155,7 +212,6 @@ class SyntaxSurgeon {
             btn.innerText = this.currentQuestion.options[i];
             btn.dataset.correct = (this.currentQuestion.options[i] === this.currentQuestion.answer);
             btn.disabled = false;
-            
             btn.style.backgroundColor = '';
             btn.style.color = '';
         }
