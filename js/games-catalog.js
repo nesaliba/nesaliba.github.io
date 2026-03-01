@@ -101,6 +101,16 @@ export const GamesCatalog =[
         isNoModal: false 
     },
     { 
+        id: 'ion-exchange', 
+        title: 'Ion Exchange (Electrochemistry)', 
+        subject: 'chemistry', 
+        category: 'Advanced Chemistry Topics', 
+        desc: 'Take on the role of an electrochemical engineer. Master galvanic and electrolytic cells, calculate standard cell potentials, and identify redox half-reactions.', 
+        play: 'Examine the electrochemical cell array and the provided standard reduction potentials. Calculate voltages or identify the flow of electrons and select the correct option to stabilize the system.', 
+        path: 'games/chemistry/advanced/ion-exchange/index.html', 
+        isNoModal: true 
+    },
+    { 
         id: 'acid-alliance', 
         title: 'Acid Alliance (Acids & Bases Strategy)', 
         subject: 'chemistry', 
@@ -226,6 +236,26 @@ export const GamesCatalog =[
         path: 'games/math/trigonometry/trig-sniper/index.html', 
         isNoModal: true 
     },
+    { 
+        id: 'calculus-time-reversal', 
+        title: 'Calculus Time Reversal (Rates & Critical Points)', 
+        subject: 'math', 
+        category: 'Intermediate and Advanced Math', 
+        desc: 'Act as a time agent using Math 30-1 calculus concepts. Compute instantaneous rates of change, critical points, and related rates to reverse system failures.', 
+        play: 'Analyze the system anomaly prompt. Compute the requested derivative, rate, or optimization point, and select the correct option to stabilize the timeline before it collapses!', 
+        path: 'games/math/calculus/calculus-time-reversal/index.html', 
+        isNoModal: true 
+    },
+    { 
+        id: 'statistics-heist', 
+        title: 'Statistics Heist (Probability & Strategy)', 
+        subject: 'math', 
+        category: 'Intermediate and Advanced Math', 
+        desc: 'Plan and execute elaborate heists by calculating probability, expected value, combinations, and permutations. Miscalculations raise your heat level!', 
+        play: 'Review the heist blueprint prompt. Correctly calculate the statistical requirement to bypass security phases. Clear all phases without maximizing your heat level to win.', 
+        path: 'games/math/statistics/statistics-heist/index.html', 
+        isNoModal: true 
+    },
 
     // --- ENGLISH ---
     { 
@@ -246,26 +276,6 @@ export const GamesCatalog =[
         desc: 'A competitive debate strategy game mapping ELA 20-1/30-1 concepts. Construct persuasive arguments, integrate evidence, and dismantle logical fallacies.', 
         play: 'Read the opponent\'s argument or rhetorical challenge. Select the correct strategy, rhetorical appeal, or fallacy identification to deal damage and defeat them.', 
         path: 'games/english/rhetoric-royale/index.html', 
-        isNoModal: true 
-    },
-    { 
-        id: 'calculus-time-reversal', 
-        title: 'Calculus Time Reversal (Rates & Critical Points)', 
-        subject: 'math', 
-        category: 'Intermediate and Advanced Math', 
-        desc: 'Act as a time agent using Math 30-1 calculus concepts. Compute instantaneous rates of change, critical points, and related rates to reverse system failures.', 
-        play: 'Analyze the system anomaly prompt. Compute the requested derivative, rate, or optimization point, and select the correct option to stabilize the timeline before it collapses!', 
-        path: 'games/math/calculus/calculus-time-reversal/index.html', 
-        isNoModal: true 
-    },
-    { 
-        id: 'statistics-heist', 
-        title: 'Statistics Heist (Probability & Strategy)', 
-        subject: 'math', 
-        category: 'Intermediate and Advanced Math', 
-        desc: 'Plan and execute elaborate heists by calculating probability, expected value, combinations, and permutations. Miscalculations raise your heat level!', 
-        play: 'Review the heist blueprint prompt. Correctly calculate the statistical requirement to bypass security phases. Clear all phases without maximizing your heat level to win.', 
-        path: 'games/math/statistics/statistics-heist/index.html', 
         isNoModal: true 
     }
 ];
