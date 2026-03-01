@@ -10,7 +10,7 @@ import {
     doc, 
     setDoc,
     getDoc
-} from './firebase-init.js';
+} from '/js/firebase-init.js';
 
 let isLoginMode = true;
 
