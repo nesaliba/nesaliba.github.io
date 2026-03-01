@@ -14,14 +14,11 @@ export const StateManager = {
             localStorage.removeItem('scitriad_user_email');
             this.userSettings = null;
         }
-        // Legacy bridge for unrefactored games
-        window.isUserLoggedIn = isLoggedIn;
     },
 
     setSettings(settings) {
         this.userSettings = settings;
         this.applyThemeAndSound();
-        window.userSettings = settings; // Legacy bridge
     },
 
     applyThemeAndSound() {
@@ -45,6 +42,3 @@ export const StateManager = {
         return this.userSettings?.muteSounds || localStorage.getItem('scitriad_mute') === 'true';
     }
 };
-
-// Expose legacy bridge
-window.applyThemeAndSound = () => StateManager.applyThemeAndSound();

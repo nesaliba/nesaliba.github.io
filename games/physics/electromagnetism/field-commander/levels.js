@@ -1,7 +1,7 @@
 // Procedurally generates a campaign of physics missions.
 // Physics Coordinate System: (0,0) is bottom-left, +x is right, +y is UP.
 
-window.generateFieldMissions = function(count = 10) {
+export function generateFieldMissions(count = 10) {
     const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 

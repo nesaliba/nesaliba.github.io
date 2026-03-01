@@ -71,7 +71,7 @@ export class BaseGame {
     }
 
     async saveProgress(mistakes) {
-        if (StateManager.isUserLoggedIn || window.isUserLoggedIn) {
+        if (StateManager.isUserLoggedIn) {
             try {
                 const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;

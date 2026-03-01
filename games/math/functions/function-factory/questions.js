@@ -15,7 +15,7 @@ const getRandomType = () => {
     return types[Math.floor(Math.random() * types.length)];
 };
 
-window.FunctionQuestionBank = {
+export const FunctionQuestionBank = {
     practice:[
         // Only vertical/horizontal shifts
         () => ({ type: getRandomType(), a: 1, b: 1, h: randRange(-6, 6, 1), k: randRange(-6, 6, 1) }),

@@ -1,72 +1,30 @@
-class PolynomialArena {
+import { BaseGame } from '/games/shared/base-game.js';
+import { PolynomialQuestionBank } from './questions.js';
+
+class PolynomialArena extends BaseGame {
     constructor() {
+        super("Polynomial Arena");
         this.enemies =[
             { name: "Quadratic Slime", emoji: "🟢", maxHp: 3, hp: 3, type: 'quad' },
             { name: "Cubic Knight", emoji: "🛡️", maxHp: 4, hp: 4, type: 'cubic' },
             { name: "Rational Dragon", emoji: "🐉", maxHp: 5, hp: 5, type: 'rational' }
         ];
-        
         this.currentEnemyIndex = 0;
         this.playerHp = 3;
         this.score = 0;
         this.mistakes = 0;
-        
-        this.audioCtx = null;
         this.isPlaying = false;
         this.currentQuestion = null;
-
         this.initUI();
-    }
-
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
-    playHit() { this.playTone(800, 'sine', 0.1); }
-    playMiss() { this.playTone(150, 'sawtooth', 0.3); }
-    playVictory() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
-    playGameOver() {
-        setTimeout(() => this.playTone(300, 'sawtooth', 0.2), 0);
-        setTimeout(() => this.playTone(250, 'sawtooth', 0.2), 200);
-        setTimeout(() => this.playTone(200, 'sawtooth', 0.4), 400);
     }
 
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
-
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.resetGame();
         });
-
         for (let i = 0; i < 4; i++) {
             const btn = document.getElementById(`btn-opt-${i}`);
             btn.addEventListener('click', () => {
@@ -74,7 +32,6 @@ class PolynomialArena {
                 this.checkAnswer(btn, btn.dataset.correct === 'true');
             });
         }
-
         this.resetGame();
     }
 
@@ -118,10 +75,7 @@ class PolynomialArena {
     }
 
     generateQuestion(enemyType) {
-        // 1. Get the list of generators for this enemy type from our external file
-        const generators = window.PolynomialQuestionBank[enemyType];
-        
-        // 2. Pick a random generator
+        const generators = PolynomialQuestionBank[enemyType];
         const randomIndex = Math.floor(Math.random() * generators.length);
         const selectedGenerator = generators[randomIndex];
         
@@ -259,28 +213,7 @@ class PolynomialArena {
         details.innerHTML = html;
         modal.style.display = 'flex';
         
-        this.saveProgress(isVictory);
-    }
-
-    async saveProgress(isVictory) {
-        if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
-            try {
-                const fbModule = await import('/js/firebase-init.js');
-                const { auth, db, collection, addDoc } = fbModule;
-                
-                if (auth && auth.currentUser) {
-                    await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
-                        title: `Polynomial Arena`,
-                        score: this.score,
-                        mistakes: this.mistakes,
-                        time: 0,
-                        date: new Date().toISOString()
-                    });
-                }
-            } catch (error) {
-                console.warn("Could not save progress.", error);
-            }
-        }
+        this.saveProgress(this.mistakes); // Replaces custom save logic using BaseGame method
     }
 }
 

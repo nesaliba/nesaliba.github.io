@@ -1,4 +1,4 @@
-window.UNIT_CIRCLE =[
+export const UNIT_CIRCLE =[
     { id: 0, rad: "0", deg: "0^\\circ", val: 0, x: "1", y: "0", tan: "0", csc: "undef", sec: "1", cot: "undef", q: "axis" },
     { id: 1, rad: "\\frac{\\pi}{6}", deg: "30^\\circ", val: Math.PI/6, x: "\\frac{\\sqrt{3}}{2}", y: "\\frac{1}{2}", tan: "\\frac{\\sqrt{3}}{3}", csc: "2", sec: "\\frac{2\\sqrt{3}}{3}", cot: "\\sqrt{3}", q: 1 },
     { id: 2, rad: "\\frac{\\pi}{4}", deg: "45^\\circ", val: Math.PI/4, x: "\\frac{\\sqrt{2}}{2}", y: "\\frac{\\sqrt{2}}{2}", tan: "1", csc: "\\sqrt{2}", sec: "\\sqrt{2}", cot: "1", q: 1 },
@@ -19,7 +19,7 @@ window.UNIT_CIRCLE =[
 
 const randPt = () => window.UNIT_CIRCLE[Math.floor(Math.random() * window.UNIT_CIRCLE.length)];
 
-window.TrigQuestionBank = {
+export const TrigQuestionBank = {
     rookie:[
         () => {
             const pt = randPt();

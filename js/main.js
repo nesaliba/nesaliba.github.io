@@ -1,3 +1,4 @@
+import { StateManager } from './state-manager.js';
 import { GamesCatalog } from './games-catalog.js';
 
 // Expose to window since this is now an ES Module

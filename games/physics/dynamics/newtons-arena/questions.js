@@ -1,9 +1,9 @@
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const randFloat = (min, max, dec) => parseFloat((Math.random() * (max - min) + min).toFixed(dec));
 
-const G = 9.8; // Gravity in Physics 20 standard
+const G = 9.81; // Gravity in Physics 20 standard
 
-window.PhysicsQuestionBank = {
+export const PhysicsQuestionBank = {
     flat:[
         // Type 1: Find Net Force
         function() {

@@ -31,7 +31,7 @@ const buildPoly = (coeffs) => {
 
 const gcd = (x, y) => y === 0 ? x : gcd(y, x % y);
 
-window.PolynomialQuestionBank = {
+export const PolynomialQuestionBank = {
     quad:[
         // Question Type 1: Find the zeros
         function() {
