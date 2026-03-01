@@ -17,7 +17,7 @@ export const UNIT_CIRCLE =[
     { id: 15, rad: "\\frac{11\\pi}{6}", deg: "330^\\circ", val: 11*Math.PI/6, x: "\\frac{\\sqrt{3}}{2}", y: "-\\frac{1}{2}", tan: "-\\frac{\\sqrt{3}}{3}", csc: "-2", sec: "\\frac{2\\sqrt{3}}{3}", cot: "-\\sqrt{3}", q: 4 }
 ];
 
-const randPt = () => window.UNIT_CIRCLE[Math.floor(Math.random() * window.UNIT_CIRCLE.length)];
+const randPt = () => UNIT_CIRCLE[Math.floor(Math.random() * UNIT_CIRCLE.length)];
 
 export const TrigQuestionBank = {
     rookie:[
@@ -35,7 +35,7 @@ export const TrigQuestionBank = {
         }
     ],
     marksman:[
-        // Condition checking (Original Logic)
+        // Condition checking
         () => {
             const pt = randPt();
             const useSin = Math.random() > 0.5;
@@ -50,7 +50,7 @@ export const TrigQuestionBank = {
                 condSign = otherValNum > 0 ? '>' : '<';
             }
 
-            const targets = window.UNIT_CIRCLE.filter(p => {
+            const targets = UNIT_CIRCLE.filter(p => {
                 if (p[funcKey] !== val) return false;
                 if (isAxisCond) return p.q === 'axis';
                 const checkVal = useSin ? Math.cos(p.val) : Math.sin(p.val);
@@ -65,7 +65,7 @@ export const TrigQuestionBank = {
 
             return { prompt: promptText, targets: targets };
         },
-        // Unrestricted match (Locate ANY valid theta)
+        // Unrestricted match
         () => {
             const pt = randPt();
             const useSin = Math.random() > 0.5;
@@ -73,12 +73,12 @@ export const TrigQuestionBank = {
             const val = pt[funcKey];
             const funcStr = useSin ? '\\sin(\\theta)' : '\\cos(\\theta)';
             
-            const targets = window.UNIT_CIRCLE.filter(p => p[funcKey] === val).map(p => p.id);
+            const targets = UNIT_CIRCLE.filter(p => p[funcKey] === val).map(p => p.id);
             return { prompt: `\\text{Find a } \\theta \\text{ where } ${funcStr} = ${val}`, targets: targets };
         }
     ],
     sniper:[
-        // Identify inverse ratios with constraints (Original Logic)
+        // Identify inverse ratios with constraints
         () => {
             const pt = randPt();
             const funcs =['tan', 'csc', 'sec', 'cot'];
@@ -98,7 +98,7 @@ export const TrigQuestionBank = {
                 condSign = numVal > 0 ? '>' : '<';
             }
 
-            const targets = window.UNIT_CIRCLE.filter(p => {
+            const targets = UNIT_CIRCLE.filter(p => {
                 if (p[chosenFunc] !== val) return false;
                 if (isAxisCond) return p.q === 'axis';
                 const checkVal = checkFunc === 'sin' ? Math.sin(p.val) : Math.cos(p.val);
