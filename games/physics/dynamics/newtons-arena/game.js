@@ -1,5 +1,9 @@
-class NewtonsArena {
+import { BaseGame } from '/games/shared/base-game.js';
+import { PhysicsQuestionBank } from './questions.js';
+
+class NewtonsArena extends BaseGame {
     constructor() {
+        super("Newton's Arena");
         this.enemies =[
             { name: "Static Slime", emoji: "🧊", maxHp: 3, hp: 3, type: 'flat' },
             { name: "Incline Golem", emoji: "⛰️", maxHp: 4, hp: 4, type: 'incline' },
@@ -10,52 +14,10 @@ class NewtonsArena {
         this.playerHp = 3;
         this.score = 0;
         this.mistakes = 0;
-        
-        this.audioCtx = null;
         this.isPlaying = false;
         this.currentQuestion = null;
 
         this.initUI();
-    }
-
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
-    playHit() { this.playTone(800, 'sine', 0.1); }
-    playMiss() { this.playTone(150, 'sawtooth', 0.3); }
-    playVictory() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
-    playGameOver() {
-        setTimeout(() => this.playTone(300, 'sawtooth', 0.2), 0);
-        setTimeout(() => this.playTone(250, 'sawtooth', 0.2), 200);
-        setTimeout(() => this.playTone(200, 'sawtooth', 0.4), 400);
     }
 
     initUI() {
@@ -118,22 +80,17 @@ class NewtonsArena {
     }
 
     generateQuestion(enemyType) {
-        const generators = window.PhysicsQuestionBank[enemyType];
+        const generators = PhysicsQuestionBank[enemyType];
         
         const randomIndex = Math.floor(Math.random() * generators.length);
         const selectedGenerator = generators[randomIndex];
         
         const rawQ = selectedGenerator();
         
-        let distractors = [...new Set(rawQ.distractors)];
-        // Fallback in case there aren't enough unique distractors
-        while (distractors.length < 3) {
-            distractors.push(`0.0 \\text{ N}`);
-        }
+        let distractors =[...new Set(rawQ.distractors)];
+        while (distractors.length < 3) distractors.push(`0.0 \\text{ N}`);
         
         let options = [rawQ.answer, distractors[0], distractors[1], distractors[2]];
-        
-        // Shuffle options
         options.sort(() => Math.random() - 0.5);
 
         return { 
@@ -256,28 +213,7 @@ class NewtonsArena {
         details.innerHTML = html;
         modal.style.display = 'flex';
         
-        this.saveProgress(isVictory);
-    }
-
-    async saveProgress(isVictory) {
-        if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
-            try {
-                const fbModule = await import('/js/firebase-init.js');
-                const { auth, db, collection, addDoc } = fbModule;
-                
-                if (auth && auth.currentUser) {
-                    await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
-                        title: `Newton's Arena`,
-                        score: this.score,
-                        mistakes: this.mistakes,
-                        time: 0,
-                        date: new Date().toISOString()
-                    });
-                }
-            } catch (error) {
-                console.warn("Could not save progress.", error);
-            }
-        }
+        this.saveProgress(this.mistakes);
     }
 }
 

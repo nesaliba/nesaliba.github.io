@@ -1,22 +1,24 @@
-class FunctionFactory {
+import { BaseGame } from '/games/shared/base-game.js';
+import { FunctionQuestionBank } from './questions.js';
+import { StateManager } from '/js/state-manager.js';
+
+class FunctionFactory extends BaseGame {
     constructor() {
+        super("Function Factory");
         this.canvas = document.getElementById('graph-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width;
         this.height = this.canvas.height;
-        this.scale = 30; // Pixels per math unit
+        this.scale = 30; 
         
-        this.mode = 'practice'; // practice, timed, puzzle, challenge
+        this.mode = 'practice';
         this.score = 0;
         this.moves = 0;
         this.timeRemaining = 0;
-        this.timerInterval = null;
-        this.audioCtx = null;
         
         this.currentParams = { type: 'quadratic', a: 1, b: 1, h: 0, k: 0 };
         this.targetParams = null;
 
-        // Listen for dark mode class toggles to dynamically redraw the canvas lines
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'class') {
@@ -32,52 +34,11 @@ class FunctionFactory {
         this.updateGraphAndEquation();
     }
 
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume();
-        }
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
-    playCorrect() { this.playTone(600, 'sine', 0.15); }
-    playWrong() { this.playTone(150, 'sawtooth', 0.3); }
-    playFinished() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
+    playFinished() { this.playVictory(); }
 
     initUI() {
-        // Init Audio on first interaction
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
-        // UI Elements
         this.sliders = {
             a: document.getElementById('slider-a'),
             b: document.getElementById('slider-b'),
@@ -93,20 +54,20 @@ class FunctionFactory {
 
         const parentSelect = document.getElementById('parent-function-select');
         
-        // Listeners
         parentSelect.addEventListener('change', (e) => {
             this.initAudio();
             this.currentParams.type = e.target.value;
             this.moves++;
             this.updateMoves();
             this.updateGraphAndEquation();
-        });['a', 'b', 'h', 'k'].forEach(param => {
+        });
+        
+        ['a', 'b', 'h', 'k'].forEach(param => {
             this.sliders[param].addEventListener('input', (e) => {
                 this.initAudio();
                 let val = parseFloat(e.target.value);
-                // Prevent a and b from being exactly 0
                 if ((param === 'a' || param === 'b') && val === 0) {
-                    val = 0.5; // Snap to nearest non-zero
+                    val = 0.5; 
                     this.sliders[param].value = val;
                 }
                 this.currentParams[param] = val;
@@ -114,13 +75,10 @@ class FunctionFactory {
                 this.moves++;
                 this.updateMoves();
                 this.updateGraphAndEquation();
-                
-                // Realtime check in practice/puzzle mode
                 document.getElementById('feedback-message').innerText = '';
             });
         });
 
-        // Buttons
         document.getElementById('btn-check').addEventListener('click', () => { this.initAudio(); this.checkMatch(); });
         document.getElementById('btn-next').addEventListener('click', () => { this.initAudio(); this.nextTarget(); });
         document.getElementById('btn-hint').addEventListener('click', () => { this.initAudio(); this.showHint(); });
@@ -130,7 +88,6 @@ class FunctionFactory {
             this.setMode(this.mode);
         });
 
-        // Mode Setup
         const modes = ['practice', 'timed', 'puzzle', 'challenge'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
@@ -191,11 +148,10 @@ class FunctionFactory {
     }
 
     generateTarget() {
-        const generators = window.FunctionQuestionBank[this.mode];
+        const generators = FunctionQuestionBank[this.mode];
         const generator = generators[Math.floor(Math.random() * generators.length)];
         this.targetParams = generator();
         
-        // Hide next button, show check button
         document.getElementById('btn-check').style.display = 'block';
         document.getElementById('btn-next').style.display = 'none';
         document.getElementById('hint-text').innerText = "Adjust the sliders to match the red target graph.";
@@ -233,7 +189,6 @@ class FunctionFactory {
         const colors = this.getColors();
         this.ctx.clearRect(0, 0, this.width, this.height);
         
-        // Grid lines
         this.ctx.strokeStyle = colors.grid;
         this.ctx.lineWidth = 1;
         
@@ -253,7 +208,6 @@ class FunctionFactory {
             this.ctx.stroke();
         }
 
-        // Axes
         this.ctx.strokeStyle = colors.axes;
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
@@ -285,7 +239,6 @@ class FunctionFactory {
             const py = originY - (mathY * this.scale);
 
             if (!isNaN(py)) {
-                // Prevent drawing lines across vertical asymptotes (e.g., reciprocal)
                 if (isDrawing && Math.abs(py - prevY) > this.height) {
                     this.ctx.stroke();
                     this.ctx.beginPath();
@@ -305,7 +258,7 @@ class FunctionFactory {
             }
         }
         if (isDrawing) this.ctx.stroke();
-        this.ctx.setLineDash([]); // Reset
+        this.ctx.setLineDash([]); 
     }
 
     updateGraphAndEquation() {
@@ -404,13 +357,9 @@ class FunctionFactory {
         const p2 = this.targetParams;
         const feedback = document.getElementById('feedback-message');
 
-        // Allow equivalent formulations (e.g. for reciprocal a=1, b=2 is same as a=0.5, b=1)
-        // But for high school, strict matching of intended a,b,h,k parameters is best for pedagogical reasons
         let isMatch = (p1.type === p2.type && p1.a === p2.a && p1.b === p2.b && p1.h === p2.h && p1.k === p2.k);
 
-        // Exceptional mathematical equivalents handling for simpler modes
         if (p1.type === 'linear' && p2.type === 'linear') {
-            // a*(b*(x-h)) + k = a*b*x - a*b*h + k
             const m1 = p1.a * p1.b;
             const b1 = (-p1.a * p1.b * p1.h) + p1.k;
             const m2 = p2.a * p2.b;
@@ -419,7 +368,7 @@ class FunctionFactory {
         }
 
         if (isMatch) {
-            this.playCorrect();
+            this.playHit();
             feedback.innerText = "Excellent! Perfect Match!";
             feedback.className = "feedback-msg feedback-success";
             this.score++;
@@ -431,11 +380,10 @@ class FunctionFactory {
                 this.endGame();
             }
         } else {
-            this.playWrong();
+            this.playMiss();
             feedback.innerText = "Not quite. Check your transformations!";
             feedback.className = "feedback-msg feedback-error";
             
-            // Visual error shake
             const canvasContainer = document.querySelector('.canvas-container');
             canvasContainer.style.transform = "translateX(-5px)";
             setTimeout(() => canvasContainer.style.transform = "translateX(5px)", 50);
@@ -505,14 +453,12 @@ class FunctionFactory {
         details.innerHTML = reportHTML;
         modal.style.display = 'flex';
         
-        // Optionally trigger save to Firebase if auth is present
-        this.saveProgress();
+        this.saveCustomProgress();
     }
 
-    async saveProgress() {
-        if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
+    async saveCustomProgress() {
+        if (StateManager.isUserLoggedIn) {
             try {
-                // Dynamically import firebase
                 const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;
                 
@@ -520,7 +466,7 @@ class FunctionFactory {
                     await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
                         title: `Function Factory (${this.mode})`,
                         score: this.score,
-                        mistakes: this.moves, // Using moves as 'mistakes' analog for UI
+                        mistakes: this.moves, 
                         time: this.mode === 'timed' ? 60 : 0,
                         date: new Date().toISOString()
                     });
@@ -532,7 +478,6 @@ class FunctionFactory {
     }
 }
 
-// Initialize on load
 window.addEventListener('DOMContentLoaded', () => {
     new FunctionFactory();
 });

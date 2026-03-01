@@ -21,7 +21,7 @@ function setupHeroCanvas() {
     resize();
 
     // Five dots — one per subject (chem, bio, phys, math, eng)
-    const circles = [
+    const circles =[
         { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'   }, // chem – blue
         { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'    }, // bio  – green
         { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'    }, // phys – purple
@@ -142,7 +142,6 @@ function setupGameSettingsModal() {
     const gameLinks = document.querySelectorAll('.game-link');
     if (gameLinks.length === 0) return;
 
-    // Inline styles for toggle switches (avoids touching external CSS)
     const toggleCSS = `
         <style id="toggle-switch-styles">
             .toggle-row {
@@ -212,7 +211,6 @@ function setupGameSettingsModal() {
             <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
                 <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">Game Settings</h2>
                 
-                <!-- Timer On/Off toggle -->
                 <div class="toggle-row">
                     <span class="toggle-label">Timer</span>
                     <label class="toggle-switch">
@@ -221,7 +219,6 @@ function setupGameSettingsModal() {
                     </label>
                 </div>
 
-                <!-- Timer Visibility toggle -->
                 <div class="toggle-row" id="timer-visible-row">
                     <span class="toggle-label">Show Timer</span>
                     <label class="toggle-switch">
@@ -230,7 +227,6 @@ function setupGameSettingsModal() {
                     </label>
                 </div>
 
-                <!-- Sounds toggle -->
                 <div class="toggle-row">
                     <span class="toggle-label">Sounds</span>
                     <label class="toggle-switch">
@@ -280,7 +276,6 @@ function setupGameSettingsModal() {
     let pendingGameUrl = '';
     let pendingDetailsIndex = -1;
 
-    // When timer is off, disable the visibility toggle
     function syncTimerVisibility() {
         const timerOn = timerToggle.checked;
         timerVisibleToggle.disabled = !timerOn;
@@ -308,11 +303,12 @@ function setupGameSettingsModal() {
             darkMode: document.body.classList.contains('dark-theme')
         };
 
-        if (document.getElementById('setting-save-default').checked && window.saveGameSettings) {
-            window.saveGameSettings(settings);
+        if (document.getElementById('setting-save-default').checked) {
+            import('./auth-service.js').then(({ authService }) => {
+                authService.saveSettings(settings);
+            });
         }
 
-        // Save the details index so that when we navigate back, the list remains expanded
         if (pendingDetailsIndex !== -1) {
             const pageName = window.location.pathname.split('/').pop() || 'index.html';
             sessionStorage.setItem('expandedDetails_' + pageName, pendingDetailsIndex);
@@ -332,7 +328,6 @@ function setupGameSettingsModal() {
     
     gameLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            // Find and assign details index immediately before anything else
             const detailsParent = link.closest('details');
             let detailsIndex = -1;
             if (detailsParent) {
@@ -340,13 +335,12 @@ function setupGameSettingsModal() {
                 detailsIndex = Array.from(allDetails).indexOf(detailsParent);
             }
 
-            // For non-modal games, set the sessionStorage property so scrolling functions properly upon return
             if (link.hasAttribute('data-no-modal')) {
                 if (detailsIndex !== -1) {
                     const pageName = window.location.pathname.split('/').pop() || 'index.html';
                     sessionStorage.setItem('expandedDetails_' + pageName, detailsIndex);
                 }
-                return; // Allows standard href navigation
+                return;
             }
 
             const href = link.getAttribute('href');
@@ -355,18 +349,17 @@ function setupGameSettingsModal() {
                 pendingGameUrl = href;
                 pendingDetailsIndex = detailsIndex;
                 
-                if (window.userSettings) {
-                    timerToggle.checked = (window.userSettings.timer || 'off') === 'on';
-                    timerVisibleToggle.checked = (window.userSettings.timerVisible || 'visible') === 'visible';
-                    document.getElementById('setting-tile-mode').value = window.userSettings.tileMode || 'all';
-                    // sounds toggle: checked = sounds ON (not muted)
-                    document.getElementById('setting-mute-sounds').checked = !window.userSettings.muteSounds;
-                    mistakesInput.value = window.userSettings.maxMistakes || 10;
+                if (StateManager.userSettings) {
+                    timerToggle.checked = (StateManager.userSettings.timer || 'off') === 'on';
+                    timerVisibleToggle.checked = (StateManager.userSettings.timerVisible || 'visible') === 'visible';
+                    document.getElementById('setting-tile-mode').value = StateManager.userSettings.tileMode || 'all';
+                    document.getElementById('setting-mute-sounds').checked = !StateManager.userSettings.muteSounds;
+                    mistakesInput.value = StateManager.userSettings.maxMistakes || 10;
                     mistakesVal.textContent = mistakesInput.value;
                     syncTimerVisibility();
                 }
                 
-                if (window.isUserLoggedIn) {
+                if (StateManager.isUserLoggedIn) {
                     document.getElementById('save-default-container').style.display = 'flex';
                 } else {
                     document.getElementById('save-default-container').style.display = 'none';
@@ -392,7 +385,6 @@ function restoreExpandedDetails() {
                 allDetails[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         }
-        // Remove so it doesn't persistently trigger on manual returns in future sessions
         sessionStorage.removeItem('expandedDetails_' + pageName);
     }
 }
@@ -401,11 +393,9 @@ function setupGameCounter() {
     const mainExplore = document.getElementById('explore');
     if (!mainExplore) return;
 
-    // Isolate only pages possessing the expandable detail components
     const detailsElements = mainExplore.querySelectorAll('details');
     if (detailsElements.length === 0) return;
 
-    // Filter by 'a.game-link' to ignore placeholders mapping to 'Coming Soon' div classes
     const totalGames = mainExplore.querySelectorAll('a.game-link').length;
     
     const counterContainer = document.createElement('div');
@@ -417,7 +407,7 @@ function setupGameCounter() {
 
     const infoIconContainer = document.createElement('div');
     infoIconContainer.className = 'info-icon-container';
-    infoIconContainer.tabIndex = 0; // Accessibility
+    infoIconContainer.tabIndex = 0; 
     
     const infoIcon = document.createElement('div');
     infoIcon.className = 'game-counter-icon';
@@ -446,16 +436,14 @@ function setupGameCounter() {
     mainExplore.insertBefore(counterContainer, mainExplore.firstChild);
 }
 
-// Ensure execution flow
 document.addEventListener('DOMContentLoaded', () => {
-    setupHeroCanvas();         // Initialize the hero animation
-    renderCatalog();           // 1. Inject DOM elements
-    setupGameSettingsModal();  // 2. Bind newly injected elements
-    setupInfoModal();          // 3. Bind info modals
-    setupGameCounter();        // 4. Count elements
+    setupHeroCanvas();         
+    renderCatalog();           
+    setupGameSettingsModal();  
+    setupInfoModal();          
+    setupGameCounter();        
     restoreExpandedDetails();
     
-    // Fallback for Start Exploring button
     const scrollInd = document.querySelector('.scroll-indicator');
     if (scrollInd) {
         scrollInd.addEventListener('click', () => {

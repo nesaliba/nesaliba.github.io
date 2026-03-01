@@ -1,26 +1,27 @@
-class FieldCommander {
+import { BaseGame } from '/games/shared/base-game.js';
+import { generateFieldMissions } from './levels.js';
+import { StateManager } from '/js/state-manager.js';
+
+class FieldCommander extends BaseGame {
     constructor() {
+        super("Field Commander");
         this.canvas = document.getElementById('field-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         
-        // Use generator to establish a 10-level campaign
-        this.missions = window.generateFieldMissions ? window.generateFieldMissions(10) : [];
+        this.missions = generateFieldMissions ? generateFieldMissions(10) :[];
         this.currentMissionIndex = 0;
         this.mistakes = 0;
         
-        this.audioCtx = null;
         this.simulating = false;
         this.animationFrame = null;
         
-        // Physics State
         this.particle = { x: 0, y: 0, vx: 0, vy: 0, q: 1, m: 1 };
-        this.trail = [];
+        this.trail =[];
         this.Ey = 0; 
         this.Bz = 0;
         
-        // Tracks whether a crash auto-reset is pending (prevents double-launches)
         this._crashResetPending = false;
         
         this.initUI();
@@ -28,41 +29,9 @@ class FieldCommander {
         this.draw();
     }
 
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
     playLaunch() { this.playTone(300, 'sine', 0.2); }
-    playHit() { this.playTone(800, 'sine', 0.15); }
     playCrash() { this.playTone(150, 'sawtooth', 0.3); }
-    playFinished() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
+    playFinished() { this.playVictory(); }
 
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
@@ -74,7 +43,6 @@ class FieldCommander {
         this.containerE = document.getElementById('container-e');
         this.containerB = document.getElementById('container-b');
 
-        // Update field values live; if not simulating, update the static canvas preview
         this.sliderE.addEventListener('input', (e) => {
             this.initAudio();
             this.Ey = parseFloat(e.target.value);
@@ -89,7 +57,6 @@ class FieldCommander {
             if (!this.simulating) this.draw();
         });
 
-        // Pressing Enter on either slider acts as a quick re-launch shortcut
         const launchOnEnter = (e) => {
             if (e.key === 'Enter' && !this.simulating && !this._crashResetPending) {
                 this.initAudio();
@@ -118,12 +85,7 @@ class FieldCommander {
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
-            
-            // Re-generate fresh new missions
-            if (window.generateFieldMissions) {
-                this.missions = window.generateFieldMissions(10);
-            }
-            
+            if (generateFieldMissions) this.missions = generateFieldMissions(10);
             this.currentMissionIndex = 0;
             this.mistakes = 0;
             document.getElementById('mistakes-display').innerText = `Mistakes: 0`;
@@ -131,10 +93,8 @@ class FieldCommander {
         });
     }
 
-    // Convenience: reset particle to start position then immediately launch
     resetAndLaunch() {
         this.resetSimulation();
-        // Use a minimal delay so the reset canvas frame renders before physics starts
         requestAnimationFrame(() => this.launch());
     }
 
@@ -150,7 +110,6 @@ class FieldCommander {
         document.getElementById('feedback-message').innerText = '';
         document.getElementById('feedback-message').className = 'feedback-msg';
         
-        // Configure sliders
         if (m.lockedE !== null) {
             this.sliderE.value = m.lockedE;
             this.sliderE.disabled = true;
@@ -198,7 +157,7 @@ class FieldCommander {
             q: m.charge, 
             m: 1 
         };
-        this.trail = [{ x: m.start.x, y: m.start.y }];
+        this.trail =[{ x: m.start.x, y: m.start.y }];
         document.getElementById('btn-launch').disabled = false;
         document.getElementById('btn-launch').textContent = 'Launch Particle';
         document.getElementById('feedback-message').innerText = '';
@@ -213,8 +172,6 @@ class FieldCommander {
         
         const loop = () => {
             if (!this.simulating) return;
-            
-            // Fixed timestep for consistent physics regardless of framerate
             const dt = 0.02;
             
             this.updatePhysics(dt);
@@ -231,9 +188,6 @@ class FieldCommander {
     }
 
     updatePhysics(dt) {
-        // F_mag = q(v x B). v=(vx, vy, 0), B=(0, 0, Bz)
-        // Fx = q * vy * Bz
-        // Fy = -q * vx * Bz + q * Ey
         const ax = (this.particle.q * this.particle.vy * this.Bz) / this.particle.m;
         const ay = ((this.particle.q * this.Ey) - (this.particle.q * this.particle.vx * this.Bz)) / this.particle.m;
 
@@ -243,7 +197,6 @@ class FieldCommander {
         this.particle.x += this.particle.vx * dt;
         this.particle.y += this.particle.vy * dt;
 
-        // Record trail every few pixels to save memory
         const lastT = this.trail[this.trail.length - 1];
         if (Math.hypot(this.particle.x - lastT.x, this.particle.y - lastT.y) > 2) {
             this.trail.push({ x: this.particle.x, y: this.particle.y });
@@ -253,21 +206,18 @@ class FieldCommander {
     checkCollisions() {
         const m = this.missions[this.currentMissionIndex];
         const p = this.particle;
-        const pr = 8; // Particle radius
+        const pr = 8; 
 
-        // 1. Target Hit
         if (Math.hypot(p.x - m.target.x, p.y - m.target.y) < (pr + m.target.r)) {
             this.handleWin();
             return true;
         }
 
-        // 2. Out of bounds
         if (p.x < 0 || p.x > this.width || p.y < 0 || p.y > this.height) {
             this.handleCrash("Particle lost in space.");
             return true;
         }
 
-        // 3. Obstacle Hit
         for (let obs of m.obstacles) {
             if (p.x + pr > obs.x && p.x - pr < obs.x + obs.w &&
                 p.y + pr > obs.y && p.y - pr < obs.y + obs.h) {
@@ -275,7 +225,6 @@ class FieldCommander {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -300,12 +249,10 @@ class FieldCommander {
         fb.innerText = msg + " Adjust fields and try again!";
         fb.className = "feedback-msg feedback-error";
         
-        // Shake canvas briefly
         this.canvas.style.transform = "translateX(-5px)";
         setTimeout(() => this.canvas.style.transform = "translateX(5px)", 50);
         setTimeout(() => this.canvas.style.transform = "translateX(0)", 100);
 
-        // Faster reset (800 ms) so the player can adjust and relaunch quickly
         this._crashResetPending = true;
         setTimeout(() => {
             this._crashResetPending = false;
@@ -314,19 +261,14 @@ class FieldCommander {
     }
 
     draw() {
-        // Convert Physics Coordinates (+y is UP) to Canvas Coordinates (+y is DOWN)
         const toCy = (y) => this.height - y;
-
         this.ctx.clearRect(0, 0, this.width, this.height);
         
         const m = this.missions[this.currentMissionIndex];
         if (!m) return;
 
-        // Draw Field Overlays
         if (document.getElementById('toggle-vectors').checked) {
             this.ctx.lineWidth = 1;
-            
-            // E-Field Lines (Cyan arrows)
             if (Math.abs(this.Ey) > 0) {
                 this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
                 this.ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
@@ -338,15 +280,12 @@ class FieldCommander {
                         const arrowEnd = this.Ey > 0 ? cy - 40 : cy + 40; 
                         this.ctx.lineTo(x, arrowEnd);
                         this.ctx.stroke();
-                        // Arrowhead
                         this.ctx.beginPath();
                         this.ctx.arc(x, arrowEnd, 3, 0, Math.PI * 2);
                         this.ctx.fill();
                     }
                 }
             }
-            
-            // B-Field (Purple X or Dots)
             if (Math.abs(this.Bz) > 0) {
                 this.ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
                 this.ctx.lineWidth = 2;
@@ -354,7 +293,6 @@ class FieldCommander {
                     for (let y = 25; y < this.height; y += 50) {
                         const cy = toCy(y);
                         if (this.Bz > 0) {
-                            // OUT of page (Dot)
                             this.ctx.beginPath();
                             this.ctx.arc(x, cy, 3, 0, Math.PI * 2);
                             this.ctx.fillStyle = 'rgba(168, 85, 247, 0.5)';
@@ -363,7 +301,6 @@ class FieldCommander {
                             this.ctx.arc(x, cy, 6, 0, Math.PI * 2);
                             this.ctx.stroke();
                         } else {
-                            // INTO page (X)
                             this.ctx.beginPath();
                             this.ctx.moveTo(x - 4, cy - 4); this.ctx.lineTo(x + 4, cy + 4);
                             this.ctx.moveTo(x + 4, cy - 4); this.ctx.lineTo(x - 4, cy + 4);
@@ -374,17 +311,15 @@ class FieldCommander {
             }
         }
 
-        // Draw Obstacles
         this.ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
         this.ctx.strokeStyle = '#ef4444';
         this.ctx.lineWidth = 2;
         for (let obs of m.obstacles) {
-            const cy = toCy(obs.y + obs.h); // Top edge in canvas space
+            const cy = toCy(obs.y + obs.h); 
             this.ctx.fillRect(obs.x, cy, obs.w, obs.h);
             this.ctx.strokeRect(obs.x, cy, obs.w, obs.h);
         }
 
-        // Draw Target
         this.ctx.beginPath();
         this.ctx.arc(m.target.x, toCy(m.target.y), m.target.r, 0, Math.PI * 2);
         this.ctx.fillStyle = 'rgba(34, 197, 94, 0.3)';
@@ -393,7 +328,6 @@ class FieldCommander {
         this.ctx.lineWidth = 3;
         this.ctx.stroke();
 
-        // Draw Trail
         if (this.trail.length > 0) {
             this.ctx.beginPath();
             this.ctx.moveTo(this.trail[0].x, toCy(this.trail[0].y));
@@ -407,7 +341,6 @@ class FieldCommander {
             this.ctx.setLineDash([]);
         }
 
-        // Draw Start Position indicator
         this.ctx.beginPath();
         this.ctx.arc(m.start.x, toCy(m.start.y), 6, 0, Math.PI * 2);
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
@@ -416,7 +349,6 @@ class FieldCommander {
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
 
-        // Draw Particle
         const p = this.particle;
         const gradient = this.ctx.createRadialGradient(p.x, toCy(p.y), 0, p.x, toCy(p.y), 12);
         if (m.charge > 0) {
@@ -433,20 +365,18 @@ class FieldCommander {
         this.ctx.fillStyle = gradient;
         this.ctx.fill();
 
-        // Draw charge label on particle
         this.ctx.fillStyle = 'white';
         this.ctx.font = 'bold 10px Inter, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(m.charge > 0 ? '+' : '\u2212', p.x, toCy(p.y));
 
-        // Draw velocity arrow when simulating
         if (this.simulating) {
             const speed = Math.hypot(p.vx, p.vy);
             if (speed > 0) {
                 const arrowLen = 25;
                 const nx = p.vx / speed;
-                const ny = -p.vy / speed; // flip y for canvas coords
+                const ny = -p.vy / speed; 
                 const arrowTipX = p.x + nx * arrowLen;
                 const arrowTipY = toCy(p.y) + ny * arrowLen;
                 this.ctx.strokeStyle = 'rgba(250, 204, 21, 0.8)';
@@ -456,7 +386,6 @@ class FieldCommander {
                 this.ctx.moveTo(p.x, toCy(p.y));
                 this.ctx.lineTo(arrowTipX, arrowTipY);
                 this.ctx.stroke();
-                // Arrowhead
                 const headLen = 8;
                 const angle = Math.atan2(arrowTipY - toCy(p.y), arrowTipX - p.x);
                 this.ctx.beginPath();
@@ -468,7 +397,6 @@ class FieldCommander {
             }
         }
 
-        // Draw HUD labels
         this.ctx.font = '12px Inter, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'top';
@@ -476,7 +404,6 @@ class FieldCommander {
         this.ctx.fillText(`E_y = ${this.Ey} N/C`, 10, 10);
         this.ctx.fillText(`B_z = ${this.Bz} T`, 10, 28);
 
-        // Draw Target label
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillStyle = '#22c55e';
@@ -506,34 +433,10 @@ class FieldCommander {
         document.getElementById('report-modal').style.alignItems = 'center';
         document.getElementById('report-modal').style.justifyContent = 'center';
 
-        this.saveProgress();
-    }
-
-    async saveProgress() {
-        const isLoggedIn = (window.StateManager && window.StateManager.isUserLoggedIn) ||
-                        window.isUserLoggedIn ||
-                        localStorage.getItem('scitriad_logged_in') === 'true';
-        if (!isLoggedIn) return;
-
-        try {
-            const fbModule = await import('/js/firebase-init.js');
-            const { auth, db, collection, addDoc } = fbModule;
-            
-            if (auth && auth.currentUser) {
-                await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
-                    title: 'Field Commander',
-                    time: 0,
-                    mistakes: this.mistakes,
-                    date: new Date().toISOString()
-                });
-            }
-        } catch (error) {
-            console.warn("Could not save progress.", error);
-        }
+        this.saveProgress(this.mistakes);
     }
 }
 
-// Boot the game once the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new FieldCommander();
 });

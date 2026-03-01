@@ -1,7 +1,10 @@
+import { BaseGame } from '/games/shared/base-game.js';
 import { db, doc, getDoc, setDoc } from '/js/firebase-init.js';
+import { StateManager } from '/js/state-manager.js';
 
-class RhetoricRoyale {
+class RhetoricRoyale extends BaseGame {
     constructor() {
+        super("Rhetoric Royale");
         this.enemies =[
             { name: "The Sophist", subtitle: "Master of Fallacies", emoji: "🤡", maxHp: 3, hp: 3, type: 'sophist' },
             { name: "The Demagogue", subtitle: "Manipulator of Appeals", emoji: "🗣️", maxHp: 4, hp: 4, type: 'demagogue' },
@@ -13,52 +16,11 @@ class RhetoricRoyale {
         this.score = 0;
         this.mistakes = 0;
         
-        this.audioCtx = null;
         this.isPlaying = false;
         this.currentQuestion = null;
         this.questionBank = null;
 
         this.initUI();
-    }
-
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
-    playHit() { this.playTone(800, 'sine', 0.1); }
-    playMiss() { this.playTone(150, 'sawtooth', 0.3); }
-    playVictory() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
-    playGameOver() {
-        setTimeout(() => this.playTone(300, 'sawtooth', 0.2), 0);
-        setTimeout(() => this.playTone(250, 'sawtooth', 0.2), 200);
-        setTimeout(() => this.playTone(200, 'sawtooth', 0.4), 400);
     }
 
     async initUI() {
@@ -78,7 +40,6 @@ class RhetoricRoyale {
             });
         }
 
-        // Wait for questions to load before resetting the game
         await this.loadQuestions();
         this.resetGame();
     }
@@ -94,31 +55,29 @@ class RhetoricRoyale {
             if (docSnap.exists()) {
                 this.questionBank = docSnap.data();
             } else {
-                // AUTO-MIGRATION SCRIPT
                 promptDisplay.innerHTML = "Uploading debate strategies to cloud...";
                 
-                // FIX: Temporarily define the missing buildQuestion function
                 window.buildQuestion = (prompt, answer, wrongOptions) => {
                     return { prompt, answer, options: [answer, ...wrongOptions] };
                 };
 
                 const cloudData = { sophist: [], demagogue: [], master:[] };
                 
-                for (const type of['sophist', 'demagogue', 'master']) {
-                    const generators = window.RhetoricQuestionBank[type];
-                    cloudData[type] = generators.map(gen => {
-                        const q = gen();
-                        return {
-                            prompt: q.prompt,
-                            answer: q.answer,
-                            wrongOptions: q.options.filter(opt => opt !== q.answer)
-                        };
-                    });
+                if (window.RhetoricQuestionBank) {
+                    for (const type of['sophist', 'demagogue', 'master']) {
+                        const generators = window.RhetoricQuestionBank[type];
+                        cloudData[type] = generators.map(gen => {
+                            const q = gen();
+                            return {
+                                prompt: q.prompt,
+                                answer: q.answer,
+                                wrongOptions: q.options.filter(opt => opt !== q.answer)
+                            };
+                        });
+                    }
+                    await setDoc(docRef, cloudData);
+                    this.questionBank = cloudData;
                 }
-                
-                await setDoc(docRef, cloudData);
-                this.questionBank = cloudData;
-                console.log("Rhetoric Royale questions migrated!");
             }
         } catch (error) {
             console.error("Error loading questions:", error);
@@ -171,12 +130,9 @@ class RhetoricRoyale {
         if (!this.isPlaying || !this.questionBank) return; 
         
         const enemy = this.enemies[this.currentEnemyIndex];
-        
-        // Read from Firestore bank
         const rawList = this.questionBank[enemy.type];
         const rawQuestion = rawList[Math.floor(Math.random() * rawList.length)];
         
-        // Shuffle dynamically
         let distractors = rawQuestion.wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
         let options =[rawQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
         
@@ -286,11 +242,11 @@ class RhetoricRoyale {
         details.innerHTML = html;
         modal.style.display = 'flex';
         
-        this.saveProgress(isVictory);
+        this.saveCustomProgress(isVictory);
     }
 
-    async saveProgress(isVictory) {
-        if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
+    async saveCustomProgress(isVictory) {
+        if (StateManager.isUserLoggedIn) {
             try {
                 const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;

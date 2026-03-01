@@ -1,59 +1,27 @@
+import { BaseGame } from '/games/shared/base-game.js';
 import { db, doc, getDoc, setDoc } from '/js/firebase-init.js';
+import { StateManager } from '/js/state-manager.js';
 
-class SyntaxSurgeon {
+class SyntaxSurgeon extends BaseGame {
     constructor() {
+        super("Syntax Surgeon");
         this.mode = 'novice';
         this.isPlaying = false;
         this.score = 0;
         this.mistakes = 0;
         this.timeRemaining = 60;
-        this.timerInterval = null;
-        this.audioCtx = null;
         this.currentQuestion = null;
         this.questionBank = null;
 
         this.initUI();
     }
 
-    initAudio() {
-        if (window.userSettings && window.userSettings.muteSounds) return;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mute') === 'true' || localStorage.getItem('scitriad_mute') === 'true') return;
-
-        if (!this.audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audioCtx = new AudioContext();
-        }
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-    }
-
-    playTone(frequency, type, duration, vol = 0.1) {
-        if (!this.audioCtx) return;
-        const oscillator = this.audioCtx.createOscillator();
-        const gainNode = this.audioCtx.createGain();
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(this.audioCtx.currentTime + duration);
-    }
-
-    playHit() { this.playTone(800, 'sine', 0.1); }
-    playMiss() { this.playTone(150, 'sawtooth', 0.3); }
-    playFinished() {
-        setTimeout(() => this.playTone(400, 'sine', 0.1), 0);
-        setTimeout(() => this.playTone(500, 'sine', 0.1), 100);
-        setTimeout(() => this.playTone(600, 'sine', 0.2), 200);
-        setTimeout(() => this.playTone(800, 'sine', 0.4), 350);
-    }
+    playFinished() { this.playVictory(); }
 
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
-        const modes = ['novice', 'resident', 'attending'];
+        const modes =['novice', 'resident', 'attending'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
                 this.initAudio();
@@ -101,25 +69,24 @@ class SyntaxSurgeon {
             if (docSnap.exists()) {
                 this.questionBank = docSnap.data();
             } else {
-                // AUTO-MIGRATION: If cloud data is missing, build it from the local JS file and upload it!
                 promptDisplay.innerText = "First-time setup: Uploading patient files to cloud...";
-                const cloudData = { novice: [], resident: [], attending: [] };
+                const cloudData = { novice: [], resident:[], attending: [] };
                 
-                for (const mode of['novice', 'resident', 'attending']) {
-                    const generators = window.SyntaxQuestionBank[mode];
-                    cloudData[mode] = generators.map(gen => {
-                        const q = gen();
-                        return {
-                            prompt: q.prompt,
-                            answer: q.answer,
-                            wrongOptions: q.options.filter(opt => opt !== q.answer) // strips the answer out of the options array
-                        };
-                    });
+                if (window.SyntaxQuestionBank) {
+                    for (const mode of['novice', 'resident', 'attending']) {
+                        const generators = window.SyntaxQuestionBank[mode];
+                        cloudData[mode] = generators.map(gen => {
+                            const q = gen();
+                            return {
+                                prompt: q.prompt,
+                                answer: q.answer,
+                                wrongOptions: q.options.filter(opt => opt !== q.answer)
+                            };
+                        });
+                    }
+                    await setDoc(docRef, cloudData);
+                    this.questionBank = cloudData;
                 }
-                
-                await setDoc(docRef, cloudData);
-                this.questionBank = cloudData;
-                console.log("Syntax Surgeon questions successfully migrated to Firestore!");
             }
             
             promptDisplay.innerText = "Patient files loaded. Ready to operate.";
@@ -192,13 +159,11 @@ class SyntaxSurgeon {
         const monitor = document.getElementById('monitor-container');
         monitor.classList.remove('error', 'success');
 
-        // Changed: Read from Firestore bank instead of window.SyntaxQuestionBank
         const rawList = this.questionBank[this.mode];
         const rawQuestion = rawList[Math.floor(Math.random() * rawList.length)];
         
-        // Shuffle options dynamically on the client side
         let distractors = rawQuestion.wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
-        let options = [rawQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
+        let options =[rawQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
         
         this.currentQuestion = {
             prompt: rawQuestion.prompt,
@@ -232,7 +197,7 @@ class SyntaxSurgeon {
             selectedBtn.style.color = 'white';
             
             this.score++;
-            this.timeRemaining += 2; // +2 seconds for a good repair
+            this.timeRemaining += 2; 
             
             document.getElementById('score-display').innerText = `Repairs: ${this.score}`;
             document.getElementById('timer-display').innerText = `Time: ${this.timeRemaining}`;
@@ -252,7 +217,7 @@ class SyntaxSurgeon {
                 }
             });
 
-            this.timeRemaining -= 5; // -5 seconds time penalty
+            this.timeRemaining -= 5; 
             this.updateVitalsDisplay();
             
             document.getElementById('timer-display').innerText = `Time: ${this.timeRemaining}`;
@@ -290,11 +255,11 @@ class SyntaxSurgeon {
         details.innerHTML = reportHTML;
         modal.style.display = 'flex';
         
-        this.saveProgress();
+        this.saveCustomProgress();
     }
 
-    async saveProgress() {
-        if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
+    async saveCustomProgress() {
+        if (StateManager.isUserLoggedIn) {
             try {
                 const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;
@@ -315,7 +280,6 @@ class SyntaxSurgeon {
     }
 }
 
-// Initialize on load
 window.addEventListener('DOMContentLoaded', () => {
     new SyntaxSurgeon();
 });
