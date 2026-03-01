@@ -19,10 +19,13 @@ function setupHeroCanvas() {
     window.addEventListener('resize', resize);
     resize();
 
-    const circles =[
-        { x: width * 0.2, y: height * 0.3, r: Math.max(80, width * 0.08), vx: 0.5, vy: 0.3, color: 'rgba(56, 182, 255, 0.15)' },
-        { x: width * 0.8, y: height * 0.6, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5, color: 'rgba(255, 235, 59, 0.1)' },
-        { x: width * 0.5, y: height * 0.8, r: Math.max(60, width * 0.06), vx: 0.6, vy: -0.4, color: 'rgba(255, 65, 108, 0.15)' }
+    // Five dots — one per subject (chem, bio, phys, math, eng)
+    const circles = [
+        { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'   }, // chem – blue
+        { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'    }, // bio  – green
+        { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'    }, // phys – purple
+        { x: width * 0.8,  y: height * 0.65, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5,  color: 'rgba(153, 27, 27, 0.12)'    }, // math – red
+        { x: width * 0.15, y: height * 0.75, r: Math.max(90,  width * 0.09), vx: 0.35, vy: -0.3, color: 'rgba(133, 77, 14, 0.13)'    }  // eng  – amber
     ];
 
     function animate() {
@@ -138,27 +141,105 @@ function setupGameSettingsModal() {
     const gameLinks = document.querySelectorAll('.game-link');
     if (gameLinks.length === 0) return;
 
+    // Inline styles for toggle switches (avoids touching external CSS)
+    const toggleCSS = `
+        <style id="toggle-switch-styles">
+            .toggle-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.1rem;
+            }
+            .toggle-label {
+                font-weight: 600;
+                color: var(--text-dark);
+                font-size: 0.95rem;
+            }
+            .toggle-switch {
+                position: relative;
+                width: 46px;
+                height: 26px;
+                flex-shrink: 0;
+            }
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+                position: absolute;
+            }
+            .toggle-slider {
+                position: absolute;
+                inset: 0;
+                background: #94a3b8;
+                border-radius: 26px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .toggle-slider::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 18px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                border-radius: 50%;
+                transition: transform 0.2s;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+            }
+            .toggle-switch input:checked + .toggle-slider {
+                background: #60a5fa;
+            }
+            .toggle-switch input:checked + .toggle-slider::before {
+                transform: translateX(20px);
+            }
+            .toggle-switch input:disabled + .toggle-slider {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .settings-divider {
+                border: none;
+                border-top: 1px solid var(--border-color);
+                margin: 1rem 0;
+            }
+        </style>
+    `;
+
     const modalHTML = `
+        ${toggleCSS}
         <div class="modal-overlay" id="settingsModal" style="z-index: 2000;">
             <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
                 <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">Game Settings</h2>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Timer</label>
-                    <select id="setting-timer" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--input-border); background: var(--card-bg); color: var(--text-dark);">
-                        <option value="off">Off</option>
-                        <option value="on">On</option>
-                    </select>
+                <!-- Timer On/Off toggle -->
+                <div class="toggle-row">
+                    <span class="toggle-label">Timer</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-timer">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Timer Visibility</label>
-                    <select id="setting-timer-visible" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--input-border); background: var(--card-bg); color: var(--text-dark);">
-                        <option value="visible">Visible</option>
-                        <option value="hidden">Hidden</option>
-                    </select>
+
+                <!-- Timer Visibility toggle -->
+                <div class="toggle-row" id="timer-visible-row">
+                    <span class="toggle-label">Show Timer</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-timer-visible" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                
+
+                <!-- Sounds toggle -->
+                <div class="toggle-row">
+                    <span class="toggle-label">Sounds</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-mute-sounds">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <hr class="settings-divider">
+
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Tile Mode</label>
                     <select id="setting-tile-mode" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--input-border); background: var(--card-bg); color: var(--text-dark);">
@@ -167,17 +248,9 @@ function setupGameSettingsModal() {
                     </select>
                 </div>
 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Sounds</label>
-                    <select id="setting-mute-sounds" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--input-border); background: var(--card-bg); color: var(--text-dark);">
-                        <option value="false">On</option>
-                        <option value="true">Muted</option>
-                    </select>
-                </div>
-                
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Max Wrong Placements: <span id="mistakes-val">10</span></label>
-                    <input type="range" id="setting-mistakes" min="0" max="10" value="10" style="width: 100%;">
+                    <input type="range" id="setting-mistakes" min="0" max="10" value="10" style="width: 100%; accent-color: #60a5fa;">
                 </div>
                 
                 <div id="save-default-container" style="margin-bottom: 1.5rem; display: none; align-items: center; gap: 0.5rem;">
@@ -199,22 +272,21 @@ function setupGameSettingsModal() {
     const mistakesVal = document.getElementById('mistakes-val');
     const btnCancel = document.getElementById('btn-cancel-settings');
     const btnStart = document.getElementById('btn-start-game');
-    const timerSelect = document.getElementById('setting-timer');
-    const timerVisibleSelect = document.getElementById('setting-timer-visible');
+    const timerToggle = document.getElementById('setting-timer');
+    const timerVisibleToggle = document.getElementById('setting-timer-visible');
+    const timerVisibleRow = document.getElementById('timer-visible-row');
     
     let pendingGameUrl = '';
     let pendingDetailsIndex = -1;
 
-    timerSelect.addEventListener('change', (e) => {
-        if(e.target.value === 'off') {
-            timerVisibleSelect.disabled = true;
-            timerVisibleSelect.style.opacity = '0.5';
-        } else {
-            timerVisibleSelect.disabled = false;
-            timerVisibleSelect.style.opacity = '1';
-        }
-    });
-    timerSelect.dispatchEvent(new Event('change')); 
+    // When timer is off, disable the visibility toggle
+    function syncTimerVisibility() {
+        const timerOn = timerToggle.checked;
+        timerVisibleToggle.disabled = !timerOn;
+        timerVisibleRow.style.opacity = timerOn ? '1' : '0.5';
+    }
+    timerToggle.addEventListener('change', syncTimerVisibility);
+    syncTimerVisibility();
     
     mistakesInput.addEventListener('input', (e) => {
         mistakesVal.textContent = e.target.value;
@@ -227,12 +299,12 @@ function setupGameSettingsModal() {
     
     btnStart.addEventListener('click', () => {
         const settings = {
-            timer: timerSelect.value,
-            timerVisible: timerVisibleSelect.value,
+            timer: timerToggle.checked ? 'on' : 'off',
+            timerVisible: timerVisibleToggle.checked ? 'visible' : 'hidden',
             tileMode: document.getElementById('setting-tile-mode').value,
             maxMistakes: mistakesInput.value,
-            muteSounds: document.getElementById('setting-mute-sounds').value === 'true',
-            darkMode: document.body.classList.contains('dark-theme') // Keep current theme when saving defaults
+            muteSounds: !document.getElementById('setting-mute-sounds').checked,
+            darkMode: document.body.classList.contains('dark-theme')
         };
 
         if (document.getElementById('setting-save-default').checked && window.saveGameSettings) {
@@ -283,13 +355,14 @@ function setupGameSettingsModal() {
                 pendingDetailsIndex = detailsIndex;
                 
                 if (window.userSettings) {
-                    timerSelect.value = window.userSettings.timer || 'off';
-                    timerVisibleSelect.value = window.userSettings.timerVisible || 'visible';
+                    timerToggle.checked = (window.userSettings.timer || 'off') === 'on';
+                    timerVisibleToggle.checked = (window.userSettings.timerVisible || 'visible') === 'visible';
                     document.getElementById('setting-tile-mode').value = window.userSettings.tileMode || 'all';
-                    document.getElementById('setting-mute-sounds').value = window.userSettings.muteSounds ? 'true' : 'false';
+                    // sounds toggle: checked = sounds ON (not muted)
+                    document.getElementById('setting-mute-sounds').checked = !window.userSettings.muteSounds;
                     mistakesInput.value = window.userSettings.maxMistakes || 10;
                     mistakesVal.textContent = mistakesInput.value;
-                    timerSelect.dispatchEvent(new Event('change'));
+                    syncTimerVisibility();
                 }
                 
                 if (window.isUserLoggedIn) {

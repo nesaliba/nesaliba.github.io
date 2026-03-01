@@ -6,7 +6,7 @@ class FieldCommander {
         this.height = this.canvas.height;
         
         // Use generator to establish a 10-level campaign
-        this.missions = window.generateFieldMissions ? window.generateFieldMissions(10) :[];
+        this.missions = window.generateFieldMissions ? window.generateFieldMissions(10) : [];
         this.currentMissionIndex = 0;
         this.mistakes = 0;
         
@@ -16,9 +16,12 @@ class FieldCommander {
         
         // Physics State
         this.particle = { x: 0, y: 0, vx: 0, vy: 0, q: 1, m: 1 };
-        this.trail =[];
+        this.trail = [];
         this.Ey = 0; 
         this.Bz = 0;
+        
+        // Tracks whether a crash auto-reset is pending (prevents double-launches)
+        this._crashResetPending = false;
         
         this.initUI();
         this.loadMission(this.currentMissionIndex);
@@ -71,32 +74,45 @@ class FieldCommander {
         this.containerE = document.getElementById('container-e');
         this.containerB = document.getElementById('container-b');
 
+        // Update field values live; if not simulating, update the static canvas preview
         this.sliderE.addEventListener('input', (e) => {
             this.initAudio();
             this.Ey = parseFloat(e.target.value);
             this.valE.innerText = this.Ey;
-            if(!this.simulating) this.draw();
+            if (!this.simulating) this.draw();
         });
 
         this.sliderB.addEventListener('input', (e) => {
             this.initAudio();
             this.Bz = parseFloat(e.target.value);
             this.valB.innerText = this.Bz;
-            if(!this.simulating) this.draw();
+            if (!this.simulating) this.draw();
         });
 
-        document.getElementById('btn-launch').addEventListener('click', () => {
+        // Pressing Enter on either slider acts as a quick re-launch shortcut
+        const launchOnEnter = (e) => {
+            if (e.key === 'Enter' && !this.simulating && !this._crashResetPending) {
+                this.initAudio();
+                this.resetAndLaunch();
+            }
+        };
+        this.sliderE.addEventListener('keydown', launchOnEnter);
+        this.sliderB.addEventListener('keydown', launchOnEnter);
+
+        const btnLaunch = document.getElementById('btn-launch');
+        btnLaunch.addEventListener('click', () => {
             this.initAudio();
-            if (!this.simulating) this.launch();
+            if (!this.simulating && !this._crashResetPending) this.resetAndLaunch();
         });
 
         document.getElementById('btn-reset').addEventListener('click', () => {
             this.initAudio();
+            this._crashResetPending = false;
             this.resetSimulation();
         });
 
         document.getElementById('toggle-vectors').addEventListener('change', () => {
-            if(!this.simulating) this.draw();
+            if (!this.simulating) this.draw();
         });
 
         document.getElementById('btn-play-again').addEventListener('click', () => {
@@ -113,6 +129,13 @@ class FieldCommander {
             document.getElementById('mistakes-display').innerText = `Mistakes: 0`;
             this.loadMission(0);
         });
+    }
+
+    // Convenience: reset particle to start position then immediately launch
+    resetAndLaunch() {
+        this.resetSimulation();
+        // Use a minimal delay so the reset canvas frame renders before physics starts
+        requestAnimationFrame(() => this.launch());
     }
 
     loadMission(index) {
@@ -155,6 +178,7 @@ class FieldCommander {
         this.valE.innerText = this.Ey;
         this.valB.innerText = this.Bz;
 
+        this._crashResetPending = false;
         this.resetSimulation();
         
         if (window.MathJax && window.MathJax.typesetPromise) {
@@ -174,8 +198,9 @@ class FieldCommander {
             q: m.charge, 
             m: 1 
         };
-        this.trail =[{x: m.start.x, y: m.start.y}];
+        this.trail = [{ x: m.start.x, y: m.start.y }];
         document.getElementById('btn-launch').disabled = false;
+        document.getElementById('btn-launch').textContent = 'Launch Particle';
         document.getElementById('feedback-message').innerText = '';
         this.draw();
     }
@@ -184,13 +209,13 @@ class FieldCommander {
         this.playLaunch();
         this.simulating = true;
         document.getElementById('btn-launch').disabled = true;
+        document.getElementById('btn-launch').textContent = 'Simulating…';
         
-        let lastTime = performance.now();
-        const loop = (time) => {
+        const loop = () => {
             if (!this.simulating) return;
             
             // Fixed timestep for consistent physics regardless of framerate
-            const dt = 0.02; // Roughly 50 updates per second equivalent
+            const dt = 0.02;
             
             this.updatePhysics(dt);
             this.draw();
@@ -221,7 +246,7 @@ class FieldCommander {
         // Record trail every few pixels to save memory
         const lastT = this.trail[this.trail.length - 1];
         if (Math.hypot(this.particle.x - lastT.x, this.particle.y - lastT.y) > 2) {
-            this.trail.push({x: this.particle.x, y: this.particle.y});
+            this.trail.push({ x: this.particle.x, y: this.particle.y });
         }
     }
 
@@ -244,7 +269,6 @@ class FieldCommander {
 
         // 3. Obstacle Hit
         for (let obs of m.obstacles) {
-            // Rect collision (physics coords)
             if (p.x + pr > obs.x && p.x - pr < obs.x + obs.w &&
                 p.y + pr > obs.y && p.y - pr < obs.y + obs.h) {
                 this.handleCrash("Particle collided with containment barrier.");
@@ -273,17 +297,20 @@ class FieldCommander {
         document.getElementById('mistakes-display').innerText = `Mistakes: ${this.mistakes}`;
         
         const fb = document.getElementById('feedback-message');
-        fb.innerText = msg + " Resetting...";
+        fb.innerText = msg + " Adjust fields and try again!";
         fb.className = "feedback-msg feedback-error";
         
-        // Shake canvas
+        // Shake canvas briefly
         this.canvas.style.transform = "translateX(-5px)";
         setTimeout(() => this.canvas.style.transform = "translateX(5px)", 50);
         setTimeout(() => this.canvas.style.transform = "translateX(0)", 100);
 
+        // Faster reset (800 ms) so the player can adjust and relaunch quickly
+        this._crashResetPending = true;
         setTimeout(() => {
+            this._crashResetPending = false;
             this.resetSimulation();
-        }, 1500);
+        }, 800);
     }
 
     draw() {
@@ -313,7 +340,7 @@ class FieldCommander {
                         this.ctx.stroke();
                         // Arrowhead
                         this.ctx.beginPath();
-                        this.ctx.arc(x, arrowEnd, 3, 0, Math.PI*2);
+                        this.ctx.arc(x, arrowEnd, 3, 0, Math.PI * 2);
                         this.ctx.fill();
                     }
                 }
@@ -329,11 +356,11 @@ class FieldCommander {
                         if (this.Bz > 0) {
                             // OUT of page (Dot)
                             this.ctx.beginPath();
-                            this.ctx.arc(x, cy, 3, 0, Math.PI*2);
+                            this.ctx.arc(x, cy, 3, 0, Math.PI * 2);
                             this.ctx.fillStyle = 'rgba(168, 85, 247, 0.5)';
                             this.ctx.fill();
                             this.ctx.beginPath();
-                            this.ctx.arc(x, cy, 6, 0, Math.PI*2);
+                            this.ctx.arc(x, cy, 6, 0, Math.PI * 2);
                             this.ctx.stroke();
                         } else {
                             // INTO page (X)
@@ -478,6 +505,31 @@ class FieldCommander {
         document.getElementById('report-modal').style.display = 'flex';
         document.getElementById('report-modal').style.alignItems = 'center';
         document.getElementById('report-modal').style.justifyContent = 'center';
+
+        this.saveProgress();
+    }
+
+    async saveProgress() {
+        const isLoggedIn = (window.StateManager && window.StateManager.isUserLoggedIn) ||
+                        window.isUserLoggedIn ||
+                        localStorage.getItem('scitriad_logged_in') === 'true';
+        if (!isLoggedIn) return;
+
+        try {
+            const fbModule = await import('/js/firebase-init.js');
+            const { auth, db, collection, addDoc } = fbModule;
+            
+            if (auth && auth.currentUser) {
+                await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
+                    title: 'Field Commander',
+                    time: 0,
+                    mistakes: this.mistakes,
+                    date: new Date().toISOString()
+                });
+            }
+        } catch (error) {
+            console.warn("Could not save progress.", error);
+        }
     }
 }
 

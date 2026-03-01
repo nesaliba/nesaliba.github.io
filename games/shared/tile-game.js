@@ -38,7 +38,7 @@ class ScitriadTileGame {
         this.elapsedSeconds = 0;
         
         // State for One Tile At A Time
-        this.remainingTilesData =[];
+        this.remainingTilesData = [];
         this.currentTileData = null;
         this.upcomingTileData = null;
         
@@ -348,6 +348,13 @@ class ScitriadTileGame {
     }
 
     async saveProgress() {
+        // Check login state via StateManager (preferred) or legacy window flag
+        const isLoggedIn = (window.StateManager && window.StateManager.isUserLoggedIn) ||
+                        window.isUserLoggedIn ||
+                        localStorage.getItem('scitriad_logged_in') === 'true';
+
+        if (!isLoggedIn) return;
+
         try {
             const fbModule = await import('/js/firebase-init.js');
             const { auth, db, collection, addDoc } = fbModule;
