@@ -1,4 +1,5 @@
 import { StateManager } from '../../js/state-manager.js';
+import { auth, db, collection, addDoc } from '/js/firebase-init.js';
 
 export class ScitriadTileGame {
     constructor(config) {
@@ -40,7 +41,7 @@ export class ScitriadTileGame {
         this.elapsedSeconds = 0;
         
         // State for One Tile At A Time
-        this.remainingTilesData = [];
+        this.remainingTilesData =[];
         this.currentTileData = null;
         this.upcomingTileData = null;
         
@@ -216,7 +217,7 @@ export class ScitriadTileGame {
 
     buildBank() {
         const bank = document.getElementById('tileBank');
-        const shuffledData = [...this.config.data].sort(() => Math.random() - 0.5);
+        const shuffledData =[...this.config.data].sort(() => Math.random() - 0.5);
         
         shuffledData.forEach(item => {
             const tile = document.createElement('div');
@@ -353,9 +354,6 @@ export class ScitriadTileGame {
         if (!StateManager.isUserLoggedIn) return; 
 
         try {
-            const fbModule = await import('/js/firebase-init.js');
-            const { auth, db, collection, addDoc } = fbModule;
-            
             if (auth && auth.currentUser) {
                 await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
                     title: this.config.title,

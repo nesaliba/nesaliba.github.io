@@ -1,4 +1,5 @@
 import { StateManager } from '../../js/state-manager.js';
+import { auth, db, collection, addDoc } from '/js/firebase-init.js';
 
 export class BaseGame {
     constructor(title) {
@@ -73,9 +74,6 @@ export class BaseGame {
     async saveProgress(mistakes) {
         if (StateManager.isUserLoggedIn) {
             try {
-                const fbModule = await import('/js/firebase-init.js');
-                const { auth, db, collection, addDoc } = fbModule;
-                
                 if (auth && auth.currentUser) {
                     await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
                         title: this.gameTitle,
