@@ -122,7 +122,8 @@ class RhetoricRoyale {
             }
         } catch (error) {
             console.error("Error loading questions:", error);
-            promptDisplay.innerHTML = "Error accessing archives.";
+            promptDisplay.innerHTML = "Unable to connect to database. Please disable your adblocker or tracking protection and refresh.";
+            document.getElementById('options-grid').style.display = 'none';
         }
     }
 

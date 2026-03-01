@@ -126,7 +126,8 @@ class SyntaxSurgeon {
             startBtn.disabled = false;
         } catch (error) {
             console.error("Error loading questions:", error);
-            promptDisplay.innerText = "Database offline. Please check your connection.";
+            promptDisplay.innerText = "Connection blocked. Please disable your adblocker or tracking protection and refresh.";
+            startBtn.disabled = true;
         }
     }
 

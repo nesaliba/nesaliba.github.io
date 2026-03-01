@@ -4,7 +4,6 @@
 html {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-    overflow-x: hidden;
 }
 
 /* Custom Scrollbar - Chrome/Edge/Safari */
@@ -29,7 +28,7 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     background-color: var(--bg-light);
-    overflow-x: hidden; 
+    overflow-x: clip; 
     min-height: 100vh;
 }
 

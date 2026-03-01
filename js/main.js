@@ -6,6 +6,48 @@ window.scrollToContent = function() {
     if(element) element.scrollIntoView({ behavior: "smooth" });
 }
 
+function setupHeroCanvas() {
+    const canvas = document.getElementById('heroCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    function resize() {
+        width = canvas.width = canvas.parentElement.offsetWidth;
+        height = canvas.height = canvas.parentElement.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const circles =[
+        { x: width * 0.2, y: height * 0.3, r: Math.max(80, width * 0.08), vx: 0.5, vy: 0.3, color: 'rgba(56, 182, 255, 0.15)' },
+        { x: width * 0.8, y: height * 0.6, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5, color: 'rgba(255, 235, 59, 0.1)' },
+        { x: width * 0.5, y: height * 0.8, r: Math.max(60, width * 0.06), vx: 0.6, vy: -0.4, color: 'rgba(255, 65, 108, 0.15)' }
+    ];
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        
+        circles.forEach(c => {
+            c.x += c.vx;
+            c.y += c.vy;
+            
+            if (c.x < -c.r) c.x = width + c.r;
+            if (c.x > width + c.r) c.x = -c.r;
+            if (c.y < -c.r) c.y = height + c.r;
+            if (c.y > height + c.r) c.y = -c.r;
+            
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+            ctx.fillStyle = c.color;
+            ctx.fill();
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
 function renderCatalog() {
     const container = document.getElementById('catalog-container');
     if (!container) return;
@@ -77,7 +119,7 @@ function setupInfoModal() {
             e.stopPropagation();
             
             const gameId = btn.getAttribute('data-game');
-            const info = window.gameInfoData ? window.gameInfoData[gameId] : null;
+            const info = GamesCatalog.find(g => g.id === gameId);
             
             if (info) {
                 titleEl.textContent = info.title;
@@ -332,9 +374,19 @@ function setupGameCounter() {
 
 // Ensure execution flow
 document.addEventListener('DOMContentLoaded', () => {
+    setupHeroCanvas();         // Initialize the hero animation
     renderCatalog();           // 1. Inject DOM elements
     setupGameSettingsModal();  // 2. Bind newly injected elements
     setupInfoModal();          // 3. Bind info modals
     setupGameCounter();        // 4. Count elements
     restoreExpandedDetails();
+    
+    // Fallback for Start Exploring button
+    const scrollInd = document.querySelector('.scroll-indicator');
+    if (scrollInd) {
+        scrollInd.addEventListener('click', () => {
+            const element = document.getElementById("explore");
+            if(element) element.scrollIntoView({ behavior: "smooth" });
+        });
+    }
 });
