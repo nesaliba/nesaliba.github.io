@@ -182,6 +182,16 @@ export const GamesCatalog =[
         path: 'games/biology/intro/mitosis-vs-meiosis/index.html', 
         isNoModal: false 
     },
+    { 
+        id: 'cell-signal-scramble', 
+        title: 'Cell Signal Scramble (Endocrine & Nervous)', 
+        subject: 'biology', 
+        category: 'Advanced Biology Topics', 
+        desc: 'A systems-regulation game focusing on homeostasis, endocrine signaling, and nervous system communication.', 
+        play: 'Select glands to release hormones and drag them to target organs, or trace nervous signals through neurons. Analyze concentration graphs to diagnose disorders like diabetes.', 
+        path: 'games/biology/advanced/cell-signal-scramble/index.html', 
+        isNoModal: true 
+    },
 
     // --- PHYSICS ---
     { 
