@@ -257,5 +257,15 @@ export const GamesCatalog =[
         play: 'Analyze the system anomaly prompt. Compute the requested derivative, rate, or optimization point, and select the correct option to stabilize the timeline before it collapses!', 
         path: 'games/math/calculus/calculus-time-reversal/index.html', 
         isNoModal: true 
+    },
+    { 
+        id: 'statistics-heist', 
+        title: 'Statistics Heist (Probability & Strategy)', 
+        subject: 'math', 
+        category: 'Intermediate and Advanced Math', 
+        desc: 'Plan and execute elaborate heists by calculating probability, expected value, combinations, and permutations. Miscalculations raise your heat level!', 
+        play: 'Review the heist blueprint prompt. Correctly calculate the statistical requirement to bypass security phases. Clear all phases without maximizing your heat level to win.', 
+        path: 'games/math/statistics/statistics-heist/index.html', 
+        isNoModal: true 
     }
 ];
