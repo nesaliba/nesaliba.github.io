@@ -247,5 +247,15 @@ export const GamesCatalog =[
         play: 'Read the opponent\'s argument or rhetorical challenge. Select the correct strategy, rhetorical appeal, or fallacy identification to deal damage and defeat them.', 
         path: 'games/english/rhetoric-royale/index.html', 
         isNoModal: true 
+    },
+    { 
+        id: 'calculus-time-reversal', 
+        title: 'Calculus Time Reversal (Rates & Critical Points)', 
+        subject: 'math', 
+        category: 'Intermediate and Advanced Math', 
+        desc: 'Act as a time agent using Math 30-1 calculus concepts. Compute instantaneous rates of change, critical points, and related rates to reverse system failures.', 
+        play: 'Analyze the system anomaly prompt. Compute the requested derivative, rate, or optimization point, and select the correct option to stabilize the timeline before it collapses!', 
+        path: 'games/math/calculus/calculus-time-reversal/index.html', 
+        isNoModal: true 
     }
 ];
