@@ -1,95 +1,43 @@
-function scrollToContent() {
+import { GamesCatalog } from './games-catalog.js';
+
+// Expose to window since this is now an ES Module
+window.scrollToContent = function() {
     const element = document.getElementById("explore");
-    element.scrollIntoView({ behavior: "smooth" });
+    if(element) element.scrollIntoView({ behavior: "smooth" });
 }
 
-window.addEventListener('scroll', function() {
-    const navbar = document.getElementById('navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-    } else {
-        navbar.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
-    }
-});
+function renderCatalog() {
+    const container = document.getElementById('catalog-container');
+    if (!container) return;
 
-const navSlide = () => {
-    const burger = document.querySelector('.hamburger');
-    const nav = document.querySelector('.nav-links');
-    const navLinks = document.querySelectorAll('.nav-links a');
+    const subject = container.getAttribute('data-subject');
+    const filteredGames = GamesCatalog.filter(g => g.subject === subject);
+    
+    const categories = {};
+    filteredGames.forEach(g => {
+        if (!categories[g.category]) categories[g.category] = [];
+        categories[g.category].push(g);
+    });
 
-    if(burger) {
-        burger.addEventListener('click', () => {
-            nav.classList.toggle('nav-active');
-            burger.classList.toggle('toggle');
-            document.body.classList.toggle('no-scroll');
-            
-            navLinks.forEach((link, index) => {
-                if (link.style.animation) {
-                    link.style.animation = '';
-                } else {
-                    link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
-                }
-            });
+    let html = '';
+    for (const [category, games] of Object.entries(categories)) {
+        html += `<details><summary>${category}</summary><div class="details-content">`;
+        games.forEach(g => {
+            html += `
+                <a href="${g.path}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>${g.title}</span>
+                        <button class="info-btn" data-game="${g.id}" title="Game Info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </button>
+                    </div>
+                    <span class="game-icon">➜</span>
+                </a>
+            `;
         });
+        html += `</div></details>`;
     }
-}
-navSlide();
-
-const canvas = document.getElementById('heroCanvas');
-if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let width, height;
-
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const balls =[
-        { angle: 0, color: '#ff416c', radius: 15, speed: 0.02, distX: 160, distY: 100 },
-        { angle: Math.PI * 2 / 3, color: '#f7b733', radius: 15, speed: 0.025, distX: 110, distY: 160 },
-        { angle: Math.PI * 4 / 3, color: '#00b09b', radius: 15, speed: 0.015, distX: 130, distY: 130 }
-    ];
-
-    function animate() {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.15)'; 
-        ctx.fillRect(0, 0, width, height);
-
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const positions =[];
-
-        balls.forEach(ball => {
-            ball.angle += ball.speed;
-            const x = centerX + Math.cos(ball.angle) * ball.distX;
-            const y = centerY + Math.sin(ball.angle * 1.2) * ball.distY;
-            positions.push({ x, y });
-
-            ctx.beginPath();
-            ctx.arc(x, y, ball.radius, 0, Math.PI * 2);
-            ctx.fillStyle = ball.color;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = ball.color;
-            ctx.fill();
-            ctx.closePath();
-        });
-
-        ctx.shadowBlur = 0;
-        ctx.beginPath();
-        ctx.moveTo(positions[0].x, positions[0].y);
-        ctx.lineTo(positions[1].x, positions[1].y);
-        ctx.lineTo(positions[2].x, positions[2].y);
-        ctx.lineTo(positions[0].x, positions[0].y);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.closePath();
-
-        requestAnimationFrame(animate);
-    }
-    animate();
+    container.innerHTML = html;
 }
 
 function setupInfoModal() {
@@ -382,9 +330,11 @@ function setupGameCounter() {
     mainExplore.insertBefore(counterContainer, mainExplore.firstChild);
 }
 
+// Ensure execution flow
 document.addEventListener('DOMContentLoaded', () => {
-    setupGameSettingsModal();
-    setupInfoModal();
-    setupGameCounter();
+    renderCatalog();           // 1. Inject DOM elements
+    setupGameSettingsModal();  // 2. Bind newly injected elements
+    setupInfoModal();          // 3. Bind info modals
+    setupGameCounter();        // 4. Count elements
     restoreExpandedDetails();
 });

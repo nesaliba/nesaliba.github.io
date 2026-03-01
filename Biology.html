@@ -11,7 +11,7 @@
 </head>
 <body class="theme-bio">
 
-<site-navbar></site-navbar>
+    <site-navbar></site-navbar>
 
     <header class="hero hero-small theme-bio">
         <h1>Biology</h1>
@@ -19,53 +19,8 @@
     </header>
 
     <main class="container" id="explore">
-        
-        <details>
-            <summary>Introductory Biology Topics</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Introduction to biology, covering basic characteristics of living organisms, cell structure, division, and genetics.</p>
-                
-                <a href="games/biology/intro/photosynthesis-vs-cellular-respiration/index.html" class="game-link">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Photosynthesis vs. Cellular Respiration Comparison</span>
-                        <button class="info-btn" data-game="photosynthesis-respiration" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-                <a href="games/biology/intro/mitosis-vs-meiosis/index.html" class="game-link">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Mitosis vs. Meiosis Comparison</span>
-                        <button class="info-btn" data-game="mitosis-meiosis" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
-        <details>
-            <summary>Intermediate and Advanced Biology</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Dive deeper into biochemistry, biodiversity, and human biology.</p>
-                <!-- Placeholders based on original file -->
-                <div class="game-link"><span>Biochemistry Games (Coming Soon)</span></div>
-                <div class="game-link"><span>Biodiversity Games (Coming Soon)</span></div>
-                <div class="game-link"><span>Human Biology Games (Coming Soon)</span></div>
-            </div>
-        </details>
-
-        <details>
-            <summary>Advanced Biology</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Advanced topics including molecular biology, DNA processes, and environmental biology.</p>
-                <div class="game-link"><span>Plant Biology Games (Coming Soon)</span></div>
-                <div class="game-link"><span>Cellular & Molecular Biology Games (Coming Soon)</span></div>
-            </div>
-        </details>
-
+        <!-- Magic happens here. The Catalog Renderer handles everything. -->
+        <div id="catalog-container" data-subject="biology"></div>
     </main>
 
     <footer>
@@ -74,7 +29,6 @@
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth.js"></script>
-    <script src="js/game-info.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

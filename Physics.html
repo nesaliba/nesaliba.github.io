@@ -11,7 +11,7 @@
 </head>
 <body class="theme-phys">
 
-<site-navbar></site-navbar>
+    <site-navbar></site-navbar>
 
     <header class="hero hero-small theme-phys">
         <h1>Physics</h1>
@@ -19,53 +19,8 @@
     </header>
 
     <main class="container" id="explore">
-        
-        <details>
-            <summary>Dynamics & Kinematics</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Master Free-Body Diagrams, Newton's Laws, and system acceleration (Physics 20).</p>
-                <a href="games/physics/dynamics/newtons-arena/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Newton's Arena (Forces & Acceleration)</span>
-                        <button class="info-btn" data-game="newtons-arena" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
-        <details>
-            <summary>Electromagnetism</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Explore electric and magnetic fields, Coulomb forces, and charged particle trajectories (Physics 30).</p>
-                <a href="games/physics/electromagnetism/field-commander/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Field Commander (E & B Fields)</span>
-                        <button class="info-btn" data-game="field-commander" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
-        <details>
-            <summary>Introductory Physics Topics</summary>
-            <div class="details-content">
-                <p style="color: #64748b;">Content coming soon...</p>
-            </div>
-        </details>
-
-        <details>
-            <summary>Advanced Physics</summary>
-            <div class="details-content">
-                <p style="color: #64748b;">Content coming soon...</p>
-            </div>
-        </details>
-
+        <!-- Magic happens here. The Catalog Renderer handles everything. -->
+        <div id="catalog-container" data-subject="physics"></div>
     </main>
 
     <footer>
@@ -74,7 +29,6 @@
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth.js"></script>
-    <script src="js/game-info.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@
 </head>
 <body class="theme-math">
 
-<site-navbar></site-navbar>
+    <site-navbar></site-navbar>
 
     <header class="hero hero-small theme-math">
         <h1>Mathematics</h1>
@@ -19,55 +19,8 @@
     </header>
 
     <main class="container" id="explore">
-        
-        <details>
-            <summary>Introductory Math Topics</summary>
-            <div class="details-content">
-                <p style="color: #64748b;">Content coming soon...</p>
-            </div>
-        </details>
-
-        <details>
-            <summary>Intermediate and Advanced Math</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Explore functions, transformations, and advanced algebraic concepts aligned to the 10C, 20-1, and 30-1 curriculum.</p>
-                <a href="games/math/functions/function-factory/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Function Factory (Transformations)</span>
-                        <button class="info-btn" data-game="function-factory" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-                <a href="games/math/algebra/polynomial-arena/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Polynomial Arena (Algebra Battles)</span>
-                        <button class="info-btn" data-game="polynomial-arena" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
-        <details>
-            <summary>Trigonometry</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Master the unit circle, trigonometric identities, and equations.</p>
-                <a href="games/math/trigonometry/trig-sniper/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Trig Sniper (Unit Circle & Identities)</span>
-                        <button class="info-btn" data-game="trig-sniper" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
+        <!-- Magic happens here. The Catalog Renderer handles everything. -->
+        <div id="catalog-container" data-subject="math"></div>
     </main>
 
     <footer>
@@ -76,7 +29,6 @@
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth.js"></script>
-    <script src="js/game-info.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

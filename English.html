@@ -11,7 +11,7 @@
 </head>
 <body class="theme-eng">
 
-<site-navbar></site-navbar>
+    <site-navbar></site-navbar>
 
     <header class="hero hero-small theme-eng">
         <h1>English</h1>
@@ -19,39 +19,8 @@
     </header>
 
     <main class="container" id="explore">
-        
-        <details>
-            <summary>Introductory English Topics</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Master grammar, syntax, and stylistic editing essential for ELA 10 and 20.</p>
-                <a href="games/english/syntax-surgeon/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Syntax Surgeon (Editing & Grammar)</span>
-                        <button class="info-btn" data-game="syntax-surgeon" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
-        <details>
-            <summary>Intermediate and Advanced English</summary>
-            <div class="details-content">
-                <p style="margin-bottom: 1rem; color: #64748b;">Master the art of persuasion, analyze complex arguments, and engage with high-level rhetoric aligned to the ELA 20-1 and 30-1 curriculum.</p>
-                <a href="games/english/rhetoric-royale/index.html" class="game-link" data-no-modal="true">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>Rhetoric Royale (Debate & Persuasion)</span>
-                        <button class="info-btn" data-game="rhetoric-royale" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
-            </div>
-        </details>
-
+        <!-- Magic happens here. The Catalog Renderer handles everything. -->
+        <div id="catalog-container" data-subject="english"></div>
     </main>
 
     <footer>
@@ -60,7 +29,6 @@
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth.js"></script>
-    <script src="js/game-info.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
