@@ -9,7 +9,11 @@
 </head>
 <body class="theme-bio">
     <div id="game-mount"></div>
-    <script src="/games/shared/tile-game.js"></script>
-    <script src="data.js"></script>
+
+    <script type="module">
+        import { ScitriadTileGame } from '/games/shared/tile-game.js';
+        import { gameData } from './data.js';
+        new ScitriadTileGame(gameData);
+    </script>
 </body>
 </html>

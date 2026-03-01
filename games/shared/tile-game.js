@@ -1,4 +1,6 @@
-class ScitriadTileGame {
+import { StateManager } from '../../js/state-manager.js';
+
+export class ScitriadTileGame {
     constructor(config) {
         this.config = config;
         this.matchedCount = 0;
@@ -348,12 +350,7 @@ class ScitriadTileGame {
     }
 
     async saveProgress() {
-        // Check login state via StateManager (preferred) or legacy window flag
-        const isLoggedIn = (window.StateManager && window.StateManager.isUserLoggedIn) ||
-                        window.isUserLoggedIn ||
-                        localStorage.getItem('scitriad_logged_in') === 'true';
-
-        if (!isLoggedIn) return;
+        if (!StateManager.isUserLoggedIn) return; 
 
         try {
             const fbModule = await import('/js/firebase-init.js');
@@ -368,7 +365,7 @@ class ScitriadTileGame {
                 });
             }
         } catch (error) {
-            console.warn("Could not save game progress. Ensure you have an active internet connection.", error);
+            console.warn("Could not save game progress.", error);
         }
     }
 }
