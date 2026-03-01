@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Ionic & Molecular Compounds",
     backUrl: "/Chemistry.html",
     minWidth: 1000, // Make it wide enough to comfortably fit 7 columns
@@ -61,4 +61,4 @@ new ScitriadTileGame({
         { matchId: "bond-cov", text: "covalent bond (share e-)" },
         { matchId: "bond-ion", text: "ionic bond (transfer e-)" }
     ]
-});
+};

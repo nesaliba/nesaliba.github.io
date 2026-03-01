@@ -2,8 +2,8 @@
     --bg-color: #f8fafc;
     --panel-bg: #ffffff;
     --border-color: #cbd5e1;
-    --phys-primary: #581c87;
-    --phys-hover: #4c1d95;
+    --subject-primary: #581c87;
+    --subject-hover: #4c1d95;
     --text-dark: #1e293b;
     --canvas-bg: #0f172a;
     --target-color: #22c55e;
@@ -18,13 +18,7 @@ body.dark-theme {
     --canvas-bg: #000000;
 }
 
-.game-header { background-color: var(--phys-primary); color: white; padding: 1.5rem; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-.game-header h1 { margin: 0.5rem 0; font-size: 2rem; }
-.back-btn { position: absolute; top: 1.5rem; left: 1.5rem; color: white; text-decoration: none; font-weight: 600; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.2s; }
-.back-btn:hover { background: rgba(255,255,255,0.3); }
-
-.game-stats { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
-.stat-box { background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.3); }
+body { background-color: var(--bg-color); }
 
 .game-container { display: flex; max-width: 1200px; margin: 2rem auto; gap: 2rem; padding: 0 1rem; align-items: flex-start; }
 .controls-panel { flex: 1; background: var(--panel-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
@@ -40,10 +34,6 @@ body.dark-theme {
 .slider-container input[type="range"] { width: 100%; cursor: pointer; }
 
 .action-buttons { display: flex; gap: 1rem; width: 100%; justify-content: center; }
-.btn-action { padding: 0.75rem 2rem; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; background: #e2e8f0; color: #1e293b; }
-.btn-action:hover { background: #cbd5e1; }
-.btn-action.primary { background: var(--phys-primary); color: white; }
-.btn-action.primary:hover { background: var(--phys-hover); }
 
 .canvas-container { background: var(--canvas-bg); border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative; width: 100%; max-width: 600px; aspect-ratio: 1; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
 canvas { width: 100%; height: 100%; display: block; }
@@ -56,4 +46,3 @@ canvas { width: 100%; height: 100%; display: block; }
     .game-container { flex-direction: column; }
     .controls-panel, .graph-panel { width: 100%; }
 }
-.modal-content h2 { color: var(--phys-primary); font-size: 2rem; }

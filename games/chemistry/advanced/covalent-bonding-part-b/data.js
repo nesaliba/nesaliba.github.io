@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Advanced Covalent Bonding Part B",
     backUrl: "/Chemistry.html",
     minWidth: 1100, // Make it wide enough to comfortably fit 7 columns
@@ -61,4 +61,4 @@ new ScitriadTileGame({
         { matchId: "shape-seesaw", text: "see-saw, irregular tetrahedron" },
         { matchId: "shape-sqplanar", text: "square planar" }
     ]
-});
+};

@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Metal vs Non-Metal Properties",
     backUrl: "/Chemistry.html",
     minWidth: 750, // Optimal for 4 data columns
@@ -18,4 +18,4 @@ new ScitriadTileGame({
         { matchId: "md-cond", text: "may conduct electricity, poor conductors of heat" },
         { matchId: "md-mall", text: "could be malleable or ductile" }
     ]
-});
+};

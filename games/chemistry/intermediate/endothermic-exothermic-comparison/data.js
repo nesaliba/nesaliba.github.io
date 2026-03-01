@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Endothermic vs. Exothermic",
     backUrl: "/Chemistry.html",
     minWidth: 600, // Reduced width since there are only 3 columns
@@ -36,4 +36,4 @@ new ScitriadTileGame({
         { matchId: "pe-endo", text: '<img src="endo pe diagram.png" alt="Endothermic Diagram" style="max-width: 100%; max-height: 120px; object-fit: contain; border-radius: 4px;">' },
         { matchId: "pe-exo", text: '<img src="exo pe diagram.jpg" alt="Exothermic Diagram" style="max-width: 100%; max-height: 120px; object-fit: contain; border-radius: 4px;">' }
     ]
-});
+};

@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Advanced Covalent Bonding Properties",
     backUrl: "/Chemistry.html",
     minWidth: 1000, 
@@ -60,4 +60,4 @@ new ScitriadTileGame({
         { matchId: "shape-linear", text: "linear" },
         { matchId: "shape-ch3cooh", text: "tetrahedral<br>trigonal planar<br>bent" } // Filled in missing data
     ]
-});
+};

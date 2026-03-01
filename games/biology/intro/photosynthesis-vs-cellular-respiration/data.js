@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Photosynthesis vs. Cellular Respiration",
     backUrl: "/Biology.html",
     minWidth: 700, // Wide enough to comfortably fit the 3 columns with detailed text
@@ -36,4 +36,4 @@ new ScitriadTileGame({
         { matchId: "desc-photo", text: "<small>Solar energy, carbon dioxide gas and water are converted into glucose and oxygen gas by plants</small>" },
         { matchId: "desc-resp", text: "<small>Glucose and oxygen are converted into carbon dioxide, water, and energy such as ATP to perform cells functions</small>" }
     ]
-});
+};

@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Periodic Table Groups",
     backUrl: "/Chemistry.html",
     minWidth: 900, // Optimal for 4 data columns with larger text
@@ -30,4 +30,4 @@ new ScitriadTileGame({
         { matchId: "aem-name", text: "calcium" },
         { matchId: "ng-name", text: "neon" }
     ]
-});
+};

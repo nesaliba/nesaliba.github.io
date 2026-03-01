@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Oxidation vs. Reduction",
     backUrl: "/Chemistry.html",
     minWidth: 600, // Reduced width since there are only 3 columns
@@ -36,4 +36,4 @@ new ScitriadTileGame({
         { matchId: "proc-ox", text: "iron metal changes to iron (II) cation" },
         { matchId: "proc-red", text: "gold (III) cation changes to gold metal" }
     ]
-});
+};

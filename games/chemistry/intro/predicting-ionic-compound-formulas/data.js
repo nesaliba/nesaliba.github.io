@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Predicting Ionic Compound Formulas",
     backUrl: "/Chemistry.html",
     minWidth: 1000, // Provides enough horizontal space for 7 columns
@@ -60,4 +60,4 @@ new ScitriadTileGame({
         { matchId: "mg-co3", text: "MgCO₃" },
         { matchId: "nh4-co3", text: "(NH₄)₂CO₃" }
     ]
-});
+};

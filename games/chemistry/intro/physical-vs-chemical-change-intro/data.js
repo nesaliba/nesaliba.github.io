@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Physical vs Chemical Change",
     backUrl: "/Chemistry.html",
     minWidth: 600, // Optimal for 2 data columns
@@ -18,4 +18,4 @@ new ScitriadTileGame({
         { matchId: "p-ex", text: "green coloured solution" },
         { matchId: "c-ex", text: "cooking eggs" }
     ]
-});
+};

@@ -2,8 +2,8 @@
     --bg-color: #f8fafc;
     --panel-bg: #ffffff;
     --border-color: #cbd5e1;
-    --math-primary: #991b1b;
-    --math-hover: #7f1d1d;
+    --subject-primary: #991b1b;
+    --subject-hover: #7f1d1d;
     --target-color: #ef4444;
     --current-color: #2563eb;
     --text-dark: #1e293b;
@@ -14,37 +14,11 @@ body.dark-theme {
     --panel-bg: #1e293b;
     --border-color: #475569;
     --text-dark: #f8fafc;
-    /* Brighter variables for dark mode lines */
     --target-color: #f87171;
     --current-color: #60a5fa;
 }
 
-.game-header {
-    background-color: var(--math-primary);
-    color: white;
-    padding: 1.5rem;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.game-header h1 { margin: 0.5rem 0; font-size: 2rem; }
-.back-btn {
-    position: absolute; top: 1.5rem; left: 1.5rem;
-    color: white; text-decoration: none; font-weight: 600;
-    background: rgba(255,255,255,0.2); padding: 0.5rem 1rem;
-    border-radius: 4px; transition: background 0.2s;
-}
-.back-btn:hover { background: rgba(255,255,255,0.3); }
-
-.game-stats {
-    display: flex; justify-content: center; gap: 1rem;
-    margin-top: 1rem; flex-wrap: wrap;
-}
-.stat-box {
-    background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem;
-    border-radius: 8px; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.3);
-}
+body { background-color: var(--bg-color); }
 
 .game-container {
     display: flex; max-width: 1200px; margin: 2rem auto;
@@ -53,15 +27,13 @@ body.dark-theme {
 
 .controls-panel {
     flex: 1; background: var(--panel-bg); padding: 1.5rem;
-    border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 1px solid var(--border-color);
+    border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color);
 }
 
 .graph-panel {
     flex: 2; display: flex; flex-direction: column; align-items: center;
     background: var(--panel-bg); padding: 1.5rem;
-    border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 1px solid var(--border-color);
+    border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color);
 }
 
 .control-group { margin-bottom: 1.5rem; }
@@ -75,7 +47,7 @@ body.dark-theme {
 }
 .btn-mode:hover { background: #e2e8f0; }
 body.dark-theme .btn-mode:hover { background: #334155; }
-.btn-mode.active { background: var(--math-primary); color: white; border-color: var(--math-primary); }
+.btn-mode.active { background: var(--subject-primary); color: white; border-color: var(--subject-primary); }
 
 select {
     width: 100%; padding: 0.75rem; border-radius: 6px;
@@ -102,14 +74,6 @@ select {
 canvas { width: 100%; height: 100%; display: block; }
 
 .action-buttons { margin-top: 1.5rem; display: flex; gap: 1rem; width: 100%; justify-content: center; }
-.btn-action {
-    padding: 0.75rem 2rem; border: none; border-radius: 6px;
-    font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
-    background: #e2e8f0; color: #1e293b;
-}
-.btn-action:hover { background: #cbd5e1; }
-.btn-action.primary { background: var(--math-primary); color: white; }
-.btn-action.primary:hover { background: var(--math-hover); }
 
 .feedback-msg { margin-top: 1rem; font-weight: bold; font-size: 1.2rem; min-height: 1.5em; text-align: center; }
 .feedback-success { color: #16a34a; }
@@ -123,5 +87,3 @@ canvas { width: 100%; height: 100%; display: block; }
     .game-container { flex-direction: column; }
     .controls-panel, .graph-panel { width: 100%; }
 }
-
-.modal-content h2 { color: var(--math-primary); font-size: 2rem; }

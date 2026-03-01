@@ -1,4 +1,4 @@
-new ScitriadTileGame({
+export const gameData = {
     title: "Predicting Ionic Compounds (IUPAC Names)",
     backUrl: "/Chemistry.html",
     minWidth: 1000, // Provides enough horizontal space for 7 columns
@@ -60,4 +60,4 @@ new ScitriadTileGame({
         { matchId: "mg-co3", text: "magnesium carbonate" },
         { matchId: "nh4-co3", text: "ammonium carbonate" }
     ]
-});
+};

@@ -2,8 +2,8 @@
     --bg-color: #f8fafc;
     --panel-bg: #ffffff;
     --border-color: #cbd5e1;
-    --math-primary: #991b1b;
-    --math-hover: #7f1d1d;
+    --subject-primary: #991b1b;
+    --subject-hover: #7f1d1d;
     --text-dark: #1e293b;
     --canvas-bg: #0f172a;
     --circle-color: #475569;
@@ -24,13 +24,7 @@ body.dark-theme {
     --target-hover: #ffffff;
 }
 
-.game-header { background-color: var(--math-primary); color: white; padding: 1.5rem; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-.game-header h1 { margin: 0.5rem 0; font-size: 2rem; }
-.back-btn { position: absolute; top: 1.5rem; left: 1.5rem; color: white; text-decoration: none; font-weight: 600; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.2s; }
-.back-btn:hover { background: rgba(255,255,255,0.3); }
-
-.game-stats { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
-.stat-box { background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.3); }
+body { background-color: var(--bg-color); }
 
 .game-container { display: flex; max-width: 1200px; margin: 2rem auto; gap: 2rem; padding: 0 1rem; align-items: flex-start; }
 .controls-panel { flex: 1; background: var(--panel-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
@@ -43,12 +37,7 @@ body.dark-theme {
 .btn-mode { padding: 0.75rem; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark); border-radius: 4px; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: left; }
 .btn-mode:hover { background: #e2e8f0; }
 body.dark-theme .btn-mode:hover { background: #1e293b; }
-.btn-mode.active { background: var(--math-primary); color: white; border-color: var(--math-primary); }
-
-.btn-action { padding: 0.75rem 2rem; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-.btn-action.primary { background: var(--math-primary); color: white; }
-.btn-action.primary:hover { background: var(--math-hover); }
-.btn-action.primary:disabled { background: #94a3b8; cursor: not-allowed; }
+.btn-mode.active { background: var(--subject-primary); color: white; border-color: var(--subject-primary); }
 
 .prompt-container { width: 100%; min-height: 80px; display: flex; align-items: center; justify-content: center; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; padding: 1rem; color: var(--text-dark); font-size: 1.25rem; font-weight: 600; text-align: center; }
 
@@ -59,4 +48,3 @@ canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
     .game-container { flex-direction: column; }
     .controls-panel, .graph-panel { width: 100%; }
 }
-.modal-content h2 { color: var(--math-primary); font-size: 2rem; }
