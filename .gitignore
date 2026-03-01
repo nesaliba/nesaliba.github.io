@@ -7,7 +7,7 @@
 ehthumbs.db
 Thumbs.db
 
-# Node / Web dependencies (if you add them later)
+# Node / Web dependencies
 node_modules/
 npm-debug.log
 yarn-error.log

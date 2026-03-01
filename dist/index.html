@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO: Title and Description -->
+    <title>Scitriad - Interactive Academic Games</title>
+    <meta name="description" content="Play interactive high school learning games for Biology, Chemistry, Physics, Math, and English. Scitriad makes complex topics fun with gamified education.">
+    <meta name="keywords" content="Science Games, Math Games, Biology, Chemistry, Physics, Education, Gamified Learning, Scitriad, High School Science">
+    <meta name="author" content="Scitriad">
+
+    <!-- Social Media Display (Open Graph) -->
+    <meta property="og:title" content="Scitriad - Interactive Learning Games">
+    <meta property="og:description" content="Explore the exciting world of Science, Mathematics, and Humanities through interactive tiles and games.">
+    <meta property="og:image" content="/assets/Scitriad-DmGcuKEa.png">
+    <meta property="og:url" content="https://nesaliba.github.io/">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" href="/assets/favicon-CNBrKAKU.ico" type="image/x-icon">
+    
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script src="js/navbar.js"></script>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="/assets/firebase-init-ZMan-bHY.js"></script>
+  <script type="module" crossorigin src="/assets/state-manager-DJUo7DIG.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="/assets/auth-taje45A4.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/auth-D1Suq3IH.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <site-navbar></site-navbar>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <!-- Interactive Canvas Background -->
+        <canvas id="heroCanvas" class="hero-bg"></canvas>
+        
+        <!-- Content Overlay -->
+        <h1>Learning, Gamified.</h1>
+        <p>Explore the exciting world of Science, Mathematics, and Humanities through interactive tiles and games.</p>
+        
+        <div class="scroll-indicator" onclick="scrollToContent()">
+            <p>Start Exploring</p>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container" id="explore">
+        <h2 class="section-title">Select a Subject</h2>
+        
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <!-- Set 1 of Cards -->
+                <div class="carousel-group">
+                    <a href="Chemistry.html" class="card chem">
+                        <div class="card-header">🧪</div>
+                        <div class="card-body">
+                            <h3>Chemistry</h3>
+                            <p>Master elements, bonding, and reactions through interactive simulations.</p>
+                        </div>
+                    </a>
+                    <a href="Biology.html" class="card bio">
+                        <div class="card-header">🧬</div>
+                        <div class="card-body">
+                            <h3>Biology</h3>
+                            <p>Dive into cells, genetics, and ecosystems.</p>
+                        </div>
+                    </a>
+                    <a href="Physics.html" class="card phys">
+                        <div class="card-header">⚛️</div>
+                        <div class="card-body">
+                            <h3>Physics</h3>
+                            <p>Understand the forces that shape our universe.</p>
+                        </div>
+                    </a>
+                    <a href="Math.html" class="card math">
+                        <div class="card-header">📐</div>
+                        <div class="card-body">
+                            <h3>Mathematics</h3>
+                            <p>Unlock the power of numbers and logic with tile games.</p>
+                        </div>
+                    </a>
+                    <a href="English.html" class="card eng">
+                        <div class="card-header">📚</div>
+                        <div class="card-body">
+                            <h3>English</h3>
+                            <p>Discover stories, cultures, and ideas.</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Set 2 of Cards (Cloned for Infinite Scroll) -->
+                <div class="carousel-group" aria-hidden="true">
+                    <a href="Chemistry.html" class="card chem">
+                        <div class="card-header">🧪</div>
+                        <div class="card-body">
+                            <h3>Chemistry</h3>
+                            <p>Master elements, bonding, and reactions through interactive simulations.</p>
+                        </div>
+                    </a>
+                    <a href="Biology.html" class="card bio">
+                        <div class="card-header">🧬</div>
+                        <div class="card-body">
+                            <h3>Biology</h3>
+                            <p>Dive into cells, genetics, and ecosystems.</p>
+                        </div>
+                    </a>
+                    <a href="Physics.html" class="card phys">
+                        <div class="card-header">⚛️</div>
+                        <div class="card-body">
+                            <h3>Physics</h3>
+                            <p>Understand the forces that shape our universe.</p>
+                        </div>
+                    </a>
+                    <a href="Math.html" class="card math">
+                        <div class="card-header">📐</div>
+                        <div class="card-body">
+                            <h3>Mathematics</h3>
+                            <p>Unlock the power of numbers and logic with tile games.</p>
+                        </div>
+                    </a>
+                    <a href="English.html" class="card eng">
+                        <div class="card-header">📚</div>
+                        <div class="card-body">
+                            <h3>English</h3>
+                            <p>Discover stories, cultures, and ideas.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="container">
+        <h2 class="section-title">Why Scitriad?</h2>
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <p>Whether you're a student pursuing academic excellence or a lifelong learner, Scitriad invites you to join us. Navigate through the subjects, immerse yourself in the rich content, and let the joy of learning be your constant companion.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Scitriad - Science Games
+    </footer>
+
+    <script src="js/game-info.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

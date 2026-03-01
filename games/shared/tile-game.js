@@ -349,14 +349,7 @@ class ScitriadTileGame {
 
     async saveProgress() {
         try {
-            const scriptTag = document.querySelector('script[src*="tile-game.js"]');
-            let rootUrl = '/';
-            if (scriptTag) {
-                const scriptSrc = scriptTag.src;
-                rootUrl = scriptSrc.split('games/shared/tile-game.js')[0];
-            }
-            
-            const fbModule = await import(rootUrl + 'js/firebase-init.js');
+            const fbModule = await import('/js/firebase-init.js');
             const { auth, db, collection, addDoc } = fbModule;
             
             if (auth && auth.currentUser) {

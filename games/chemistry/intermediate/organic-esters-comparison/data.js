@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Organic Chemistry: Esters",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 1100, // Make it wide enough to comfortably fit 7 columns
     columns:[
         "", 

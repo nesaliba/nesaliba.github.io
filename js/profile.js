@@ -1,4 +1,4 @@
-import { auth, db, collection, query, orderBy, getDocs } from './firebase-init.js';
+import { auth, db, collection, query, orderBy, getDocs } from '/js/firebase-init.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const authWarning = document.getElementById('auth-warning');

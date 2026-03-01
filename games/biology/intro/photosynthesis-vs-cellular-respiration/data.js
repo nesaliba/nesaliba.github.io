@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Photosynthesis vs. Cellular Respiration",
-    backUrl: "../../../../Biology.html",
+    backUrl: "/Biology.html",
     minWidth: 700, // Wide enough to comfortably fit the 3 columns with detailed text
     columns:["", "Photosynthesis", "Cellular Respiration"],
     rows:[

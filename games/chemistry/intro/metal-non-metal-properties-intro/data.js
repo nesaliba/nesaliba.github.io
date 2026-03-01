@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Metal vs Non-Metal Properties",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 750, // Optimal for 4 data columns
     columns:["", "State of Matter (s, l, g)", "Appearance", "Conductivity", "Malleability or Ductility"],
     rows: ["Metallic Elements", "Non-metallic Elements", "Metalloids"],

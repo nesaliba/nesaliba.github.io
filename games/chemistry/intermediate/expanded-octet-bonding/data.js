@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Expanded Octet Bonding (Steric 5 & 6)",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 1100, // Make it wide enough to comfortably fit 7 columns
     columns:["", "SF₆", "ClF₃", "PCl₅", "BrF₅", "SF₄", "XeF₄"],
     rows:[

@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Advanced Covalent Bonding Properties",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 1000, 
     columns:["", "NH₃", "CH₃OH", "C₂H₄", "BH₃", "C₂H₂", "CH₃COOH"],
     rows:[

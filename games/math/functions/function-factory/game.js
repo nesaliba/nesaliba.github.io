@@ -513,7 +513,7 @@ class FunctionFactory {
         if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
             try {
                 // Dynamically import firebase
-                const fbModule = await import('../../../../js/firebase-init.js');
+                const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;
                 
                 if (auth && auth.currentUser) {

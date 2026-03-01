@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Factory | Scitriad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // Synchronously apply theme before the DOM fully parses
+        (function() {
+            if (localStorage.getItem('scitriad_theme') === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'],['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="/assets/firebase-init-ZMan-bHY.js"></script>
+  <script type="module" crossorigin src="/assets/state-manager-DJUo7DIG.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="/assets/auth-taje45A4.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script type="module" crossorigin src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/auth-D1Suq3IH.css">
+  <link rel="stylesheet" crossorigin href="/assets/games_math_functions_function-factory_index-BvS8s2Ee.css">
+</head>
+<body class="theme-math">
+    <div id="game-mount">
+        <header class="game-header">
+            <a href="/Math.html" class="back-btn">← Back to Menu</a>
+            <h1>Function Factory</h1>
+            <p>Match the target graph by applying transformations to the parent function!</p>
+            <div class="game-stats">
+                <div id="mode-display" class="stat-box">Mode: Practice</div>
+                <div id="timer-display" class="stat-box">Time: --:--</div>
+                <div id="score-display" class="stat-box">Matches: 0</div>
+                <div id="moves-display" class="stat-box">Moves: 0</div>
+            </div>
+        </header>
+
+        <main class="game-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>Game Mode</h3>
+                    <div class="mode-buttons">
+                        <button id="btn-practice" class="btn-mode active">Practice</button>
+                        <button id="btn-timed" class="btn-mode">Timed Orders</button>
+                        <button id="btn-puzzle" class="btn-mode">Puzzle</button>
+                        <button id="btn-challenge" class="btn-mode">Challenge</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Parent Function</h3>
+                    <select id="parent-function-select">
+                        <option value="linear">Linear (y = x)</option>
+                        <option value="quadratic" selected>Quadratic (y = x²)</option>
+                        <option value="absolute">Absolute Value (y = |x|)</option>
+                        <option value="sqrt">Square Root (y = √x)</option>
+                        <option value="cubic">Cubic (y = x³)</option>
+                        <option value="reciprocal">Reciprocal (y = 1/x)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <h3>Transformations</h3>
+                    <div class="slider-container">
+                        <label>Vertical Stretch/Reflect (a): <span id="val-a">1</span></label>
+                        <input type="range" id="slider-a" min="-5" max="5" step="0.5" value="1">
+                    </div>
+                    <div class="slider-container challenge-only">
+                        <label>Horizontal Stretch/Reflect (b): <span id="val-b">1</span></label>
+                        <input type="range" id="slider-b" min="-3" max="3" step="0.5" value="1">
+                    </div>
+                    <div class="slider-container">
+                        <label>Horizontal Shift (h): <span id="val-h">0</span></label>
+                        <input type="range" id="slider-h" min="-10" max="10" step="1" value="0">
+                    </div>
+                    <div class="slider-container">
+                        <label>Vertical Shift (k): <span id="val-k">0</span></label>
+                        <input type="range" id="slider-k" min="-10" max="10" step="1" value="0">
+                    </div>
+                </div>
+
+                <div class="control-group hint-box">
+                    <button id="btn-hint" class="btn-action">Get Hint</button>
+                    <p id="hint-text">Adjust the sliders to match the red target graph.</p>
+                </div>
+            </div>
+
+            <div class="graph-panel">
+                <div class="equation-display" id="equation-display">
+                    \( y = f(x) \)
+                </div>
+                <div class="canvas-container">
+                    <canvas id="graph-canvas" width="600" height="600"></canvas>
+                </div>
+                <div class="action-buttons">
+                    <button id="btn-check" class="btn-action primary">Check Match</button>
+                    <button id="btn-next" class="btn-action" style="display: none;">Next Target ➔</button>
+                </div>
+                <div id="feedback-message" class="feedback-msg"></div>
+            </div>
+        </main>
+
+        <!-- Report Modal -->
+        <div class="modal-overlay" id="report-modal">
+            <div class="modal-content">
+                <h2>Game Over!</h2>
+                <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;">
+                    <!-- Report populated by JS -->
+                </div>
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                    <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                    <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="questions.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

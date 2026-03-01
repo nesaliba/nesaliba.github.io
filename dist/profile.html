@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Scitriad</title>
+    <link rel="icon" href="/assets/favicon-CNBrKAKU.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid var(--primary-blue); border: 1px solid var(--border-color); }
+        .stat-card h3 { color: var(--text-dark); font-size: 1rem; margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--primary-blue); }
+        .history-list { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border-color); }
+        .history-item { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item .game-title { font-weight: 600; color: var(--text-dark); }
+        .history-item .game-meta { font-size: 0.85rem; color: #64748b; }
+        .history-item .game-score { font-weight: 600; text-align: right; }
+        .history-item .game-score .mistakes { color: #ef4444; font-size: 0.85rem; }
+        .history-item .game-score .time { color: #10b981; }
+    </style>
+  <script type="module" crossorigin src="/assets/profile-BbIJ9YKi.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/firebase-init-ZMan-bHY.js">
+  <link rel="modulepreload" crossorigin href="/assets/state-manager-DJUo7DIG.js">
+  <link rel="modulepreload" crossorigin href="/assets/auth-taje45A4.js">
+  <link rel="stylesheet" crossorigin href="/assets/auth-D1Suq3IH.css">
+</head>
+<body>
+    <site-navbar></site-navbar>
+    
+    <header class="hero hero-small">
+        <h1>My Dashboard</h1>
+        <p>Track your progress and review your recent activity.</p>
+    </header>
+
+    <main class="container">
+        <div id="auth-warning" style="text-align: center; padding: 3rem; display: none;">
+            <h2 style="color: var(--text-dark);">Please log in to view your dashboard.</h2>
+        </div>
+
+        <div id="dashboard-content" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <h3>Games Completed</h3>
+                    <div class="value" id="stat-total-games">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Mistakes</h3>
+                    <div class="value" id="stat-total-mistakes">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Perfect Games</h3>
+                    <div class="value" id="stat-perfect-games">-</div>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="text-align: left; font-size: 1.8rem; margin-bottom: 1.5rem;">Recent Activity</h2>
+            <div class="history-list" id="history-list">
+                <div style="padding: 1.5rem; text-align: center; color: #64748b;">Loading history...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Scitriad - Science Games
+    </footer>
+
+    <script src="js/navbar.js"></script>
+</body>
+</html>

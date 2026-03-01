@@ -1,8 +1,8 @@
 import { 
     auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
     signOut, onAuthStateChanged, updateEmail, updatePassword, doc, setDoc, getDoc
-} from './firebase-init.js';
-import { StateManager } from './state-manager.js';
+} from '/js/firebase-init.js';
+import { StateManager } from '/js/state-manager.js';
 
 let isLoginMode = true;
 

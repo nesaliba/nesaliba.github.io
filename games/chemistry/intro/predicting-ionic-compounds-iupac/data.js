@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Predicting Ionic Compounds (IUPAC Names)",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 1000, // Provides enough horizontal space for 7 columns
     columns:["", "Li⁺", "Al⁺³", "Fe⁺²", "Fe⁺³", "Mg⁺²", "NH₄⁺"],
     rows:[

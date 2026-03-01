@@ -342,7 +342,7 @@ class TrigSniper {
     async saveProgress(accuracy) {
         if (typeof window.isUserLoggedIn !== 'undefined' && window.isUserLoggedIn) {
             try {
-                const fbModule = await import('../../../../js/firebase-init.js');
+                const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;
                 
                 if (auth && auth.currentUser) {

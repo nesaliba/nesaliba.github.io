@@ -1,4 +1,4 @@
-import { BaseGame } from '../../../shared/base-game.js';
+import { BaseGame } from '/games/shared/base-game.js';
 
 class AcidAllianceGame extends BaseGame {
     constructor() {
@@ -20,7 +20,7 @@ class AcidAllianceGame extends BaseGame {
         // Notice the massive HTML reduction (No modal HTML needed!)
         mount.innerHTML = `
             <header class="game-header">
-                <a href="../../../../Chemistry.html" class="back-btn">← Back to Menu</a>
+                <a href="/Chemistry.html" class="back-btn">← Back to Menu</a>
                 <h1>Acid Alliance</h1>
                 <div class="game-stats">
                     ${timerHTML}
@@ -109,7 +109,7 @@ class AcidAllianceGame extends BaseGame {
             win ? 'System Stabilized!' : 'System Failure!', 
             desc, 
             win, 
-            '../../../../Chemistry.html'
+            '/Chemistry.html'
         );
 
         if (win) {

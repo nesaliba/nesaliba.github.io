@@ -72,7 +72,7 @@ class ReactionReactorGame {
         
         mount.innerHTML = `
             <header class="game-header">
-                <a href="../../../../Chemistry.html" class="back-btn">← Back to Menu</a>
+                <a href="/Chemistry.html" class="back-btn">← Back to Menu</a>
                 <h1>Reaction Reactor</h1>
                 <div class="game-stats">
                     ${timerHTML}
@@ -94,7 +94,7 @@ class ReactionReactorGame {
                     <h2 id="end-title"></h2>
                     <p id="end-desc"></p>
                     <button class="modal-btn" onclick="location.reload()">Reinitialize Reactor</button>
-                    <a href="../../../../Chemistry.html" class="modal-btn btn-secondary">Return to Menu</a>
+                    <a href="/Chemistry.html" class="modal-btn btn-secondary">Return to Menu</a>
                 </div>
             </div>
         `;
@@ -284,7 +284,7 @@ class ReactionReactorGame {
 
     async saveProgress() {
         try {
-            const fbModule = await import('../../../../js/firebase-init.js');
+            const fbModule = await import('/js/firebase-init.js');
             const { auth, db, collection, addDoc } = fbModule;
             
             if (auth && auth.currentUser) {

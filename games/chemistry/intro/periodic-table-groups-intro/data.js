@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Periodic Table Groups",
-    backUrl: "../../../../Chemistry.html",
+    backUrl: "/Chemistry.html",
     minWidth: 900, // Optimal for 4 data columns with larger text
     columns: ["", "Alkali Metals", "Halogens", "Alkaline Earth Metals", "Noble Gases"],
     rows:["Group or Family", "Property of Metal or Non-Metal", "Number of Valence e-", "Relative Reactivity", "Example Element: Smbol", "Example Element: Name"],

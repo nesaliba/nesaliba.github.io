@@ -1,6 +1,6 @@
 new ScitriadTileGame({
     title: "Mitosis vs. Meiosis",
-    backUrl: "../../../../Biology.html",
+    backUrl: "/Biology.html",
     minWidth: 600, // Reduced width since there are only 3 columns
     columns:["", "Mitosis", "Meiosis"],
     rows:[

@@ -73,8 +73,7 @@ export class BaseGame {
     async saveProgress(mistakes) {
         if (StateManager.isUserLoggedIn || window.isUserLoggedIn) {
             try {
-                // Dynamic import keeps initial load lightweight
-                const fbModule = await import('../../js/firebase-init.js');
+                const fbModule = await import('/js/firebase-init.js');
                 const { auth, db, collection, addDoc } = fbModule;
                 
                 if (auth && auth.currentUser) {
