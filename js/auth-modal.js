@@ -66,6 +66,8 @@ const btnLogout = document.getElementById('btn-logout');
 const btnAccountSettings = document.getElementById('btn-account-settings');
 
 const authModal = document.getElementById('auth-modal');
+const authModalTitle = document.getElementById('auth-modal-title');
+const authModalDesc = document.getElementById('auth-modal-desc');
 const authEmailInput = document.getElementById('auth-email-input');
 const authPasswordInput = document.getElementById('auth-password-input');
 const authSubmitBtn = document.getElementById('auth-submit-btn');

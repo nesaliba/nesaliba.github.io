@@ -45,6 +45,30 @@ class SiteNavbar extends HTMLElement {
             </div>
         </nav>
         `;
+
+        // Hamburger Menu Logic
+        const hamburger = this.querySelector('.hamburger');
+        const nav = this.querySelector('.nav-links');
+        const navLinks = this.querySelectorAll('.nav-links a');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                // Toggle Menu
+                nav.classList.toggle('nav-active');
+
+                // Animate Links
+                navLinks.forEach((link, index) => {
+                    if (link.style.animation) {
+                        link.style.animation = '';
+                    } else {
+                        link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+                    }
+                });
+
+                // Toggle Hamburger Animation
+                hamburger.classList.toggle('toggle');
+            });
+        }
     }
 }
 

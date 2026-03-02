@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Signal Scramble | Scitriad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/games_biology_advanced_cell-signal-scramble_index-DJl4Y71V.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/game-report-modal-DseixZ19.js">
+  <link rel="modulepreload" crossorigin href="/assets/state-manager-BIvrU4Io.js">
+  <link rel="modulepreload" crossorigin href="/assets/firebase-init-ZMan-bHY.js">
+  <link rel="modulepreload" crossorigin href="/assets/base-game-Dy3wBghj.js">
+  <link rel="stylesheet" crossorigin href="/assets/games_biology_advanced_cell-signal-scramble_index-DSwL87XS.css">
+  <link rel="stylesheet" crossorigin href="/assets/arena-game-CmROqfFb.css">
+</head>
+<body class="theme-bio">
+    <div id="game-mount">
+        <header class="game-header">
+            <a href="/Biology.html" class="back-btn">← Back to Menu</a>
+            <h1>Cell Signal Scramble</h1>
+            <div class="game-stats">
+                <div class="stat-box" id="level-display">Level 1</div>
+                <div class="stat-box" id="game-timer" style="display:none;">00:00</div>
+                <div class="stat-box" id="game-mistakes">Mistakes: 0 / 5</div>
+            </div>
+        </header>
+        
+        <main class="arena-container">
+            <div class="scenario-panel">
+                <h2 id="scenario-title">Scenario Title</h2>
+                <p id="scenario-desc">Stimulus description goes here.</p>
+                <div id="action-prompt" class="action-prompt">Action prompt goes here.</div>
+                <div id="feedback-msg" class="feedback-msg"></div>
+            </div>
+            
+            <div class="interactive-area">
+                <div class="graph-panel" id="graph-panel-container">
+                    <h3 id="graph-title">Concentration Graph</h3>
+                    <svg id="graph-svg" width="100%" height="250"></svg>
+                </div>
+                
+                <div class="board-panel" id="board-panel">
+                    <!-- Dynamic Elements Injected Here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    <game-report-modal></game-report-modal>
+</body>
+</html>
