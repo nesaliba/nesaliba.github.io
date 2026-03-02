@@ -5,10 +5,10 @@ const SCENARIOS =[
         id: 1,
         type: 'endocrine',
         title: 'Scenario 1: Post-Meal Glucose Spike',
-        stimulus: 'Blood glucose has spiked after a carbohydrate-heavy meal. Restore homeostasis by releasing the correct hormone.',
+        stimulus: 'Blood glucose has spiked after a carbohydrate-heavy meal. Restore homeostasis using the correct dosage.',
         variableName: 'Blood Glucose (mg/dL)',
-        graphMin: 40, graphMax: 200, normalMin: 80, normalMax: 100,
-        initialValue: 160,
+        graphMin: 40, graphMax: 220, normalMin: 80, normalMax: 100,
+        initialValue: 180,
         glands:[
             { id: 'pancreas', name: 'Pancreas', hormones: ['Insulin', 'Glucagon'] },
             { id: 'pituitary', name: 'Pituitary', hormones: ['TSH'] }
@@ -18,10 +18,15 @@ const SCENARIOS =[
             { id: 'thyroid', name: 'Thyroid Gland' }
         ],
         rules:[
-            { hormone: 'Insulin', target: 'liver', effect: -70, isCorrect: true, msg: 'Correct! Insulin stimulates the liver to store glucose as glycogen.' },
+            { hormone: 'Insulin', target: 'liver', effect: -45, isCorrect: true, msg: 'Insulin applied! Liver stores glucose, but more might be needed.' },
             { hormone: 'Glucagon', target: 'liver', effect: 40, isCorrect: false, msg: 'Wrong! Glucagon tells the liver to release MORE glucose!' },
             { hormone: 'TSH', target: 'thyroid', effect: 0, isCorrect: false, msg: 'TSH stimulates the thyroid, which affects metabolism, not immediate blood sugar.' }
-        ]
+        ],
+        disruptor: {
+            triggerAt: 1, 
+            effect: 40, 
+            msg: '⚠️ Random Event: Patient just drank a sugary soda! Blood glucose spiking again!'
+        }
     },
     {
         id: 2,
@@ -41,36 +46,64 @@ const SCENARIOS =[
     {
         id: 3,
         type: 'endocrine',
-        title: 'Scenario 3: Hypoglycemia (Fasting)',
-        stimulus: 'Blood glucose has dropped dangerously low during a long fast. Restore homeostasis.',
-        variableName: 'Blood Glucose (mg/dL)',
-        graphMin: 40, graphMax: 200, normalMin: 80, normalMax: 100,
-        initialValue: 50,
+        title: 'Scenario 3: The Thyroid Cascade',
+        stimulus: 'Body temperature and metabolism are dropping. Initiate the multi-step cascade from the brain to the body cells.',
+        variableName: 'Metabolic Rate (BMR %)',
+        graphMin: 50, graphMax: 150, normalMin: 95, normalMax: 105,
+        initialValue: 60,
         glands:[
-            { id: 'pancreas', name: 'Pancreas', hormones: ['Insulin', 'Glucagon'] },
-            { id: 'adrenal', name: 'Adrenal Glands', hormones: ['Epinephrine'] }
+            { id: 'hypothalamus', name: 'Hypothalamus', hormones: ['TRH'] },
+            { id: 'pituitary', name: 'Pituitary', hormones:[] }, // TSH unlocks here dynamically
+            { id: 'thyroid', name: 'Thyroid', hormones: [] } // Thyroxine unlocks here dynamically
         ],
         organs:[
-            { id: 'liver', name: 'Liver' },
+            { id: 'pituitary', name: 'Pituitary Gland' },
+            { id: 'thyroid', name: 'Thyroid Gland' },
             { id: 'body_cells', name: 'Body Cells' }
         ],
         rules:[
-            { hormone: 'Glucagon', target: 'liver', effect: 40, isCorrect: true, msg: 'Correct! Glucagon stimulates the liver to release stored glucose.' },
-            { hormone: 'Insulin', target: 'liver', effect: -20, isCorrect: false, msg: 'Insulin lowers blood glucose further!' },
-            { hormone: 'Epinephrine', target: 'liver', effect: 30, isCorrect: true, msg: 'Epinephrine also triggers glucose release, helping raise blood sugar.' }
+            { hormone: 'TRH', target: 'pituitary', effect: 5, isCorrect: true, msg: 'TRH stimulates the Pituitary! TSH is now available.', unlocks: { gland: 'pituitary', hormone: 'TSH' } },
+            { hormone: 'TSH', target: 'thyroid', effect: 5, isCorrect: true, msg: 'TSH stimulates the Thyroid! Thyroxine is now available.', unlocks: { gland: 'thyroid', hormone: 'Thyroxine' } },
+            { hormone: 'Thyroxine', target: 'body_cells', effect: 30, isCorrect: true, msg: 'Thyroxine successfully increases the metabolic rate of body cells!' },
+            { hormone: 'TRH', target: 'thyroid', effect: 0, isCorrect: false, msg: 'TRH does not act on the thyroid directly. It must go to the Pituitary.' },
+            { hormone: 'TSH', target: 'body_cells', effect: 0, isCorrect: false, msg: 'TSH only targets the thyroid, not general body cells.' }
         ]
     },
     {
         id: 4,
         type: 'endocrine',
-        title: 'Scenario 4: Type 1 Diabetes',
+        title: 'Scenario 4: Bear Attack! (Synergy)',
+        stimulus: 'A bear is charging! You need a massive, sustained surge of energy. Combine synergistic hormones to reach maximum output!',
+        variableName: 'Energy Availability',
+        graphMin: 0, graphMax: 100, normalMin: 80, normalMax: 100,
+        initialValue: 30,
+        glands:[
+            { id: 'adrenal_medulla', name: 'Adrenal Medulla', hormones: ['Epinephrine'] },
+            { id: 'adrenal_cortex', name: 'Adrenal Cortex', hormones:['Cortisol'] },
+            { id: 'pancreas', name: 'Pancreas', hormones: ['Glucagon'] }
+        ],
+        organs:[
+            { id: 'heart', name: 'Heart & Lungs' },
+            { id: 'liver', name: 'Liver' }
+        ],
+        rules:[
+            { hormone: 'Epinephrine', target: 'heart', effect: 30, isCorrect: true, msg: 'Heart rate spikes! Immediate short-term energy provided.' },
+            { hormone: 'Cortisol', target: 'liver', effect: 25, isCorrect: true, msg: 'Cortisol triggers sustained, long-term glucose production.' },
+            { hormone: 'Glucagon', target: 'liver', effect: 10, isCorrect: true, msg: 'Glucagon helps a bit, but is too weak to handle a major fight-or-flight emergency!' },
+            { hormone: 'Epinephrine', target: 'liver', effect: 15, isCorrect: true, msg: 'Epinephrine stimulates the liver slightly, but target the heart for max effect.' }
+        ]
+    },
+    {
+        id: 5,
+        type: 'endocrine',
+        title: 'Scenario 5: Type 1 Diabetes',
         stimulus: 'Blood glucose is high, but the Pancreas is damaged (Type 1 Diabetes) and cannot secrete insulin. Apply a medical corrective action.',
         variableName: 'Blood Glucose (mg/dL)',
         graphMin: 40, graphMax: 250, normalMin: 80, normalMax: 100,
         initialValue: 200,
         glands:[
             { id: 'pancreas', name: 'Pancreas (Damaged)', hormones: ['Glucagon'] }, 
-            { id: 'medical', name: 'Medical Kit', hormones:['Insulin Injection'] }
+            { id: 'medical', name: 'Medical Kit', hormones: ['Insulin Injection'] }
         ],
         organs:[
             { id: 'liver', name: 'Liver' },
@@ -93,6 +126,7 @@ class CellSignalScramble extends BaseGame {
         
         this.history =[];
         this.currentValue = 0;
+        this.moves = 0;
         this.selectedHormone = null;
         this.playerSequence =[];
         
@@ -130,10 +164,11 @@ class CellSignalScramble extends BaseGame {
         document.getElementById('scenario-desc').textContent = scenario.stimulus;
         document.getElementById('level-display').textContent = `Level ${this.currentLevel + 1} / ${SCENARIOS.length}`;
         document.getElementById('feedback-msg').textContent = '';
+        this.moves = 0;
         
         if (scenario.type === 'endocrine') {
             document.getElementById('graph-panel-container').style.display = 'flex';
-            document.getElementById('action-prompt').textContent = "Action Required: Click or drag the correct hormone token to its target organ.";
+            document.getElementById('action-prompt').innerHTML = "Action Required: Click or drag the correct hormone token to its target organ.";
             this.currentValue = scenario.initialValue;
             this.history = [this.currentValue];
             this.selectedHormone = null;
@@ -142,7 +177,7 @@ class CellSignalScramble extends BaseGame {
             setTimeout(() => this.renderGraph(), 50);
         } else {
             document.getElementById('graph-panel-container').style.display = 'none';
-            document.getElementById('action-prompt').textContent = `Action Required: Click the starting neuron to begin the reflex arc (0 / ${scenario.correctSequence.length} selected).`;
+            document.getElementById('action-prompt').innerHTML = `Action Required: Click the starting neuron to begin the reflex arc (0 / ${scenario.correctSequence.length} selected).`;
             this.playerSequence =[];
             this.setupNervousBoard(scenario);
         }
@@ -171,7 +206,10 @@ class CellSignalScramble extends BaseGame {
         </div>`;
         board.innerHTML = html;
 
-        // Attach Interactions
+        this.attachEndocrineListeners(board);
+    }
+
+    attachEndocrineListeners(board) {
         const tokens = board.querySelectorAll('.hormone-token');
         const organs = board.querySelectorAll('.organ-card');
 
@@ -184,9 +222,9 @@ class CellSignalScramble extends BaseGame {
             token.addEventListener('click', () => {
                 this.initAudio();
                 this.selectedHormone = token.dataset.hormone;
-                tokens.forEach(t => t.classList.remove('selected'));
+                board.querySelectorAll('.hormone-token').forEach(t => t.classList.remove('selected'));
                 token.classList.add('selected');
-                document.getElementById('action-prompt').textContent = `Action Required: Click the target organ for ${this.selectedHormone}.`;
+                document.getElementById('action-prompt').innerHTML = `Action Required: Click the target organ for ${this.selectedHormone}.`;
             });
         });
 
@@ -205,17 +243,43 @@ class CellSignalScramble extends BaseGame {
                 if (hormone) {
                     this.handleHormoneAction(hormone, organ.dataset.organ);
                     this.selectedHormone = null;
-                    tokens.forEach(t => t.classList.remove('selected'));
+                    board.querySelectorAll('.hormone-token').forEach(t => t.classList.remove('selected'));
                 }
             });
             organ.addEventListener('click', () => {
                 if (this.selectedHormone) {
                     this.handleHormoneAction(this.selectedHormone, organ.dataset.organ);
                     this.selectedHormone = null;
-                    tokens.forEach(t => t.classList.remove('selected'));
+                    board.querySelectorAll('.hormone-token').forEach(t => t.classList.remove('selected'));
                 }
             });
         });
+    }
+
+    addHormoneToken(glandId, hormoneName) {
+        const glandContainer = document.querySelector(`[data-gland="${glandId}"] .hormones-container`);
+        if (glandContainer && !glandContainer.querySelector(`[data-hormone="${hormoneName}"]`)) {
+            const token = document.createElement('div');
+            token.className = 'hormone-token new-token';
+            token.draggable = true;
+            token.dataset.hormone = hormoneName;
+            token.textContent = hormoneName;
+            
+            token.addEventListener('dragstart', (e) => {
+                this.initAudio();
+                e.dataTransfer.setData('text/plain', token.dataset.hormone);
+                this.selectedHormone = token.dataset.hormone;
+            });
+            token.addEventListener('click', () => {
+                this.initAudio();
+                this.selectedHormone = token.dataset.hormone;
+                document.querySelectorAll('.hormone-token').forEach(t => t.classList.remove('selected'));
+                token.classList.add('selected');
+                document.getElementById('action-prompt').innerHTML = `Action Required: Click the target organ for ${this.selectedHormone}.`;
+            });
+            
+            glandContainer.appendChild(token);
+        }
     }
 
     setupNervousBoard(scenario) {
@@ -247,40 +311,68 @@ class CellSignalScramble extends BaseGame {
         if (!rule) {
             this.showFeedback(`The ${organId} does not have receptors for ${hormone}.`, false);
             this.addMistake();
-            document.getElementById('action-prompt').textContent = "Incorrect target. Try again!";
+            document.getElementById('action-prompt').innerHTML = "Incorrect target. Try again!";
             return;
         }
 
+        this.moves++;
         this.showFeedback(rule.msg, rule.isCorrect);
 
         if (rule.isCorrect) {
             this.playHit();
+            
+            if (rule.unlocks) {
+                this.addHormoneToken(rule.unlocks.gland, rule.unlocks.hormone);
+            }
+
             let newValue = this.currentValue + rule.effect;
             this.history.push(newValue);
             this.currentValue = newValue;
             this.renderGraph();
 
-            if (newValue >= scenario.normalMin && newValue <= scenario.normalMax) {
-                document.getElementById('action-prompt').textContent = "Homeostasis successfully restored!";
-                this.levelComplete();
+            // Handle Dynamic Disruptor Events
+            if (scenario.disruptor && this.moves === scenario.disruptor.triggerAt) {
+                document.getElementById('action-prompt').innerHTML = "System updating...";
+                setTimeout(() => {
+                    if (this.isGameOver) return;
+                    this.playMiss(); // Alert sound for disruption
+                    this.currentValue += scenario.disruptor.effect;
+                    this.history.push(this.currentValue);
+                    this.renderGraph();
+                    
+                    const prompt = document.getElementById('action-prompt');
+                    prompt.innerHTML = `<span class="disruptor-alert">${scenario.disruptor.msg}</span>`;
+                    
+                    this.checkEndocrineWinCondition(scenario);
+                }, 1200);
             } else {
-                document.getElementById('action-prompt').textContent = "Action applied, but more is needed. Select another hormone!";
+                this.checkEndocrineWinCondition(scenario);
             }
+            
         } else {
             this.playMiss();
             let tempValue = this.currentValue + rule.effect;
             this.history.push(tempValue);
             this.renderGraph();
             this.addMistake();
-            document.getElementById('action-prompt').textContent = "Harmful action detected! Reverting to prevent damage...";
+            document.getElementById('action-prompt').innerHTML = "Harmful action detected! Reverting to prevent damage...";
 
             // Revert incorrect effect to prevent math soft-locks
             setTimeout(() => {
                 if (this.isGameOver) return;
                 this.history.push(this.currentValue);
                 this.renderGraph();
-                document.getElementById('action-prompt').textContent = "Effect reverted. Try a different hormone!";
+                document.getElementById('action-prompt').innerHTML = "Effect reverted. Try a different hormone!";
             }, 1800);
+        }
+    }
+
+    checkEndocrineWinCondition(scenario) {
+        if (this.currentValue >= scenario.normalMin && this.currentValue <= scenario.normalMax) {
+            document.getElementById('action-prompt').innerHTML = "Homeostasis successfully restored!";
+            this.levelComplete();
+        } else if (!scenario.disruptor || this.moves !== scenario.disruptor.triggerAt) {
+            document.getElementById('action-prompt').innerHTML = "Action applied, but more is needed. Keep going!";
         }
     }
 
@@ -297,11 +389,11 @@ class CellSignalScramble extends BaseGame {
             this.drawNervousLines();
 
             if (this.playerSequence.length === scenario.correctSequence.length) {
-                document.getElementById('action-prompt').textContent = "Pathway complete!";
+                document.getElementById('action-prompt').innerHTML = "Pathway complete!";
                 this.showFeedback(scenario.msg, true);
                 this.levelComplete();
             } else {
-                document.getElementById('action-prompt').textContent = `Action Required: Click the next neuron in the pathway (${this.playerSequence.length} / ${scenario.correctSequence.length} selected).`;
+                document.getElementById('action-prompt').innerHTML = `Action Required: Click the next neuron in the pathway (${this.playerSequence.length} / ${scenario.correctSequence.length} selected).`;
             }
         } else {
             this.playMiss();
@@ -318,7 +410,7 @@ class CellSignalScramble extends BaseGame {
             this.playerSequence =[];
             document.querySelectorAll('.neuron-node').forEach(n => n.classList.remove('active'));
             this.drawNervousLines();
-            document.getElementById('action-prompt').textContent = `Action Required: Click the starting neuron to begin the reflex arc (0 / ${scenario.correctSequence.length} selected).`;
+            document.getElementById('action-prompt').innerHTML = `Action Required: Click the starting neuron to begin the reflex arc (0 / ${scenario.correctSequence.length} selected).`;
         }
     }
 

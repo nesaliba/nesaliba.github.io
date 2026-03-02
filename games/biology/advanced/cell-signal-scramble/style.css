@@ -120,6 +120,7 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
+    min-height: 30px; /* Prevent collapse if empty */
 }
 .hormone-token {
     background: var(--primary-blue, #38B6FF);
@@ -140,6 +141,27 @@
     box-shadow: 0 0 0 3px #fcd34d, 0 4px 8px rgba(0,0,0,0.2);
     transform: scale(1.05);
 }
+
+/* Animations for Cascades and Disruptors */
+.new-token {
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.disruptor-alert {
+    color: var(--danger, #ef4444);
+    font-weight: 800;
+    animation: pulse-alert 1s infinite;
+    display: block;
+}
+@keyframes pulse-alert {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 .nervous-board {
     position: relative;
     height: 350px;
