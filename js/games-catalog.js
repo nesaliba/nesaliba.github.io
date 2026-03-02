@@ -235,6 +235,17 @@ export const GamesCatalog =[
         isNoModal: true,
         keywords:['field', 'electric', 'magnetic', 'electromagnetism', 'lorentz', 'charge', 'particle']
     },
+    { 
+        id: 'reproduction-rift', 
+        title: 'Reproduction Rift (Cell & Repro Biology)', 
+        subject: 'biology', 
+        category: 'Advanced Biology Topics', 
+        desc: 'Repair biological rifts by mastering cell division, reproduction, and biotechnology.', 
+        play: 'Complete 5 sequential levels covering mitosis/meiosis, hormones, fertilization, embryology, and IVF under a dark bioluminescent theme. Answer dynamic questions to heal the rift!', 
+        path: 'games/biology/advanced/reproduction-rift/index.html', 
+        isNoModal: true,
+        keywords:['reproduction', 'cell division', 'mitosis', 'meiosis', 'hormones', 'fertilization', 'embryo', 'biotechnology', 'ivf']
+    },
 
     // --- MATH ---
     { 
