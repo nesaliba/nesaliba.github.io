@@ -1,4 +1,4 @@
-import { auth, db, onAuthStateChanged, collection, query, orderBy, getDocs } from '/js/firebase-init.js';
+import { auth, db, onAuthStateChanged, collection, query, orderBy, getDocs, limit } from '/js/firebase-init.js';
 
 const authWarning = document.getElementById('auth-warning');
 const dashboardContent = document.getElementById('dashboard-content');
@@ -16,7 +16,8 @@ function formatTime(seconds) {
 async function loadDashboardData(user) {
     try {
         const historyRef = collection(db, "users", user.uid, "history");
-        const q = query(historyRef, orderBy("date", "desc"));
+        // Apply limit(10) to the query to avoid over-fetching and hitting Firestore read limits
+        const q = query(historyRef, orderBy("date", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
         
         let totalGames = 0;
