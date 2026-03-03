@@ -176,6 +176,17 @@ export const GamesCatalog =[
         isNoModal: false,
         keywords:['covalent', 'bonding', 'steric', 'pi', 'sigma', 'hybridization', 'vsepr']
     },
+    { 
+        id: 'solution-strategist', 
+        title: 'Solution Strategist (Concentration)', 
+        subject: 'chemistry', 
+        category: 'Intermediate Chemistry Topics', 
+        desc: 'Formulate precise solutions by mastering concentration, dilution, and solubility limits in applied scenarios.', 
+        play: 'Adjust solute mass and solvent volume on the interactive lab bench. Watch the concentration change in real time and avoid unwanted precipitation!', 
+        path: 'games/chemistry/intermediate/solution-strategist/index.html', 
+        isNoModal: true,
+        keywords:['concentration', 'dilution', 'molarity', 'solubility', 'precipitation', 'moles', 'solutions', 'chemistry 20']
+    },
 
     // --- BIOLOGY ---
     { 
