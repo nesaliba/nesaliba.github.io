@@ -53,6 +53,12 @@ class FunctionFactory extends BaseGame {
         clearInterval(this.timerInterval);
         document.getElementById('timer-display').style.display = mode === 'orders' ? 'block' : 'none';
         document.getElementById('mistakes-display').style.display = mode === 'orders' ? 'block' : 'none';
+        
+        if (mode === 'orders') {
+            document.getElementById('timer-display').innerText = `Time: 60s`;
+            document.getElementById('mistakes-display').innerText = `Mistakes: 0 / 10`;
+        }
+        
         this.showFeedback("", true);
         
         const controls = document.getElementById('game-controls');
@@ -80,16 +86,17 @@ class FunctionFactory extends BaseGame {
                     <label>k (Vertical Shift): <span id="val-k">0</span></label>
                     <input type="range" id="slider-k" min="-10" max="10" step="1" value="0">
                 </div>
-                ${mode === 'orders' ? `<button id="btn-submit" class="btn-action primary" style="width:100%;">Submit Order</button>` : `<button id="btn-next" class="btn-action primary" style="width:100%; display:none;">Next Graph</button>`}
+                ${mode === 'orders' ? `
+                <button id="btn-submit" class="btn-action primary" style="width:100%; display:none;">Submit Order</button>
+                <button id="btn-start" class="btn-action primary" style="width:100%;">Start Game</button>
+                ` : `<button id="btn-next" class="btn-action primary" style="width:100%; display:none;">Next Graph</button>`}
             `;
             
             document.getElementById('type-select').addEventListener('change', (e) => {
                 this.initAudio();
                 this.playerParams.type = e.target.value;
                 this.updateGraph();
-            });
-            
-            ['a', 'h', 'k'].forEach(param => {
+            });['a', 'h', 'k'].forEach(param => {
                 document.getElementById(`slider-${param}`).addEventListener('input', (e) => {
                     this.initAudio();
                     let val = parseFloat(e.target.value);
@@ -103,20 +110,36 @@ class FunctionFactory extends BaseGame {
                 });
             });
             
+            // Reset player params and DOM controls for practice/orders
+            this.playerParams = { type: 'quadratic', a: 1, h: 0, k: 0 };
+            document.getElementById('type-select').value = 'quadratic';['a', 'h', 'k'].forEach(param => {
+                const val = param === 'a' ? 1 : 0;
+                document.getElementById(`slider-${param}`).value = val;
+                document.getElementById(`val-${param}`).innerText = val;
+            });
+            
             if (mode === 'orders') {
+                document.getElementById('order-prompt').innerText = "Press Start Game when ready!";
+                
                 document.getElementById('btn-submit').addEventListener('click', () => {
                     this.initAudio();
                     this.checkOrder();
                 });
-                this.startOrders();
+                
+                document.getElementById('btn-start').addEventListener('click', () => {
+                    this.initAudio();
+                    document.getElementById('btn-start').style.display = 'none';
+                    document.getElementById('btn-submit').style.display = 'block';
+                    this.startOrders();
+                });
+                
+                this.updateGraph();
             } else {
                 document.getElementById('btn-next').addEventListener('click', () => {
                     this.initAudio();
                     document.getElementById('btn-next').style.display = 'none';
                     this.generateTarget();
                 });
-                // Reset player params
-                this.playerParams = { type: 'quadratic', a: 1, h: 0, k: 0 };
                 this.generateTarget();
             }
         } else if (mode === 'challenge') {
@@ -417,7 +440,7 @@ class FunctionFactory extends BaseGame {
         const ctx = this.ctx;
         ctx.beginPath();
         
-        ctx.strokeStyle = isTarget ? '#94a3b8' : '#ea580c';
+        ctx.strokeStyle = isTarget ? '#94a3b8' : '#991b1b';
         ctx.lineWidth = 3;
         if (isTarget) ctx.setLineDash([8, 8]);
         else ctx.setLineDash([]);
@@ -447,7 +470,7 @@ class FunctionFactory extends BaseGame {
         const ctx = this.ctx;
         const isDark = document.documentElement.classList.contains('dark-theme');
 
-        ctx.strokeStyle = isTarget ? (isDark ? '#64748b' : '#94a3b8') : '#ea580c';
+        ctx.strokeStyle = isTarget ? (isDark ? '#64748b' : '#94a3b8') : '#991b1b';
         ctx.lineWidth = isTarget ? 2.5 : 3;
         if (isTarget) ctx.setLineDash([8, 8]);
         else ctx.setLineDash([]);
@@ -455,8 +478,8 @@ class FunctionFactory extends BaseGame {
         const b = params.b || 1;
 
         // Handle discontinuous functions (reciprocal) by breaking on asymptotes
-        const segments = [];
-        let currentSeg = [];
+        const segments =[];
+        let currentSeg =[];
 
         for (let px = 0; px <= this.canvas.width; px += 1.5) {
             const x = (px / (this.canvas.width / 20)) - 10;
@@ -487,7 +510,7 @@ class FunctionFactory extends BaseGame {
             if (y === null || isNaN(y) || !isFinite(y)) {
                 if (currentSeg.length > 0) {
                     segments.push(currentSeg);
-                    currentSeg = [];
+                    currentSeg =[];
                 }
                 continue;
             }
@@ -496,7 +519,7 @@ class FunctionFactory extends BaseGame {
             if (py < -800 || py > this.canvas.height + 800) {
                 if (currentSeg.length > 0) {
                     segments.push(currentSeg);
-                    currentSeg = [];
+                    currentSeg =[];
                 }
                 continue;
             }

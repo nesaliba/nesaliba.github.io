@@ -13,7 +13,7 @@
 body.blueprint-theme {
     background-color: var(--bg-color);
     background-image: linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+                    linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
 }
 
