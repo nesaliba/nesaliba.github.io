@@ -43,6 +43,9 @@ class FunctionFactory extends BaseGame {
     }
 
     setMode(mode) {
+        const existingPrompt = document.getElementById('order-prompt');
+        if (existingPrompt) existingPrompt.remove();
+
         this.mode = mode;
         this.isPlaying = false;
         document.getElementById('mode-display').innerText = `Mode: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
@@ -65,7 +68,6 @@ class FunctionFactory extends BaseGame {
         
         if (mode === 'practice' || mode === 'orders') {
             controls.innerHTML = `
-                ${mode === 'orders' ? `<div id="order-prompt" class="prompt-box"></div>` : ''}
                 <div class="slider-group">
                     <label>Function Type</label>
                     <select id="type-select" style="width:100%; padding:0.5rem; border-radius:4px; font-weight:bold; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark);">
@@ -119,6 +121,11 @@ class FunctionFactory extends BaseGame {
             });
             
             if (mode === 'orders') {
+                // Inject prompt above the canvas in the graph panel
+                const graphPanel = document.querySelector('.graph-panel');
+                if (!document.getElementById('order-prompt')) {
+                    graphPanel.insertAdjacentHTML('afterbegin', `<div id="order-prompt" class="prompt-box"></div>`);
+                }
                 document.getElementById('order-prompt').innerText = "Press Start Game when ready!";
                 
                 document.getElementById('btn-submit').addEventListener('click', () => {
