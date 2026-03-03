@@ -1,483 +1,579 @@
 import { BaseGame } from '/games/shared/base-game.js';
-import { FunctionQuestionBank } from './questions.js';
 import { StateManager } from '/js/state-manager.js';
 
 class FunctionFactory extends BaseGame {
     constructor() {
         super("Function Factory");
-        this.canvas = document.getElementById('graph-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
-        this.scale = 30; 
         
         this.mode = 'practice';
         this.score = 0;
-        this.moves = 0;
-        this.timeRemaining = 0;
+        this.mistakes = 0;
+        this.timeRemaining = 60;
+        this.timerInterval = null;
+        this.isPlaying = false;
         
-        this.currentParams = { type: 'quadratic', a: 1, b: 1, h: 0, k: 0 };
         this.targetParams = null;
-
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class') {
-                    this.updateGraphAndEquation();
-                }
-            });
-        });
-        observer.observe(document.documentElement, { attributes: true });
-        if (document.body) observer.observe(document.body, { attributes: true });
-
+        this.playerParams = { type: 'quadratic', a: 1, h: 0, k: 0 };
+        this.currentExpression = "";
+        
+        this.canvas = document.getElementById('graph-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        
         this.initUI();
-        this.generateTarget();
-        this.updateGraphAndEquation();
+        this.setMode('practice');
     }
-
-    playFinished() { this.playVictory(); }
 
     initUI() {
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
 
-        this.sliders = {
-            a: document.getElementById('slider-a'),
-            b: document.getElementById('slider-b'),
-            h: document.getElementById('slider-h'),
-            k: document.getElementById('slider-k')
-        };
-        this.displays = {
-            a: document.getElementById('val-a'),
-            b: document.getElementById('val-b'),
-            h: document.getElementById('val-h'),
-            k: document.getElementById('val-k')
-        };
-
-        const parentSelect = document.getElementById('parent-function-select');
-        
-        parentSelect.addEventListener('change', (e) => {
-            this.initAudio();
-            this.currentParams.type = e.target.value;
-            this.moves++;
-            this.updateMoves();
-            this.updateGraphAndEquation();
-        });
-        
-        ['a', 'b', 'h', 'k'].forEach(param => {
-            this.sliders[param].addEventListener('input', (e) => {
+        document.querySelectorAll('.btn-mode').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 this.initAudio();
-                let val = parseFloat(e.target.value);
-                if ((param === 'a' || param === 'b') && val === 0) {
-                    val = 0.5; 
-                    this.sliders[param].value = val;
-                }
-                this.currentParams[param] = val;
-                this.displays[param].innerText = val;
-                this.moves++;
-                this.updateMoves();
-                this.updateGraphAndEquation();
-                document.getElementById('feedback-message').innerText = '';
+                document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.setMode(e.target.id.replace('btn-', ''));
             });
         });
 
-        document.getElementById('btn-check').addEventListener('click', () => { this.initAudio(); this.checkMatch(); });
-        document.getElementById('btn-next').addEventListener('click', () => { this.initAudio(); this.nextTarget(); });
-        document.getElementById('btn-hint').addEventListener('click', () => { this.initAudio(); this.showHint(); });
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.setMode(this.mode);
         });
-
-        const modes = ['practice', 'timed', 'puzzle', 'challenge'];
-        modes.forEach(mode => {
-            document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
-                this.initAudio();
-                modes.forEach(m => document.getElementById(`btn-${m}`).classList.remove('active'));
-                e.target.classList.add('active');
-                this.setMode(mode);
-            });
-        });
     }
 
     setMode(mode) {
         this.mode = mode;
-        this.score = 0;
-        this.moves = 0;
-        this.updateScore();
-        this.updateMoves();
-        document.getElementById('feedback-message').innerText = '';
+        this.isPlaying = false;
         document.getElementById('mode-display').innerText = `Mode: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+        this.score = 0;
+        this.mistakes = 0;
+        document.getElementById('score-display').innerText = `Score: 0`;
         
         clearInterval(this.timerInterval);
+        document.getElementById('timer-display').style.display = mode === 'orders' ? 'block' : 'none';
+        document.getElementById('mistakes-display').style.display = mode === 'orders' ? 'block' : 'none';
+        this.showFeedback("", true);
         
-        const bSlider = document.querySelector('.challenge-only');
-        if (mode === 'challenge') {
-            bSlider.style.display = 'block';
-        } else {
-            bSlider.style.display = 'none';
-            this.currentParams.b = 1;
-            this.sliders.b.value = 1;
-            this.displays.b.innerText = 1;
+        const controls = document.getElementById('game-controls');
+        
+        if (mode === 'practice' || mode === 'orders') {
+            controls.innerHTML = `
+                ${mode === 'orders' ? `<div id="order-prompt" class="prompt-box"></div>` : ''}
+                <div class="slider-group">
+                    <label>Function Type</label>
+                    <select id="type-select" style="width:100%; padding:0.5rem; border-radius:4px; font-weight:bold; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark);">
+                        <option value="linear">Linear</option>
+                        <option value="quadratic">Quadratic</option>
+                        <option value="absolute">Absolute Value</option>
+                    </select>
+                </div>
+                <div class="slider-group">
+                    <label>a (Vertical Stretch/Direction): <span id="val-a">1</span></label>
+                    <input type="range" id="slider-a" min="-5" max="5" step="1" value="1">
+                </div>
+                <div class="slider-group">
+                    <label>h (Horizontal Shift): <span id="val-h">0</span></label>
+                    <input type="range" id="slider-h" min="-10" max="10" step="1" value="0">
+                </div>
+                <div class="slider-group">
+                    <label>k (Vertical Shift): <span id="val-k">0</span></label>
+                    <input type="range" id="slider-k" min="-10" max="10" step="1" value="0">
+                </div>
+                ${mode === 'orders' ? `<button id="btn-submit" class="btn-action primary" style="width:100%;">Submit Order</button>` : `<button id="btn-next" class="btn-action primary" style="width:100%; display:none;">Next Graph</button>`}
+            `;
+            
+            document.getElementById('type-select').addEventListener('change', (e) => {
+                this.initAudio();
+                this.playerParams.type = e.target.value;
+                this.updateGraph();
+            });
+            
+            ['a', 'h', 'k'].forEach(param => {
+                document.getElementById(`slider-${param}`).addEventListener('input', (e) => {
+                    this.initAudio();
+                    let val = parseFloat(e.target.value);
+                    if (param === 'a' && val === 0) {
+                        val = 1; 
+                        e.target.value = 1;
+                    }
+                    document.getElementById(`val-${param}`).innerText = val;
+                    this.playerParams[param] = val;
+                    this.updateGraph();
+                });
+            });
+            
+            if (mode === 'orders') {
+                document.getElementById('btn-submit').addEventListener('click', () => {
+                    this.initAudio();
+                    this.checkOrder();
+                });
+                this.startOrders();
+            } else {
+                document.getElementById('btn-next').addEventListener('click', () => {
+                    this.initAudio();
+                    document.getElementById('btn-next').style.display = 'none';
+                    this.generateTarget();
+                });
+                // Reset player params
+                this.playerParams = { type: 'quadratic', a: 1, h: 0, k: 0 };
+                this.generateTarget();
+            }
+        } else if (mode === 'challenge') {
+            controls.innerHTML = `
+                <div class="math-field-container">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">Enter Equation:</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--text-dark);">
+                        y = <math-field id="math-input" style="flex: 1;"></math-field>
+                    </div>
+                </div>
+                <button id="btn-submit-math" class="btn-action primary" style="width:100%;">Verify Equation</button>
+            `;
+            
+            const mf = document.getElementById('math-input');
+            mf.addEventListener('input', () => {
+                this.currentExpression = mf.getValue('ascii-math');
+                this.updateGraph();
+            });
+            
+            document.getElementById('btn-submit-math').addEventListener('click', () => {
+                this.initAudio();
+                this.checkChallenge();
+            });
+            
+            this.generateTarget();
         }
-
-        if (mode === 'timed') {
-            this.timeRemaining = 60;
-            document.getElementById('timer-display').innerText = `Time: 01:00`;
-            this.timerInterval = setInterval(() => {
-                this.timeRemaining--;
-                const m = Math.floor(this.timeRemaining / 60).toString().padStart(2, '0');
-                const s = (this.timeRemaining % 60).toString().padStart(2, '0');
-                document.getElementById('timer-display').innerText = `Time: ${m}:${s}`;
-                if (this.timeRemaining <= 0) this.endGame();
-            }, 1000);
-        } else {
-            document.getElementById('timer-display').innerText = `Time: --:--`;
-        }
-
-        this.generateTarget();
-        this.resetCurrentParams();
-        this.updateGraphAndEquation();
-    }
-
-    resetCurrentParams() {
-        this.currentParams = { type: this.currentParams.type, a: 1, b: 1, h: 0, k: 0 };
-        ['a', 'b', 'h', 'k'].forEach(p => {
-            this.sliders[p].value = this.currentParams[p];
-            this.displays[p].innerText = this.currentParams[p];
-        });
     }
 
     generateTarget() {
-        const generators = FunctionQuestionBank[this.mode];
-        const generator = generators[Math.floor(Math.random() * generators.length)];
-        this.targetParams = generator();
+        const types =['linear', 'quadratic', 'absolute'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        let a = (Math.floor(Math.random() * 5) - 2); 
+        if (a === 0) a = 1;
+        const h = Math.floor(Math.random() * 11) - 5; 
+        const k = Math.floor(Math.random() * 11) - 5;
         
-        document.getElementById('btn-check').style.display = 'block';
-        document.getElementById('btn-next').style.display = 'none';
-        document.getElementById('hint-text').innerText = "Adjust the sliders to match the red target graph.";
-    }
-
-    mathEvaluate(x, params) {
-        const { type, a, b, h, k } = params;
-        const inner = b * (x - h);
-        let yBase = 0;
-
-        switch(type) {
-            case 'linear': yBase = inner; break;
-            case 'quadratic': yBase = inner * inner; break;
-            case 'absolute': yBase = Math.abs(inner); break;
-            case 'sqrt': yBase = inner >= 0 ? Math.sqrt(inner) : NaN; break;
-            case 'cubic': yBase = Math.pow(inner, 3); break;
-            case 'reciprocal': yBase = inner !== 0 ? 1 / inner : NaN; break;
+        this.targetParams = { type, a, h, k };
+        
+        if (this.mode === 'challenge') {
+            this.currentExpression = "";
+            const mf = document.getElementById('math-input');
+            if (mf) mf.value = "";
         }
         
-        return (a * yBase) + k;
+        this.showFeedback("", true);
+        this.updateGraph();
     }
 
-    getColors() {
-        const isDark = document.documentElement.classList.contains('dark-theme') || 
-                    (document.body && document.body.classList.contains('dark-theme'));
-        return {
-            grid: isDark ? '#334155' : '#e2e8f0',
-            axes: isDark ? '#94a3b8' : '#475569',
-            target: isDark ? '#f87171' : '#ef4444',
-            current: isDark ? '#60a5fa' : '#2563eb'
-        };
+    startOrders() {
+        this.mistakes = 0;
+        this.score = 0;
+        this.isPlaying = true;
+        document.getElementById('mistakes-display').innerText = `Mistakes: 0 / 10`;
+        document.getElementById('score-display').innerText = `Score: 0`;
+        this.nextOrder();
     }
 
-    drawGrid() {
-        const colors = this.getColors();
-        this.ctx.clearRect(0, 0, this.width, this.height);
+    nextOrder() {
+        this.timeRemaining = 60;
+        document.getElementById('timer-display').innerText = `Time: 60s`;
         
-        this.ctx.strokeStyle = colors.grid;
-        this.ctx.lineWidth = 1;
-        
-        const originX = this.width / 2;
-        const originY = this.height / 2;
-
-        for (let x = 0; x <= this.width; x += this.scale) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.height);
-            this.ctx.stroke();
-        }
-        for (let y = 0; y <= this.height; y += this.scale) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.width, y);
-            this.ctx.stroke();
-        }
-
-        this.ctx.strokeStyle = colors.axes;
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        this.ctx.moveTo(originX, 0);
-        this.ctx.lineTo(originX, this.height);
-        this.ctx.moveTo(0, originY);
-        this.ctx.lineTo(this.width, originY);
-        this.ctx.stroke();
-    }
-
-    drawFunction(params, colorType, isDashed = false) {
-        const colors = this.getColors();
-        this.ctx.strokeStyle = colorType === 'target' ? colors.target : colors.current;
-        this.ctx.lineWidth = 3;
-        if (isDashed) this.ctx.setLineDash([5, 5]);
-        else this.ctx.setLineDash([]);
-
-        this.ctx.beginPath();
-        
-        const originX = this.width / 2;
-        const originY = this.height / 2;
-        let isDrawing = false;
-        let prevY = 0;
-
-        for (let px = 0; px <= this.width; px++) {
-            const mathX = (px - originX) / this.scale;
-            const mathY = this.mathEvaluate(mathX, params);
-            
-            const py = originY - (mathY * this.scale);
-
-            if (!isNaN(py)) {
-                if (isDrawing && Math.abs(py - prevY) > this.height) {
-                    this.ctx.stroke();
-                    this.ctx.beginPath();
-                } else if (!isDrawing) {
-                    this.ctx.moveTo(px, py);
-                    isDrawing = true;
-                } else {
-                    this.ctx.lineTo(px, py);
-                }
-                prevY = py;
-            } else {
-                if (isDrawing) {
-                    this.ctx.stroke();
-                    this.ctx.beginPath();
-                }
-                isDrawing = false;
+        clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+            this.timeRemaining--;
+            document.getElementById('timer-display').innerText = `Time: ${this.timeRemaining}s`;
+            if (this.timeRemaining <= 0) {
+                this.handleOrderTimeout();
             }
-        }
-        if (isDrawing) this.ctx.stroke();
-        this.ctx.setLineDash([]); 
+        }, 1000);
+        
+        this.generateTarget();
+        document.getElementById('order-prompt').innerText = this.generateOrderPrompt(this.targetParams);
+        this.showFeedback("New order received. Fulfill it quickly!", true);
+        
+        this.playerParams = { type: 'quadratic', a: 1, h: 0, k: 0 };
+        document.getElementById('type-select').value = 'quadratic';['a', 'h', 'k'].forEach(param => {
+            const val = param === 'a' ? 1 : 0;
+            document.getElementById(`slider-${param}`).value = val;
+            document.getElementById(`val-${param}`).innerText = val;
+        });
+        this.updateGraph();
     }
 
-    updateGraphAndEquation() {
-        this.drawGrid();
-        if (this.targetParams) {
-            this.drawFunction(this.targetParams, 'target', true);
-        }
-        this.drawFunction(this.currentParams, 'current');
-        this.updateEquation();
-    }
-
-    formatTermLatex(coef, isFirst, isMultiplier = true) {
-        if (coef === 0 && !isMultiplier) return "";
-        if (coef === 1 && isMultiplier) return isFirst ? "" : "+";
-        if (coef === -1 && isMultiplier) return "-";
-        if (coef > 0 && !isFirst) return `+ ${coef}`;
-        if (coef < 0 && !isFirst) return `- ${Math.abs(coef)}`;
-        return `${coef}`;
-    }
-
-    updateEquation() {
-        const { type, a, b, h, k } = this.currentParams;
+    generateOrderPrompt(params) {
+        let name = '';
+        let dir = '';
+        let stretchStr = '';
         
-        let aStr = this.formatTermLatex(a, true, true);
-        if (aStr === "" && a !== 1 && a !== -1) aStr = a; 
-        
-        let innerExp = "x";
-        let hStr = "";
-        if (h > 0) hStr = `- ${h}`;
-        else if (h < 0) hStr = `+ ${Math.abs(h)}`;
-        
-        if (b !== 1 && h !== 0) {
-            innerExp = `${b}\\left(x ${hStr}\\right)`;
-        } else if (b !== 1) {
-            innerExp = `${b}x`;
-        } else if (h !== 0) {
-            innerExp = `x ${hStr}`;
-        }
-
-        let eq = "y = ";
-        let base = "";
-        
-        switch(type) {
-            case 'linear': 
-                if ((a !== 1 && a !== -1) && innerExp !== "x" && innerExp !== `${b}x`) {
-                    base = `\\left(${innerExp}\\right)`;
-                } else if (a === -1 && innerExp !== "x" && innerExp !== `${b}x`) {
-                    base = `\\left(${innerExp}\\right)`;
-                } else {
-                    base = innerExp;
-                }
-                break;
-            case 'quadratic': 
-                base = innerExp === "x" ? `x^2` : `\\left(${innerExp}\\right)^2`; 
-                break;
-            case 'absolute': 
-                base = `\\left|${innerExp}\\right|`; 
-                break;
-            case 'sqrt': 
-                base = `\\sqrt{${innerExp}}`; 
-                break;
-            case 'cubic': 
-                base = innerExp === "x" ? `x^3` : `\\left(${innerExp}\\right)^3`; 
-                break;
-            case 'reciprocal': 
-                let num = "1";
-                if (a === -1) num = "-1";
-                else if (a !== 1) num = a.toString();
-                base = `\\frac{${num}}{${innerExp}}`;
-                aStr = ""; 
-                break;
-        }
-
-        if (type !== 'reciprocal') {
-            eq += `${aStr}${base}`;
+        if (params.type === 'linear') {
+            name = 'line';
+            dir = params.a > 0 ? 'an increasing' : 'a decreasing';
+            stretchStr = Math.abs(params.a) > 1 ? `a steep slope magnitude of ${Math.abs(params.a)}` : `a standard slope magnitude of 1`;
+            return `Order: Create ${dir} ${name} passing through the point (${params.h}, ${params.k}) with ${stretchStr}.`;
         } else {
-            eq += base;
-        }
-
-        if (k !== 0) {
-            eq += ` ${k > 0 ? '+' : '-'} ${Math.abs(k)}`;
-        }
-        
-        if (eq === "y = ") eq = "y = 0";
-
-        const displayEl = document.getElementById('equation-display');
-        displayEl.innerText = `\\( ${eq} \\)`;
-        
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([displayEl]).catch(err => console.log('MathJax error:', err));
+            name = params.type === 'quadratic' ? 'parabola' : 'absolute value function';
+            dir = params.a > 0 ? 'an upward-opening' : 'a downward-opening';
+            stretchStr = Math.abs(params.a) > 1 ? ` and a vertical stretch of ${Math.abs(params.a)}` : ` and standard width`;
+            return `Order: Create ${dir} ${name} with a vertex at (${params.h}, ${params.k})${stretchStr}.`;
         }
     }
 
-    checkMatch() {
-        const p1 = this.currentParams;
-        const p2 = this.targetParams;
-        const feedback = document.getElementById('feedback-message');
-
-        let isMatch = (p1.type === p2.type && p1.a === p2.a && p1.b === p2.b && p1.h === p2.h && p1.k === p2.k);
-
-        if (p1.type === 'linear' && p2.type === 'linear') {
-            const m1 = p1.a * p1.b;
-            const b1 = (-p1.a * p1.b * p1.h) + p1.k;
-            const m2 = p2.a * p2.b;
-            const b2 = (-p2.a * p2.b * p2.h) + p2.k;
-            if (m1 === m2 && b1 === b2) isMatch = true;
-        }
-
-        if (isMatch) {
-            this.playHit();
-            feedback.innerText = "Excellent! Perfect Match!";
-            feedback.className = "feedback-msg feedback-success";
-            this.score++;
-            this.updateScore();
-            document.getElementById('btn-check').style.display = 'none';
-            document.getElementById('btn-next').style.display = 'block';
+    checkOrder() {
+        if (!this.isPlaying) return;
+        
+        if (this.playerParams.type === this.targetParams.type &&
+            this.playerParams.a === this.targetParams.a &&
+            this.playerParams.h === this.targetParams.h &&
+            this.playerParams.k === this.targetParams.k) {
             
-            if (this.mode === 'puzzle' && this.score >= 5) {
-                this.endGame();
+            this.playHit();
+            this.score++;
+            document.getElementById('score-display').innerText = `Score: ${this.score}`;
+            
+            if (this.score >= 10) {
+                this.endOrders(true);
+            } else {
+                this.showFeedback("Order fulfilled!", true);
+                clearInterval(this.timerInterval);
+                setTimeout(() => this.nextOrder(), 1000);
             }
         } else {
             this.playMiss();
-            feedback.innerText = "Not quite. Check your transformations!";
-            feedback.className = "feedback-msg feedback-error";
+            this.mistakes++;
+            document.getElementById('mistakes-display').innerText = `Mistakes: ${this.mistakes} / 10`;
+            this.showFeedback("Incorrect order configuration!", false);
             
-            const canvasContainer = document.querySelector('.canvas-container');
-            canvasContainer.style.transform = "translateX(-5px)";
-            setTimeout(() => canvasContainer.style.transform = "translateX(5px)", 50);
-            setTimeout(() => canvasContainer.style.transform = "translateX(0)", 100);
-        }
-    }
-
-    nextTarget() {
-        document.getElementById('feedback-message').innerText = '';
-        this.generateTarget();
-        this.resetCurrentParams();
-        this.updateGraphAndEquation();
-    }
-
-    showHint() {
-        const p1 = this.currentParams;
-        const p2 = this.targetParams;
-        const hintEl = document.getElementById('hint-text');
-
-        if (p1.type !== p2.type) {
-            hintEl.innerText = "Hint: Start by selecting the correct Parent Function.";
-        } else if (p1.h !== p2.h) {
-            hintEl.innerText = "Hint: Look at the horizontal shift (left or right). Focus on 'h'.";
-        } else if (p1.k !== p2.k) {
-            hintEl.innerText = "Hint: Look at the vertical shift (up or down). Focus on 'k'.";
-        } else if (p1.a !== p2.a) {
-            if (Math.sign(p1.a) !== Math.sign(p2.a)) {
-                hintEl.innerText = "Hint: The graph might need a vertical reflection across the x-axis.";
-            } else {
-                hintEl.innerText = "Hint: Check the vertical stretch or compression. Focus on 'a'.";
+            if (this.mistakes >= 10) {
+                this.endOrders(false);
             }
-        } else if (p1.b !== p2.b) {
-            hintEl.innerText = "Hint: Check the horizontal stretch or reflection. Focus on 'b'.";
-        } else {
-            hintEl.innerText = "You're very close! Double check your values.";
         }
     }
 
-    updateScore() {
-        document.getElementById('score-display').innerText = `Matches: ${this.score}`;
+    handleOrderTimeout() {
+        if (!this.isPlaying) return;
+        this.playMiss();
+        this.mistakes++;
+        document.getElementById('mistakes-display').innerText = `Mistakes: ${this.mistakes} / 10`;
+        this.showFeedback("Out of time!", false);
+        
+        if (this.mistakes >= 10) {
+            this.endOrders(false);
+        } else {
+            setTimeout(() => this.nextOrder(), 1000);
+        }
     }
 
-    updateMoves() {
-        document.getElementById('moves-display').innerText = `Moves: ${this.moves}`;
-    }
-
-    endGame() {
+    endOrders(win) {
+        this.isPlaying = false;
         clearInterval(this.timerInterval);
-        this.playFinished();
+        if (win) this.playVictory();
+        else this.playGameOver();
         
         const modal = document.getElementById('report-modal');
-        const details = document.getElementById('report-details');
+        document.getElementById('report-title').innerText = win ? "Shift Completed Successfully!" : "Fired!";
+        document.getElementById('report-title').style.color = win ? "var(--subject-primary)" : "#ef4444";
         
-        let reportHTML = `<p><strong>Mode:</strong> ${this.mode.charAt(0).toUpperCase() + this.mode.slice(1)}</p>`;
-        reportHTML += `<p><strong>Total Matches:</strong> ${this.score}</p>`;
-        
-        if (this.mode === 'timed') {
-            reportHTML += `<p>You completed ${this.score} matches in 60 seconds!</p>`;
-        } else if (this.mode === 'puzzle') {
-            reportHTML += `<p><strong>Total Moves:</strong> ${this.moves}</p>`;
-            reportHTML += `<p>You completed 5 matches in ${this.moves} slider adjustments.</p>`;
-            if (this.moves <= 15) reportHTML += `<p style="color:var(--math-primary); font-weight:bold;">Amazing efficiency!</p>`;
-        } else {
-            reportHTML += `<p><strong>Total Moves:</strong> ${this.moves}</p>`;
-        }
-
-        details.innerHTML = reportHTML;
+        document.getElementById('report-details').innerHTML = `
+            <p><strong>Orders Fulfilled:</strong> ${this.score}</p>
+            <p><strong>Mistakes Made:</strong> ${this.mistakes} / 10</p>
+        `;
         modal.style.display = 'flex';
         
         this.saveCustomProgress();
     }
 
-    async saveCustomProgress() {
-        if (StateManager.isUserLoggedIn) {
-            try {
-                const fbModule = await import('/js/firebase-init.js');
-                const { auth, db, collection, addDoc } = fbModule;
-                
-                if (auth && auth.currentUser) {
-                    await addDoc(collection(db, "users", auth.currentUser.uid, "history"), {
-                        title: `Function Factory (${this.mode})`,
-                        score: this.score,
-                        mistakes: this.moves, 
-                        time: this.mode === 'timed' ? 60 : 0,
-                        date: new Date().toISOString()
-                    });
-                }
-            } catch (error) {
-                console.warn("Could not save progress.", error);
+    evaluateMath(ascii, xVal) {
+        if (!ascii) return null;
+        let code = ascii.replace(/\s+/g, '');
+        
+        code = code.replace(/abs\(/g, 'Math.abs(');
+        code = code.replace(/\|([^\|]+)\|/g, 'Math.abs($1)');
+        code = code.replace(/\\left\|/g, '|').replace(/\\right\|/g, '|'); 
+        code = code.replace(/\|([^\|]+)\|/g, 'Math.abs($1)'); 
+        
+        code = code.replace(/\^/g, '**');
+        code = code.replace(/(\d)([a-zA-Z\(])/g, '$1*$2'); 
+        code = code.replace(/\)([\d\w\(])/g, ')*$1');
+        code = code.replace(/cdot/g, '*');
+        
+        code = code.replace(/x/g, `(${xVal})`);
+        
+        try {
+            let result = new Function(`return ${code};`)();
+            if (typeof result === 'number' && !isNaN(result) && isFinite(result)) return result;
+            return null;
+        } catch(e) {
+            return null;
+        }
+    }
+
+    checkChallenge() {
+        if (!this.currentExpression || this.currentExpression.trim() === '') {
+            this.showFeedback("Please enter an equation.", false);
+            return;
+        }
+
+        let correct = true;
+        // Verify mathematical equivalency across the entire domain using 0.5 step sizes
+        for (let x = -10; x <= 10; x += 0.5) {
+            let expected = 0;
+            if (this.targetParams.type === 'linear') {
+                expected = this.targetParams.a * (x - this.targetParams.h) + this.targetParams.k;
+            } else if (this.targetParams.type === 'quadratic') {
+                expected = this.targetParams.a * Math.pow(x - this.targetParams.h, 2) + this.targetParams.k;
+            } else if (this.targetParams.type === 'absolute') {
+                expected = this.targetParams.a * Math.abs(x - this.targetParams.h) + this.targetParams.k;
             }
+            
+            let actual = this.evaluateMath(this.currentExpression, x);
+            if (actual === null || Math.abs(expected - actual) > 0.1) {
+                correct = false;
+                break;
+            }
+        }
+        
+        if (correct) {
+            this.playHit();
+            this.score++;
+            document.getElementById('score-display').innerText = `Score: ${this.score}`;
+            this.showFeedback("Correct! Function matched perfectly.", true);
+            setTimeout(() => this.generateTarget(), 1500);
+        } else {
+            this.playMiss();
+            this.showFeedback("Equation does not match the target graph.", false);
+        }
+    }
+
+    updateGraph() {
+        this.drawGraph();
+        
+        if (this.mode === 'practice') {
+            if (this.playerParams.type === this.targetParams.type &&
+                this.playerParams.a === this.targetParams.a &&
+                this.playerParams.h === this.targetParams.h &&
+                this.playerParams.k === this.targetParams.k) {
+                
+                if (document.getElementById('btn-next').style.display !== 'block') {
+                    this.playHit();
+                    this.showFeedback("Perfect Match!", true);
+                    document.getElementById('btn-next').style.display = 'block';
+                }
+            } else {
+                this.showFeedback("", true);
+                document.getElementById('btn-next').style.display = 'none';
+            }
+        }
+    }
+
+    showFeedback(msg, isSuccess) {
+        const fb = document.getElementById('feedback-message');
+        fb.innerText = msg;
+        fb.className = `feedback-msg ${isSuccess ? 'feedback-success' : 'feedback-error'}`;
+    }
+
+    mapX(x) { return (x + 10) * (this.canvas.width / 20); }
+    mapY(y) { return (10 - y) * (this.canvas.height / 20); }
+
+    drawGrid() {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const ctx = this.ctx;
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        const range = 10;
+        const step = width / (range * 2);
+        
+        ctx.strokeStyle = document.documentElement.classList.contains('dark-theme') ? '#334155' : '#e2e8f0';
+        ctx.lineWidth = 1;
+        
+        for(let i = 0; i <= range * 2; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * step, 0);
+            ctx.lineTo(i * step, height);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, i * step);
+            ctx.lineTo(width, i * step);
+            ctx.stroke();
+        }
+        
+        ctx.strokeStyle = document.documentElement.classList.contains('dark-theme') ? '#94a3b8' : '#64748b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(width / 2, 0);
+        ctx.lineTo(width / 2, height);
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
+    }
+
+    drawExpression(ascii, isTarget) {
+        if (!ascii) return;
+        const ctx = this.ctx;
+        ctx.beginPath();
+        
+        ctx.strokeStyle = isTarget ? '#94a3b8' : '#ea580c';
+        ctx.lineWidth = 3;
+        if (isTarget) ctx.setLineDash([8, 8]);
+        else ctx.setLineDash([]);
+        
+        let first = true;
+        for(let px = 0; px <= this.canvas.width; px += 2) {
+            let x = (px / (this.canvas.width / 20)) - 10;
+            let y = this.evaluateMath(ascii, x);
+            if (y === null || isNaN(y)) continue;
+            
+            let py = this.mapY(y);
+            // Optimization trick to prevent Canvas glitching out
+            if (py < -1000 || py > this.canvas.height + 1000) continue;
+            
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    drawFunction(params, isTarget) {
+        const ctx = this.ctx;
+        const isDark = document.documentElement.classList.contains('dark-theme');
+
+        ctx.strokeStyle = isTarget ? (isDark ? '#64748b' : '#94a3b8') : '#ea580c';
+        ctx.lineWidth = isTarget ? 2.5 : 3;
+        if (isTarget) ctx.setLineDash([8, 8]);
+        else ctx.setLineDash([]);
+
+        const b = params.b || 1;
+
+        // Handle discontinuous functions (reciprocal) by breaking on asymptotes
+        const segments = [];
+        let currentSeg = [];
+
+        for (let px = 0; px <= this.canvas.width; px += 1.5) {
+            const x = (px / (this.canvas.width / 20)) - 10;
+            const xInner = b * (x - params.h);
+            let y = null;
+
+            switch (params.type) {
+                case 'linear':
+                    y = params.a * xInner + params.k;
+                    break;
+                case 'quadratic':
+                    y = params.a * Math.pow(xInner, 2) + params.k;
+                    break;
+                case 'absolute':
+                    y = params.a * Math.abs(xInner) + params.k;
+                    break;
+                case 'cubic':
+                    y = params.a * Math.pow(xInner, 3) + params.k;
+                    break;
+                case 'sqrt':
+                    if (xInner >= 0) y = params.a * Math.sqrt(xInner) + params.k;
+                    break;
+                case 'reciprocal':
+                    if (Math.abs(xInner) > 0.05) y = params.a / xInner + params.k;
+                    break;
+            }
+
+            if (y === null || isNaN(y) || !isFinite(y)) {
+                if (currentSeg.length > 0) {
+                    segments.push(currentSeg);
+                    currentSeg = [];
+                }
+                continue;
+            }
+
+            const py = this.mapY(y);
+            if (py < -800 || py > this.canvas.height + 800) {
+                if (currentSeg.length > 0) {
+                    segments.push(currentSeg);
+                    currentSeg = [];
+                }
+                continue;
+            }
+
+            currentSeg.push({ px, py });
+        }
+        if (currentSeg.length > 0) segments.push(currentSeg);
+
+        for (const seg of segments) {
+            if (seg.length < 2) continue;
+            ctx.beginPath();
+            ctx.moveTo(seg[0].px, seg[0].py);
+            for (let i = 1; i < seg.length; i++) {
+                ctx.lineTo(seg[i].px, seg[i].py);
+            }
+            ctx.stroke();
+        }
+
+        ctx.setLineDash([]);
+    }
+
+    drawGraph() {
+        this.drawGrid();
+        const ctx = this.ctx;
+        const isDark = document.documentElement.classList.contains('dark-theme');
+
+        // Draw axis labels
+        ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        const step = this.canvas.width / 20;
+        for (let i = -9; i <= 9; i++) {
+            if (i === 0) continue;
+            // X axis numbers
+            ctx.fillText(i, this.mapX(i), this.mapY(0) + 14);
+            // Y axis numbers
+            ctx.textAlign = 'right';
+            ctx.fillText(i, this.mapX(0) - 4, this.mapY(i) + 4);
+            ctx.textAlign = 'center';
+        }
+
+        if (this.mode === 'practice') {
+            // Draw dotted target graph
+            if (this.targetParams) this.drawFunction(this.targetParams, true);
+            // Draw player's live graph
+            this.drawFunction(this.playerParams, false);
+
+        } else if (this.mode === 'orders') {
+            // No reference graph — player works from description alone
+            this.drawFunction(this.playerParams, false);
+
+        } else if (this.mode === 'challenge') {
+            // Draw dotted target graph
+            if (this.targetParams) this.drawFunction(this.targetParams, true);
+            // Draw player's typed expression if any
+            if (this.currentExpression) {
+                this.drawExpression(this.currentExpression, false);
+            }
+        }
+    }
+
+    saveCustomProgress() {
+        // Hook for external progress tracking (e.g. via StateManager or Firebase)
+        // Called after completing Timed Orders mode
+        try {
+            if (typeof StateManager !== 'undefined' && StateManager.saveProgress) {
+                StateManager.saveProgress('function-factory', {
+                    mode: this.mode,
+                    score: this.score,
+                    mistakes: this.mistakes,
+                    timestamp: Date.now()
+                });
+            }
+        } catch (e) {
+            // Progress saving is non-critical; fail silently
         }
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    new FunctionFactory();
-});
+new FunctionFactory();
