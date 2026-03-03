@@ -187,6 +187,17 @@ export const GamesCatalog =[
         isNoModal: true,
         keywords:['concentration', 'dilution', 'molarity', 'solubility', 'precipitation', 'moles', 'solutions', 'chemistry 20']
     },
+    { 
+        id: 'gas-laws-gauntlet', 
+        title: 'Gas Laws Gauntlet (Pressure & Temp)', 
+        subject: 'chemistry', 
+        category: 'Intermediate Chemistry Topics', 
+        desc: 'Operate sealed industrial chambers by applying Boyle\'s, Charles\'s, Gay-Lussac\'s, and the Ideal Gas Law.', 
+        play: 'Manipulate pressure and volume sliders to stabilize the system. Watch the live piston and telemetry graph respond, and remember to convert to Kelvin!', 
+        path: 'games/chemistry/intermediate/gas-laws-gauntlet/index.html', 
+        isNoModal: true,
+        keywords:['gas laws', 'pressure', 'volume', 'temperature', 'boyle', 'charles', 'ideal gas', 'chemistry 20']
+    },
 
     // --- BIOLOGY ---
     { 
