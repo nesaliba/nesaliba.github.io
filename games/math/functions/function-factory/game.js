@@ -74,6 +74,9 @@ class FunctionFactory extends BaseGame {
                         <option value="linear">Linear</option>
                         <option value="quadratic">Quadratic</option>
                         <option value="absolute">Absolute Value</option>
+                        <option value="cubic">Cubic</option>
+                        <option value="sqrt">Square Root</option>
+                        <option value="reciprocal">Inverse (Reciprocal)</option>
                     </select>
                 </div>
                 <div class="slider-group">
@@ -165,6 +168,14 @@ class FunctionFactory extends BaseGame {
                 this.currentExpression = mf.getValue('ascii-math');
                 this.updateGraph();
             });
+
+            // Trigger Verify Equation smoothly on 'Enter' keyup
+            mf.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    this.initAudio();
+                    this.checkChallenge();
+                }
+            });
             
             document.getElementById('btn-submit-math').addEventListener('click', () => {
                 this.initAudio();
@@ -176,7 +187,7 @@ class FunctionFactory extends BaseGame {
     }
 
     generateTarget() {
-        const types =['linear', 'quadratic', 'absolute'];
+        const types =['linear', 'quadratic', 'absolute', 'cubic', 'sqrt', 'reciprocal'];
         const type = types[Math.floor(Math.random() * types.length)];
         let a = (Math.floor(Math.random() * 5) - 2); 
         if (a === 0) a = 1;
@@ -241,10 +252,27 @@ class FunctionFactory extends BaseGame {
             stretchStr = Math.abs(params.a) > 1 ? `a steep slope magnitude of ${Math.abs(params.a)}` : `a standard slope magnitude of 1`;
             return `Order: Create ${dir} ${name} passing through the point (${params.h}, ${params.k}) with ${stretchStr}.`;
         } else {
-            name = params.type === 'quadratic' ? 'parabola' : 'absolute value function';
-            dir = params.a > 0 ? 'an upward-opening' : 'a downward-opening';
+            if (params.type === 'quadratic') name = 'parabola';
+            else if (params.type === 'absolute') name = 'absolute value function';
+            else if (params.type === 'cubic') name = 'cubic function';
+            else if (params.type === 'sqrt') name = 'square root function';
+            else if (params.type === 'reciprocal') name = 'rational (inverse) function';
+
+            if (params.type === 'reciprocal') {
+                dir = params.a > 0 ? 'a positive' : 'a negative';
+            } else if (params.type === 'cubic') {
+                dir = params.a > 0 ? 'an increasing' : 'a decreasing';
+            } else {
+                dir = params.a > 0 ? 'an upward-opening' : 'a downward-opening';
+            }
+            
             stretchStr = Math.abs(params.a) > 1 ? ` and a vertical stretch of ${Math.abs(params.a)}` : ` and standard width`;
-            return `Order: Create ${dir} ${name} with a vertex at (${params.h}, ${params.k})${stretchStr}.`;
+            
+            let centerStr = 'vertex';
+            if (params.type === 'cubic' || params.type === 'reciprocal') centerStr = 'center';
+            if (params.type === 'sqrt') centerStr = 'starting point';
+            
+            return `Order: Create ${dir} ${name} with a ${centerStr} at (${params.h}, ${params.k})${stretchStr}.`;
         }
     }
 
@@ -316,10 +344,11 @@ class FunctionFactory extends BaseGame {
         if (!ascii) return null;
         let code = ascii.replace(/\s+/g, '');
         
-        code = code.replace(/abs\(/g, 'Math.abs(');
+        code = code.replace(/abs\(/gi, 'Math.abs(');
         code = code.replace(/\|([^\|]+)\|/g, 'Math.abs($1)');
         code = code.replace(/\\left\|/g, '|').replace(/\\right\|/g, '|'); 
         code = code.replace(/\|([^\|]+)\|/g, 'Math.abs($1)'); 
+        code = code.replace(/sqrt\(/g, 'Math.sqrt(');
         
         code = code.replace(/\^/g, '**');
         code = code.replace(/(\d)([a-zA-Z\(])/g, '$1*$2'); 
@@ -346,19 +375,31 @@ class FunctionFactory extends BaseGame {
         let correct = true;
         // Verify mathematical equivalency across the entire domain using 0.5 step sizes
         for (let x = -10; x <= 10; x += 0.5) {
-            let expected = 0;
+            let expected = null;
             if (this.targetParams.type === 'linear') {
                 expected = this.targetParams.a * (x - this.targetParams.h) + this.targetParams.k;
             } else if (this.targetParams.type === 'quadratic') {
                 expected = this.targetParams.a * Math.pow(x - this.targetParams.h, 2) + this.targetParams.k;
             } else if (this.targetParams.type === 'absolute') {
                 expected = this.targetParams.a * Math.abs(x - this.targetParams.h) + this.targetParams.k;
+            } else if (this.targetParams.type === 'cubic') {
+                expected = this.targetParams.a * Math.pow(x - this.targetParams.h, 3) + this.targetParams.k;
+            } else if (this.targetParams.type === 'sqrt') {
+                if (x >= this.targetParams.h) {
+                    expected = this.targetParams.a * Math.sqrt(x - this.targetParams.h) + this.targetParams.k;
+                }
+            } else if (this.targetParams.type === 'reciprocal') {
+                if (Math.abs(x - this.targetParams.h) > 0.1) {
+                    expected = this.targetParams.a / (x - this.targetParams.h) + this.targetParams.k;
+                }
             }
             
-            let actual = this.evaluateMath(this.currentExpression, x);
-            if (actual === null || Math.abs(expected - actual) > 0.1) {
-                correct = false;
-                break;
+            if (expected !== null) {
+                let actual = this.evaluateMath(this.currentExpression, x);
+                if (actual === null || Math.abs(expected - actual) > 0.1) {
+                    correct = false;
+                    break;
+                }
             }
         }
         
