@@ -278,8 +278,8 @@ class GasLawsGauntlet extends BaseGame {
         const pistonRod = document.getElementById('piston-rod');
         
         pistonHead.style.top = `${pistonTop}%`;
-        pistonRod.style.top = `-${150 - pistonTop}%`;
-        pistonRod.style.height = `${150}%`;
+        pistonRod.style.top = '0';
+        pistonRod.style.height = `${pistonTop}%`;
 
         this.pistonY = (pistonTop / 100) * 250; // Canvas px
 
