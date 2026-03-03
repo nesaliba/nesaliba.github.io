@@ -13,6 +13,7 @@ class SiteNavbar extends HTMLElement {
 
         this.innerHTML = `
         <nav class="navbar" id="navbar">
+            <div class="nav-overlay" id="nav-overlay"></div>
             <div class="nav-left">
                 <a href="index.html" class="nav-logo">
                     <img src="Scitriad.png" alt="Scitriad Logo">
@@ -63,25 +64,63 @@ class SiteNavbar extends HTMLElement {
         const hamburger = this.querySelector('.hamburger');
         const nav = this.querySelector('.nav-links');
         const navLinks = this.querySelectorAll('.nav-links a');
+        const overlay = this.querySelector('#nav-overlay');
+
+        const closeMenu = () => {
+            if (nav.classList.contains('nav-active')) {
+                nav.classList.remove('nav-active');
+                if (overlay) overlay.classList.remove('active');
+                hamburger.classList.remove('toggle');
+                navLinks.forEach(link => {
+                    link.style.animation = '';
+                });
+                
+                setTimeout(() => {
+                    const anyModalOpen = document.querySelector('.modal-overlay[style*="display: flex"]');
+                    const authModalOpen = document.querySelector('.auth-modal-overlay[style*="display: flex"]');
+                    if (!anyModalOpen && !authModalOpen) {
+                        document.body.classList.remove('no-scroll');
+                    }
+                }, 50);
+            }
+        };
 
         if (hamburger) {
             hamburger.addEventListener('click', () => {
-                // Toggle Menu
-                nav.classList.toggle('nav-active');
+                if (nav.classList.contains('nav-active')) {
+                    closeMenu();
+                } else {
+                    // Open menu
+                    nav.classList.add('nav-active');
+                    if (overlay) overlay.classList.add('active');
+                    document.body.classList.add('no-scroll');
+                    hamburger.classList.add('toggle');
 
-                // Animate Links
-                navLinks.forEach((link, index) => {
-                    if (link.style.animation) {
-                        link.style.animation = '';
-                    } else {
+                    // Animate Links
+                    navLinks.forEach((link, index) => {
                         link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
-                    }
-                });
-
-                // Toggle Hamburger Animation
-                hamburger.classList.toggle('toggle');
+                    });
+                }
             });
         }
+
+        if (overlay) {
+            overlay.addEventListener('click', closeMenu);
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        const authBtn = this.querySelector('#auth-btn');
+        if (authBtn) {
+            authBtn.addEventListener('click', closeMenu);
+        }
+
+        const dropdownButtons = this.querySelectorAll('.dropdown-content button');
+        dropdownButtons.forEach(btn => {
+            btn.addEventListener('click', closeMenu);
+        });
     }
 
     setupSearch(GamesCatalog) {

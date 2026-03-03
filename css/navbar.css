@@ -9,6 +9,25 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.nav-overlay {
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    backdrop-filter: blur(2px);
+}
+
+.nav-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
 .nav-left {
     display: flex;
     align-items: center;
@@ -143,7 +162,7 @@ body.dark-theme .search-result-desc {
 }
 .dropdown-content button:hover { background-color: var(--details-bg); color: var(--primary-blue); }
 
-.hamburger { display: none; cursor: pointer; z-index: 1002; font-size: clamp(16px, 2vw, 24px); }
+.hamburger { display: none; cursor: pointer; z-index: 2002; position: relative; font-size: clamp(16px, 2vw, 24px); }
 .hamburger div { width: 1.6em; height: 0.2em; background-color: var(--text-dark); margin: 0.3em; transition: all 0.3s ease; }
 
 @media (max-width: 768px) {
@@ -152,12 +171,23 @@ body.dark-theme .search-result-desc {
         position: fixed; right: -65%; height: 100vh; top: 0px; background-color: var(--card-bg);
         display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
         width: 65%; transform: translateX(0); transition: transform 0.4s ease-in;
-        box-shadow: -2px 0 10px rgba(0,0,0,0.1); padding-top: 100px; padding-bottom: 40px; z-index: 1001; 
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1); padding-top: 100px; padding-bottom: 40px; z-index: 2001; 
         overflow-y: auto;
     }
     .nav-links.nav-active { transform: translateX(-100%); }
     .nav-links a { opacity: 0; margin: 1.5rem 0; font-size: 1.2rem; flex-shrink: 0; }
-    .auth-container { flex-shrink: 0; margin: 1.5rem 0; }
+    
+    .auth-container { flex-shrink: 0; margin: 1.5rem 0; display: flex; flex-direction: column; align-items: center; }
+    .user-menu { display: flex; flex-direction: column; align-items: center; }
+    .dropdown-content {
+        position: relative;
+        top: 15px;
+        right: auto;
+        min-width: 200px;
+        box-shadow: none;
+        border: 1px solid var(--border-color);
+        background-color: var(--card-bg);
+    }
 }
 
 @media (max-width: 600px) {
