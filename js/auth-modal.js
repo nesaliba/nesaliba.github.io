@@ -31,14 +31,20 @@ const accountModalHTML = `
     <div class="auth-modal-content">
         <h2 style="color: var(--text-dark); margin-bottom: 1.5rem;">Account Settings</h2>
         <div style="text-align: left; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
-            <label style="font-weight:600; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; color: var(--text-dark);">
-                Dark Mode
-                <input type="checkbox" id="account-dark-mode" style="cursor: pointer; width: 16px; height: 16px;">
-            </label>
-            <label style="font-weight:600; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; color: var(--text-dark);">
-                Mute Sounds
-                <input type="checkbox" id="account-mute-sounds" style="cursor: pointer; width: 16px; height: 16px;">
-            </label>
+            <div class="toggle-row">
+                <span class="toggle-label">Dark Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="account-dark-mode">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row" style="margin-bottom: 0;">
+                <span class="toggle-label">Mute Sounds</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="account-mute-sounds">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
         </div>
         <div style="text-align: left; margin-bottom: 1rem;">
             <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-dark);">Change Email</label>

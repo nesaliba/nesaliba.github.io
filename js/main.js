@@ -142,71 +142,7 @@ function setupGameSettingsModal() {
     const gameLinks = document.querySelectorAll('.game-link');
     if (gameLinks.length === 0) return;
 
-    const toggleCSS = `
-        <style id="toggle-switch-styles">
-            .toggle-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.1rem;
-            }
-            .toggle-label {
-                font-weight: 600;
-                color: var(--text-dark);
-                font-size: 0.95rem;
-            }
-            .toggle-switch {
-                position: relative;
-                width: 46px;
-                height: 26px;
-                flex-shrink: 0;
-            }
-            .toggle-switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-                position: absolute;
-            }
-            .toggle-slider {
-                position: absolute;
-                inset: 0;
-                background: #94a3b8;
-                border-radius: 26px;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-            .toggle-slider::before {
-                content: '';
-                position: absolute;
-                width: 18px;
-                height: 18px;
-                left: 4px;
-                top: 4px;
-                background: white;
-                border-radius: 50%;
-                transition: transform 0.2s;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-            }
-            .toggle-switch input:checked + .toggle-slider {
-                background: #60a5fa;
-            }
-            .toggle-switch input:checked + .toggle-slider::before {
-                transform: translateX(20px);
-            }
-            .toggle-switch input:disabled + .toggle-slider {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
-            .settings-divider {
-                border: none;
-                border-top: 1px solid var(--border-color);
-                margin: 1rem 0;
-            }
-        </style>
-    `;
-
     const modalHTML = `
-        ${toggleCSS}
         <div class="modal-overlay" id="settingsModal" style="z-index: 2000;">
             <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
                 <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">Game Settings</h2>
