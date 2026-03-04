@@ -15,7 +15,7 @@ export class ScitriadTileGame {
             timerVisible: params.get('timerVisible') || 'visible',
             tileMode: params.get('tileMode') || 'all',
             maxMistakes: params.has('maxMistakes') ? parseInt(params.get('maxMistakes')) : 10,
-            mute: params.get('mute') === 'true',
+            mute: params.has('mute') ? params.get('mute') === 'true' : StateManager.getMuteState(),
             theme: params.get('theme') || localStorage.getItem('scitriad_theme') || 'light'
         };
         

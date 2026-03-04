@@ -22,7 +22,14 @@ export const StateManager = {
     },
 
     applyThemeAndSound() {
-        const isDark = this.userSettings?.darkMode || localStorage.getItem('scitriad_theme') === 'dark';
+        // When userSettings is loaded, it is the authoritative source for darkMode.
+        // Only fall back to localStorage when no user settings have been loaded yet
+        // (e.g. anonymous visitor). This prevents a stale localStorage value from
+        // overriding an explicit darkMode: false set by the user.
+        const isDark = this.userSettings != null
+            ? !!this.userSettings.darkMode
+            : localStorage.getItem('scitriad_theme') === 'dark';
+
         if (isDark) {
             document.documentElement.classList.add('dark-theme');
             if (document.body) document.body.classList.add('dark-theme');

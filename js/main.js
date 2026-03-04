@@ -285,6 +285,11 @@ function setupGameSettingsModal() {
                 pendingGameUrl = href;
                 pendingDetailsIndex = detailsIndex;
                 
+                // Always seed the sounds toggle from the global mute state first,
+                // so anonymous users and users whose settings haven't loaded yet see
+                // a toggle that reflects their actual preference rather than the HTML default.
+                document.getElementById('setting-mute-sounds').checked = !StateManager.getMuteState();
+
                 if (StateManager.userSettings) {
                     timerToggle.checked = (StateManager.userSettings.timer || 'off') === 'on';
                     timerVisibleToggle.checked = (StateManager.userSettings.timerVisible || 'visible') === 'visible';
