@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Grid Mastery | Scitriad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/arena-game.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script>
+        (function() {
+            if (localStorage.getItem('scitriad_theme') === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+</head>
+<body class="theme-math">
+    <div id="game-mount">
+        <header class="game-header">
+            <a href="/Math.html" class="back-btn">← Back to Menu</a>
+            <h1>Math Grid Mastery</h1>
+            <p>Master arithmetic and order of operations in an interactive grid!</p>
+            <div class="game-stats">
+                <div class="stat-box">Time: <span id="timer-val">00:00</span></div>
+                <div id="mistakes-display" class="stat-box hp-box">Mistakes: 0 / 10</div>
+            </div>
+        </header>
+
+        <main class="game-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Operator Mode:</label>
+                    <select id="operator-select" class="game-select">
+                        <option value="+">Addition (+)</option>
+                        <option value="-">Subtraction (−)</option>
+                        <option value="*">Multiplication (×)</option>
+                        <option value="/">Division (÷)</option>
+                        <option value="bedmas">Mixed / BEDMAS</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Game Mode:</label>
+                    <select id="mode-select" class="game-select">
+                        <option value="all">All Tiles Visible</option>
+                        <option value="one">One Tile at a Time</option>
+                    </select>
+                </div>
+                <button id="btn-start" class="btn-action primary">Start Game</button>
+            </div>
+
+            <div class="grid-panel">
+                <div id="grid-board" class="math-grid">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Report Modal -->
+        <div class="modal-overlay" id="report-modal">
+            <div class="modal-content">
+                <h2 id="report-title">Grid Mastered!</h2>
+                <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;">
+                    <!-- Populated by JS -->
+                </div>
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                    <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                    <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="game.js"></script>
+    <script type="module" src="/js/firebase-init.js"></script>
+    <script type="module" src="/js/auth-modal.js"></script>
+</body>
+</html>

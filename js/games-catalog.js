@@ -271,6 +271,17 @@ export const GamesCatalog =[
 
     // --- MATH ---
     { 
+        id: 'math-grid-mastery', 
+        title: 'Math Grid Mastery', 
+        subject: 'math', 
+        category: 'Introductory Math Topics', 
+        desc: 'Master arithmetic and order of operations in an interactive grid.', 
+        play: 'Select an operator and mode. Calculate the correct integer for each cell based on its row and column headers. In BEDMAS mode, evaluate the expressions!', 
+        path: 'games/math/arithmetic/math-grid-mastery/index.html', 
+        isNoModal: true,
+        keywords:['math', 'arithmetic', 'addition', 'subtraction', 'multiplication', 'division', 'bedmas', 'order of operations', 'grid']
+    },
+    { 
         id: 'function-factory', 
         title: 'Function Factory (Transformations)', 
         subject: 'math', 
