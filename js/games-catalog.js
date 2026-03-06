@@ -144,15 +144,15 @@ export const GamesCatalog =[
         keywords:['equilibrium', 'kinetics', 'le chatelier', 'catalyst', 'rate', 'reactor']
     },
     { 
-        id: 'thermodynamic-trials', 
-        title: 'Thermodynamic Trials (Thermochemistry)', 
+        id: 'thermochemical-trials', 
+        title: 'ThermochemicalTrials (Thermochemistry)', 
         subject: 'chemistry', 
         category: 'Advanced Chemistry Topics', 
         desc: 'Engineer controlled chemical reactions to meet precise energy targets. Apply Chemistry 30 thermochemistry principles under pressure.', 
-        play: 'Analyze the incoming thermodynamic data such as calorimetry values, Hess\'s Law equations, or potential energy profiles. Calculate the correct enthalpy change, activation energy, or heat transfer, and select the right option to stabilize the energy core.', 
-        path: 'games/chemistry/advanced/thermodynamic-trials/index.html', 
+        play: 'Analyze the incoming thermochemical data such as calorimetry values, Hess\'s Law equations, or potential energy profiles. Calculate the correct enthalpy change, activation energy, or heat transfer, and select the right option to stabilize the energy core.', 
+        path: 'games/chemistry/advanced/thermochemical-trials/index.html', 
         isNoModal: true,
-        keywords:['thermodynamics', 'thermochemistry', 'enthalpy', 'hess', 'calorimetry', 'activation energy', 'exothermic', 'endothermic']
+        keywords:['thermochemical', 'thermochemistry', 'enthalpy', 'hess', 'calorimetry', 'activation energy', 'exothermic', 'endothermic']
     },
     { 
         id: 'covalent-props', 
