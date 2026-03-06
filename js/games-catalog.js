@@ -20,7 +20,7 @@ export const GamesCatalog =[
         play: 'Match descriptions and real-world examples to either Physical Change or Chemical Change.', 
         path: 'games/chemistry/intro/physical-vs-chemical-change-intro/index.html', 
         isNoModal: false,
-        keywords: ['physical', 'chemical', 'change', 'reaction', 'reversible', 'states of matter']
+        keywords:['physical', 'chemical', 'change', 'reaction', 'reversible', 'states of matter']
     },
     { 
         id: 'periodic-groups', 
@@ -209,7 +209,7 @@ export const GamesCatalog =[
         play: 'Place property tiles (such as organelles, energy changes, and chemical equations) into the correct columns.', 
         path: 'games/biology/intro/photosynthesis-vs-cellular-respiration/index.html', 
         isNoModal: false,
-        keywords: ['photosynthesis', 'cellular respiration', 'chloroplast', 'mitochondria', 'energy', 'glucose']
+        keywords:['photosynthesis', 'cellular respiration', 'chloroplast', 'mitochondria', 'energy', 'glucose']
     },
     { 
         id: 'mitosis-meiosis', 
@@ -278,7 +278,7 @@ export const GamesCatalog =[
         desc: 'Master arithmetic and order of operations in an interactive grid.', 
         play: 'Select an operator and mode. Calculate the correct integer for each cell based on its row and column headers. In BEDMAS mode, evaluate the expressions!', 
         path: 'games/math/arithmetic/math-grid-mastery/index.html', 
-        isNoModal: true,
+        isNoModal: false,
         keywords:['math', 'arithmetic', 'addition', 'subtraction', 'multiplication', 'division', 'bedmas', 'order of operations', 'grid']
     },
     { 

@@ -24,7 +24,7 @@
             <h1>Math Grid Mastery</h1>
             <p>Master arithmetic and order of operations in an interactive grid!</p>
             <div class="game-stats">
-                <div class="stat-box">Time: <span id="timer-val">00:00</span></div>
+                <div class="stat-box" id="timer-container">Time: <span id="timer-val">00:00</span></div>
                 <div id="mistakes-display" class="stat-box hp-box">Mistakes: 0 / 10</div>
             </div>
         </header>
@@ -39,6 +39,14 @@
                         <option value="*">Multiplication (×)</option>
                         <option value="/">Division (÷)</option>
                         <option value="bedmas">Mixed / BEDMAS</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Difficulty:</label>
+                    <select id="difficulty-select" class="game-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
                     </select>
                 </div>
                 <div class="control-group">
