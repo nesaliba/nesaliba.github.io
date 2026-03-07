@@ -1,4 +1,3 @@
-// js/games-catalog.js
 export const GamesCatalog =[
     // --- CHEMISTRY ---
     { 
@@ -198,6 +197,17 @@ export const GamesCatalog =[
         path: 'games/chemistry/intermediate/solution-strategist/index.html', 
         isNoModal: true,
         keywords:['concentration', 'dilution', 'molarity', 'solubility', 'precipitation', 'moles', 'solutions', 'chemistry 20']
+    },
+    { 
+        id: 'titration-tower', 
+        title: 'Titration Tower (Acid-Base Mastery)', 
+        subject: 'chemistry', 
+        category: 'Advanced Chemistry Topics', 
+        desc: 'Prevent a laboratory collapse by performing precise titrations. Analyze live titration curves and indicator colors to neutralize unknown solutions.', 
+        play: 'Add titrant carefully to find the equivalence point. Use the curve and indicator colors to calculate the unknown molar concentration before submitting your answer.', 
+        path: 'games/chemistry/advanced/titration-tower/index.html', 
+        isNoModal: true,
+        keywords:['titration', 'acid', 'base', 'ph', 'curve', 'indicators', 'polyprotic', 'equivalence', 'neutralization']
     },
     { 
         id: 'gas-laws-gauntlet', 
