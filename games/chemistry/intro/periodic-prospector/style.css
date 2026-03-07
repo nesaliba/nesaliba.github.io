@@ -1,0 +1,180 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-dark: #f8fafc;
+    --primary: #f59e0b; /* Amber/Gold for prospector theme */
+    --subject-primary: #f59e0b;
+    --subject-hover: #d97706;
+    --border-color: #334155;
+    --danger: #ef4444;
+    --success: #10b981;
+    --shadow: 0 4px 15px rgba(0,0,0,0.5);
+    
+    --hud-green: #4ade80;
+    --hud-cyan: #22d3ee;
+    
+    /* Biomes */
+    --biome-volcanic: linear-gradient(to bottom, #450a0a, #000000);
+    --biome-trench: linear-gradient(to bottom, #082f49, #020617);
+    --biome-arctic: linear-gradient(to bottom, #e0f2fe, #0c4a6e);
+    --biome-cave: linear-gradient(to bottom, #2e1065, #000000);
+}
+
+body { background-color: var(--bg-color); color: var(--text-dark); }
+.game-header { border-bottom: 4px solid var(--primary); background-color: #020617; }
+.game-header h1 { font-family: 'Share Tech Mono', monospace; color: var(--primary); letter-spacing: 2px; }
+
+.game-container {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; padding: 2rem 1rem; 
+    max-width: 950px; margin: 0 auto; width: 100%;
+}
+
+.prospector-panel {
+    background: var(--card-bg); padding: 2rem; border-radius: 12px;
+    box-shadow: var(--shadow); width: 100%; margin-bottom: 2rem;
+    border: 2px solid var(--border-color); border-top: 6px solid var(--primary);
+    position: relative; overflow: hidden;
+}
+
+.panel-header {
+    color: var(--primary); font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;
+}
+
+.hud-layout {
+    display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .hud-layout { grid-template-columns: 1fr; }
+}
+
+/* Viewport / Biome Area */
+.viewport-frame {
+    background: #000; border: 4px solid #475569; border-radius: 8px;
+    height: 280px; position: relative; overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.biome-bg {
+    position: absolute; inset: 0; z-index: 1; transition: background 1s ease;
+}
+
+/* Biome Styles */
+.volcanic { background: var(--biome-volcanic); }
+.trench { background: var(--biome-trench); }
+.arctic { background: var(--biome-arctic); }
+.cave { background: var(--biome-cave); }
+
+/* Environmental Effects */
+.env-particles {
+    position: absolute; inset: 0; z-index: 2; opacity: 0.4;
+    background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+    background-size: 20px 20px; animation: drift 20s linear infinite;
+}
+@keyframes drift { from { background-position: 0 0; } to { background-position: 100% 100%; } }
+
+/* The Unknown Deposit */
+.deposit-node {
+    z-index: 5; position: relative; width: 120px; height: 120px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.rock-shell {
+    width: 100px; height: 90px; background: #334155; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 10px 15px rgba(0,0,0,0.5);
+    transition: all 0.5s ease; position: relative; display: flex; align-items: center; justify-content: center;
+}
+
+.rock-shell::after {
+    content: '?'; font-family: 'Share Tech Mono', monospace; font-size: 3rem; color: #94a3b8;
+    font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Revealed Crystal States */
+.deposit-node.revealed .rock-shell {
+    border-radius: 10px 30px 10px 30px; transform: scale(1.1);
+}
+.deposit-node.revealed .rock-shell::after { content: attr(data-sym); color: #fff; }
+
+.cat-alkali .rock-shell { background: #ef4444; box-shadow: 0 0 30px #ef4444, inset 0 0 20px #fca5a5; }
+.cat-noble .rock-shell { background: #06b6d4; box-shadow: 0 0 30px #06b6d4, inset 0 0 20px #67e8f9; animation: pulse 2s infinite; }
+.cat-transition .rock-shell { background: #eab308; box-shadow: 0 0 20px #eab308, inset 0 0 15px #fef08a; }
+.cat-halogen .rock-shell { background: #22c55e; box-shadow: 0 0 30px #22c55e, inset 0 0 20px #86efac; }
+.cat-nonmetal .rock-shell { background: #8b5cf6; box-shadow: 0 0 20px #8b5cf6, inset 0 0 15px #c4b5fd; }
+
+@keyframes pulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.5); } }
+
+/* Scanner HUD */
+.scanner-hud {
+    background: #020617; border: 2px solid #1e293b; border-radius: 8px;
+    padding: 1.5rem; font-family: 'Share Tech Mono', monospace;
+    display: flex; flex-direction: column; gap: 0.75rem;
+    box-shadow: inset 0 0 15px rgba(74, 222, 128, 0.1);
+}
+
+.hud-title { color: var(--hud-cyan); font-size: 1.1rem; border-bottom: 1px dashed var(--hud-cyan); padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+.data-line { display: flex; justify-content: space-between; font-size: 0.95rem; }
+.data-label { color: #94a3b8; }
+.data-value { color: var(--hud-green); font-weight: bold; }
+.field-notes { margin-top: auto; padding-top: 1rem; border-top: 1px dashed #334155; color: #facc15; font-size: 0.9rem; line-height: 1.4; }
+
+/* Options Grid */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.option-btn {
+    background: var(--card-bg); border: 2px solid var(--border-color);
+    color: var(--text-dark); padding: 1.25rem 1rem; border-radius: 8px;
+    font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+@media (hover: hover) {
+    .option-btn:hover:not(:disabled) {
+        border-color: var(--primary); background: rgba(245, 158, 11, 0.1); color: var(--primary);
+        transform: translateY(-2px);
+    }
+}
+
+.option-btn.correct { background: var(--success); border-color: var(--success); color: #020617; }
+.option-btn.wrong { background: var(--danger); border-color: var(--danger); color: white; animation: shake 0.3s; }
+.option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-6px); }
+}
+
+/* Hazard Animations */
+.hazard-explosion { animation: explosion 0.6s ease-out; }
+@keyframes explosion {
+    0% { filter: brightness(1); transform: scale(1); }
+    20% { filter: brightness(4) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(1.1); }
+    50% { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(1.05) translate(10px, -10px); }
+    80% { transform: scale(1) translate(-10px, 10px); }
+    100% { filter: brightness(1); transform: scale(1) translate(0, 0); }
+}
+
+.hazard-corrosion { animation: corrosion 1s ease-out; }
+@keyframes corrosion {
+    0% { filter: contrast(1); }
+    30% { filter: contrast(0.5) sepia(1) hue-rotate(50deg) saturate(3) blur(2px); }
+    70% { filter: contrast(0.8) sepia(0.5) hue-rotate(50deg) saturate(2) blur(1px); }
+    100% { filter: contrast(1) blur(0); }
+}
+
+.hazard-pressure { animation: pressure 0.8s ease-in-out; }
+@keyframes pressure {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(0.95); }
+    75% { transform: scale(1.02); }
+}
+
+@media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+}

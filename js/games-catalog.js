@@ -34,6 +34,17 @@ export const GamesCatalog =[
         keywords:['periodic table', 'groups', 'alkali', 'halogens', 'noble gases', 'alkaline earth', 'valence electrons']
     },
     { 
+        id: 'periodic-prospector', 
+        title: 'Periodic Prospector (Trends & Elements)', 
+        subject: 'chemistry', 
+        category: 'Introductory Chemistry Topics', 
+        desc: 'Act as a field scientist exploring uncharted biomes. Analyze atomic data to identify unknown elements based on periodic trends.', 
+        play: 'Read the scanner HUD for clues on atomic radius, ionization energy, electronegativity, and reactivity. Select the correct element to extract it safely without causing an environmental hazard!', 
+        path: 'games/chemistry/intro/periodic-prospector/index.html', 
+        isNoModal: true,
+        keywords:['periodic table', 'trends', 'atomic radius', 'ionization energy', 'electronegativity', 'alkali', 'halogens', 'noble gases', 'science 10']
+    },
+    { 
         id: 'ionic-molecular', 
         title: 'Ionic & Molecular Compounds Intro', 
         subject: 'chemistry', 
