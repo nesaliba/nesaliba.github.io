@@ -174,14 +174,15 @@ body.dark-lab-theme {
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
     z-index: 1;
+    pointer-events: none; /* rings themselves don't capture events */
 }
 
 .bohr-ring:hover {
-    background: rgba(0, 240, 255, 0.05);
+    background: transparent;
     border-color: var(--qa-cyan);
 }
 
-.bohr-ring[data-shell="1"] { width: 80px; height: 80px; }
+.bohr-ring[data-shell="1"] { width: 80px;  height: 80px;  }
 .bohr-ring[data-shell="2"] { width: 140px; height: 140px; }
 .bohr-ring[data-shell="3"] { width: 200px; height: 200px; }
 .bohr-ring[data-shell="4"] { width: 260px; height: 260px; }

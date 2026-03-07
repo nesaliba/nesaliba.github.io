@@ -311,14 +311,15 @@ class QuantumArchitect extends BaseGame {
                 </div>
                 <div id="electron-pool" class="electron-pool"></div>
             `;
-            
+
             const diagram = document.getElementById('bohr-diagram');
-            const radii = {1: 40, 2: 70, 3: 100, 4: 130};
-            
-            for(let s = 1; s <= 4; s++) {
+            const radii = { 1: 40, 2: 70, 3: 100, 4: 130 };
+            const ringThickness = 18;
+
+            for (let s = 1; s <= 4; s++) {
                 let count = this.playerConfig[`Shell ${s}`];
                 let r = radii[s];
-                for(let i = 0; i < count; i++) {
+                for (let i = 0; i < count; i++) {
                     let angle = (i / count) * Math.PI * 2;
                     let x = 150 + r * Math.cos(angle);
                     let y = 150 + r * Math.sin(angle);
@@ -337,9 +338,10 @@ class QuantumArchitect extends BaseGame {
             }
 
             const pool = document.getElementById('electron-pool');
-            let totalPlaced = Object.values(this.playerConfig).reduce((a,b) => a + b, 0);
-            let poolCount = 20 - totalPlaced;
-            for(let i = 0; i < poolCount; i++) {
+            let totalPlaced = Object.values(this.playerConfig).reduce((a, b) => a + b, 0);
+            const totalElectrons = this.targetEl.z - this.targetCharge;
+            let poolCount = totalElectrons - totalPlaced;
+            for (let i = 0; i < poolCount; i++) {
                 let e = document.createElement('div');
                 e.className = 'pool-electron';
                 if (!this.isLocked) {
@@ -350,26 +352,44 @@ class QuantumArchitect extends BaseGame {
             }
 
             if (!this.isLocked) {
-                diagram.querySelectorAll('.bohr-ring').forEach(ring => {
-                    ring.ondragover = (ev) => ev.preventDefault();
-                    ring.onclick = () => {
-                        let s = parseInt(ring.dataset.shell);
+                for (let s = 1; s <= 4; s++) {
+                    const r = radii[s];
+                    const size = r * 2 + ringThickness;
+                    const hitZone = document.createElement('div');
+                    hitZone.style.cssText = `
+                        position: absolute;
+                        top: 50%; left: 50%;
+                        width: ${size}px; height: ${size}px;
+                        margin-left: ${-size / 2}px; margin-top: ${-size / 2}px;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        z-index: ${5 - s};
+                        background: transparent;
+                    `;
+                    if (s > 1) {
+                        const innerR = radii[s - 1];
+                        const innerSize = innerR * 2 + ringThickness;
+                        hitZone.style.clipPath = `path('evenodd')`;
+                        hitZone.style.setProperty('--inner-ratio', `${(innerSize / size) * 50}%`);
+                    }
+                    hitZone.ondragover = (ev) => ev.preventDefault();
+                    hitZone.onclick = () => {
                         if (this.playerConfig[`Shell ${s}`] < this.maxE[`Shell ${s}`]) {
                             this.playerConfig[`Shell ${s}`]++;
                             this.renderBuilder();
                         }
                     };
-                    ring.ondrop = (ev) => {
+                    hitZone.ondrop = (ev) => {
                         ev.preventDefault();
                         if (ev.dataTransfer.getData('text/plain') === 'electron') {
-                            let s = parseInt(ring.dataset.shell);
                             if (this.playerConfig[`Shell ${s}`] < this.maxE[`Shell ${s}`]) {
                                 this.playerConfig[`Shell ${s}`]++;
                                 this.renderBuilder();
                             }
                         }
                     };
-                });
+                    diagram.appendChild(hitZone);
+                }
             }
         } else {
             const orbitalBoard = document.createElement('div');
