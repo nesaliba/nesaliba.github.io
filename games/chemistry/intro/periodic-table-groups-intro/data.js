@@ -3,7 +3,7 @@ export const gameData = {
     backUrl: "/Chemistry.html",
     minWidth: 900, // Optimal for 4 data columns with larger text
     columns: ["", "Alkali Metals", "Halogens", "Alkaline Earth Metals", "Noble Gases"],
-    rows:["Group or Family", "Property of Metal or Non-Metal", "Number of Valence e-", "Relative Reactivity", "Example Element: Smbol", "Example Element: Name"],
+    rows:["Group or Family", "Property of Metal or Non-Metal", "Number of Valence e-", "Relative Reactivity", "Example Element: Symbol", "Example Element: Name"],
     data:[
         { matchId: "am-grp", text: "Group 1 Column 1" },
         { matchId: "hal-grp", text: "Group 17 Column 17" },
