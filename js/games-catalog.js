@@ -220,6 +220,17 @@ export const GamesCatalog =[
         isNoModal: true,
         keywords:['gas laws', 'pressure', 'volume', 'temperature', 'boyle', 'charles', 'ideal gas', 'chemistry 20']
     },
+    { 
+        id: 'equilibrium-engine', 
+        title: 'Equilibrium Engine (Le Chatelier)', 
+        subject: 'chemistry', 
+        category: 'Advanced Chemistry Topics', 
+        desc: 'Manage live chemical reactors. Manipulate concentration, temperature, and pressure to apply Le Chatelier\'s Principle and maintain equilibrium.', 
+        play: 'Analyze the Q vs. K gauges and system stresses. Select the correct intervention to shift equilibrium, maximize yield, and stabilize the reactor.', 
+        path: 'games/chemistry/advanced/equilibrium-engine/index.html', 
+        isNoModal: true,
+        keywords:['equilibrium', 'le chatelier', 'q vs k', 'temperature', 'pressure', 'concentration', 'reactor', 'haber process']
+    },
 
     // --- BIOLOGY ---
     { 
