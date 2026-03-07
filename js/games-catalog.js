@@ -146,7 +146,7 @@ export const GamesCatalog =[
     },
     { 
         id: 'thermochemical-trials', 
-        title: 'ThermochemicalTrials (Thermochemistry)', 
+        title: 'Thermochemical Trials (Thermochemistry)', 
         subject: 'chemistry', 
         category: 'Advanced Chemistry Topics', 
         desc: 'Engineer controlled chemical reactions to meet precise energy targets. Apply Chemistry 30 thermochemistry principles under pressure.', 
