@@ -1,12 +1,12 @@
 import { BaseGame } from '/games/shared/base-game.js';
 
 const INDICATORS =[
-    { name: "Methyl Orange", lowPH: 3.1, highPH: 4.4, lowColor: [255, 0, 0], highColor: [255, 255, 0] },
+    { name: "Methyl Orange", lowPH: 3.1, highPH: 4.4, lowColor: [255, 0, 0], highColor:[255, 255, 0] },
     { name: "Bromocresol Green", lowPH: 3.8, highPH: 5.4, lowColor:[255, 255, 0], highColor:[0, 0, 255] },
-    { name: "Methyl Red", lowPH: 4.4, highPH: 6.2, lowColor: [255, 0, 0], highColor:[255, 255, 0] },
-    { name: "Bromothymol Blue", lowPH: 6.0, highPH: 7.6, lowColor:[255, 255, 0], highColor: [0, 0, 255] },
-    { name: "Phenol Red", lowPH: 6.4, highPH: 8.0, lowColor: [255, 255, 0], highColor:[255, 0, 0] },
-    { name: "Phenolphthalein", lowPH: 8.2, highPH: 10.0, lowColor:[200, 200, 200], highColor: [255, 0, 255] }
+    { name: "Methyl Red", lowPH: 4.4, highPH: 6.2, lowColor:[255, 0, 0], highColor:[255, 255, 0] },
+    { name: "Bromothymol Blue", lowPH: 6.0, highPH: 7.6, lowColor:[255, 255, 0], highColor:[0, 0, 255] },
+    { name: "Phenol Red", lowPH: 6.4, highPH: 8.0, lowColor:[255, 255, 0], highColor:[255, 0, 0] },
+    { name: "Phenolphthalein", lowPH: 8.2, highPH: 10.0, lowColor:[200, 200, 200], highColor:[255, 0, 255] }
 ];
 
 const ZONES =[
@@ -78,7 +78,7 @@ class TitrationTowerGame extends BaseGame {
                                 </div>
                                 
                                 <div class="submit-section">
-                                    <input type="number" id="input-ca" class="input-ca" step="0.001" placeholder="Calculated Ca (M)">
+                                    <input type="number" id="input-ca" class="input-ca" step="0.001" placeholder="Acid Concentration (M)">
                                     <button id="btn-submit" class="btn-submit">Submit Neutralization</button>
                                 </div>
 
@@ -104,7 +104,7 @@ class TitrationTowerGame extends BaseGame {
         this.ctx = this.canvas.getContext('2d');
         
         document.querySelectorAll('.btn-add').forEach(btn => {
-            btn.addEventListener('click', (e) => this.addTitrant(parseFloat(e.target.dataset.vol)));
+            btn.addEventListener('click', () => this.addTitrant(parseFloat(btn.dataset.vol)));
         });
 
         document.getElementById('btn-submit').addEventListener('click', () => this.checkNeutralization());
@@ -243,9 +243,10 @@ class TitrationTowerGame extends BaseGame {
         if (this.currentVb >= 60) return;
         this.initAudio();
         
-        const steps = amount / 0.1;
+        // Ensure Math.round is used so floating point arithmetic stays clean
+        const steps = Math.round(amount / 0.1);
         for(let i=0; i<steps; i++) {
-            this.currentVb += 0.1;
+            this.currentVb = Math.round((this.currentVb + 0.1) * 10) / 10;
             if(this.currentVb > 60) { this.currentVb = 60; break; }
             this.currentPH = this.getPH(this.currentVb, this.Va, this.Ca, this.Cb, this.acidProfile);
             this.graphData.push({v: this.currentVb, ph: this.currentPH});
@@ -286,8 +287,12 @@ class TitrationTowerGame extends BaseGame {
         
         this.ctx.clearRect(0, 0, w, h);
         
-        this.ctx.strokeStyle = 'var(--crt-grid)';
-        this.ctx.fillStyle = 'var(--crt-grid)';
+        // Hex colors explicitly provided to avoid HTML Canvas missing CSS variable scope natively
+        const primaryColor = '#39ff14';
+        const gridColor = '#0d220d';
+
+        this.ctx.strokeStyle = gridColor;
+        this.ctx.fillStyle = gridColor;
         this.ctx.font = '10px "Share Tech Mono"';
         this.ctx.lineWidth = 1;
         
@@ -302,7 +307,7 @@ class TitrationTowerGame extends BaseGame {
             this.ctx.fillText(i, 5, y+3);
         }
         
-        this.ctx.strokeStyle = 'var(--primary)';
+        this.ctx.strokeStyle = primaryColor;
         this.ctx.beginPath();
         this.ctx.moveTo(30, 10); this.ctx.lineTo(30, h-20); this.ctx.lineTo(w-10, h-20);
         this.ctx.stroke();
@@ -310,7 +315,7 @@ class TitrationTowerGame extends BaseGame {
         if (this.graphData.length === 0) return;
 
         this.ctx.shadowBlur = 6;
-        this.ctx.shadowColor = 'var(--primary)';
+        this.ctx.shadowColor = primaryColor;
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         
@@ -334,8 +339,8 @@ class TitrationTowerGame extends BaseGame {
         if(this.hintsUsed === 1) {
             hintText = `Look at the ${this.currentIndicators[0].name} indicator. Its color shifts between pH ${this.currentIndicators[0].lowPH} and ${this.currentIndicators[0].highPH}.`;
         } else if(this.hintsUsed === 2) {
-            const formula = this.acidProfile.protons === 1 ? "Ca * Va = Cb * Vb" : `${this.acidProfile.protons} * Ca * Va = Cb * Vb`;
-            hintText = `Use the titration formula: ${formula}. Find the steep jump on the graph to get Vb.`;
+            const formula = this.acidProfile.protons === 1 ? "[Acid] × V_acid = [Base] × V_base" : `${this.acidProfile.protons} × [Acid] × V_acid =[Base] × V_base`;
+            hintText = `Use the titration formula: ${formula}. Find the steep jump on the graph to get V_base.`;
         } else if(this.hintsUsed === 3) {
             const trueVeq = (this.acidProfile.protons * this.Ca * this.Va) / this.Cb;
             hintText = `The true equivalence point volume is exactly ${trueVeq.toFixed(1)} mL.`;
@@ -363,7 +368,7 @@ class TitrationTowerGame extends BaseGame {
         const playerCa = parseFloat(document.getElementById('input-ca').value);
         if(isNaN(playerCa)) {
             this.playMiss();
-            this.showDiagnostic("Error: No concentration entered. Please calculate Ca.", true, true);
+            this.showDiagnostic("Error: No concentration entered. Please calculate the acid concentration.", true, true);
             return;
         }
         
