@@ -26,6 +26,7 @@ details[open] summary { border-bottom: 1px solid var(--border-color); }
 .theme-phys .game-link { border-left-color: var(--phys-color); }
 .theme-math .game-link { border-left-color: var(--math-color); }
 .theme-eng .game-link { border-left-color: var(--eng-color); }
+.theme-soc  .game-link { border-left-color: var(--soc-color);  }
 
 /* Info Button Styles */
 .info-btn {

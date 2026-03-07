@@ -15,6 +15,7 @@
 .card.phys:hover { box-shadow: 0 10px 25px rgba(var(--phys-rgb), 0.4); }
 .card.math:hover { box-shadow: 0 10px 25px rgba(var(--math-rgb), 0.4); }
 .card.eng:hover { box-shadow: 0 10px 25px rgba(var(--eng-rgb), 0.4); }
+.card.soc:hover  { box-shadow: 0 10px 25px rgba(var(--soc-rgb),  0.4); }
 
 .card-header { height: 120px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: bold; }
 .card-body { padding: 1.5rem; }
@@ -25,5 +26,6 @@
 .card.phys .card-header { background-color: var(--phys-color); }
 .card.math .card-header { background-color: var(--math-color); }
 .card.eng .card-header { background-color: var(--eng-color); }
+.card.soc  .card-header { background-color: var(--soc-color);  }
 
 @keyframes scrollCarousel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }

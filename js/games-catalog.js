@@ -404,4 +404,7 @@ export const GamesCatalog =[
         isNoModal: true,
         keywords:['english', 'rhetoric', 'debate', 'persuasion', 'fallacies', 'sophist', 'appeals', 'logos', 'ethos', 'pathos']
     }
+    
+    // --- SOCIAL STUDIES ---
+
 ];

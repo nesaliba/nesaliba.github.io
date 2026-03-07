@@ -20,13 +20,14 @@ function setupHeroCanvas() {
     window.addEventListener('resize', resize);
     resize();
 
-    // Five dots — one per subject (chem, bio, phys, math, eng)
-    const circles =[
-        { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'   }, // chem – blue
-        { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'    }, // bio  – green
-        { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'    }, // phys – purple
-        { x: width * 0.8,  y: height * 0.65, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5,  color: 'rgba(153, 27, 27, 0.12)'    }, // math – red
-        { x: width * 0.15, y: height * 0.75, r: Math.max(90,  width * 0.09), vx: 0.35, vy: -0.3, color: 'rgba(133, 77, 14, 0.13)'    }  // eng  – amber
+    // Six dots — one per subject (chem, bio, phys, math, eng, soc)
+    const circles = [
+        { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'  }, // chem – blue
+        { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'   }, // bio  – green
+        { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'   }, // phys – purple
+        { x: width * 0.8,  y: height * 0.65, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5,  color: 'rgba(153, 27, 27, 0.12)'   }, // math – red
+        { x: width * 0.15, y: height * 0.75, r: Math.max(90,  width * 0.09), vx: 0.35, vy: -0.3, color: 'rgba(133, 77, 14, 0.13)'   }, // eng  – amber
+        { x: width * 0.45, y: height * 0.35, r: Math.max(85,  width * 0.08), vx: -0.4, vy: 0.2,  color: 'rgba(13, 148, 136, 0.14)'  }  // soc  – teal
     ];
 
     function animate() {

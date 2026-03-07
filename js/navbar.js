@@ -29,6 +29,7 @@ class SiteNavbar extends HTMLElement {
                 <a href="Physics.html">Physics</a>
                 <a href="Math.html">Math</a>
                 <a href="English.html">English</a>
+                <a href="Social.html">Social Studies</a>
 
                 <div class="auth-container">
                     <button id="auth-btn" class="btn-login" style="${isLoggedIn ? 'display: none;' : ''}">Login</button>

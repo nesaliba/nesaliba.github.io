@@ -19,6 +19,7 @@
 .theme-phys.hero-small { background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--phys-rgb), 0.85)); box-shadow: 0 10px 40px rgba(var(--phys-rgb), 0.4); }
 .theme-math.hero-small { background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--math-rgb), 0.85)); box-shadow: 0 10px 40px rgba(var(--math-rgb), 0.4); }
 .theme-eng.hero-small { background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--eng-rgb), 0.85)); box-shadow: 0 10px 40px rgba(var(--eng-rgb), 0.4); }
+.theme-soc.hero-small  { background: linear-gradient(135deg, var(--primary-dark) 40%, rgba(var(--soc-rgb),  0.85)); box-shadow: 0 10px 40px rgba(var(--soc-rgb),  0.4); }
 
 .hero h1 {
     font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: clamp(0.5rem, 2vw, 1rem);
@@ -45,4 +46,4 @@
     60% {transform: translateY(-5px);}
 }
 
-.theme-chem h1, .theme-bio h1, .theme-phys h1, .theme-math h1, .theme-eng h1 { -webkit-text-fill-color: white; }
+.theme-chem h1, .theme-bio h1, .theme-phys h1, .theme-math h1, .theme-eng h1, .theme-soc h1 { -webkit-text-fill-color: white; }

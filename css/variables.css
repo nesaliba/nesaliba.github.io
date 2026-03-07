@@ -30,6 +30,9 @@
     --eng-color: #854d0e;  
     --eng-rgb: 133, 77, 14;
 
+    --soc-color: #0d9488;  
+    --soc-rgb: 13, 148, 136;
+
     /* Custom Scrollbar Colors */
     --scrollbar-track: var(--bg-light);
     --scrollbar-thumb: #cbd5e1;
