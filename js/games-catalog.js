@@ -1,3 +1,4 @@
+// js/games-catalog.js
 export const GamesCatalog =[
     // --- CHEMISTRY ---
     { 
@@ -86,7 +87,7 @@ export const GamesCatalog =[
         play: 'Match definitions, acronyms, half-reactions, and process examples to either Oxidation or Reduction.', 
         path: 'games/chemistry/intermediate/oxidation-reduction-comparison/index.html', 
         isNoModal: false,
-        keywords: ['oxidation', 'reduction', 'redox', 'electrons', 'leo ger', 'half-reaction']
+        keywords:['oxidation', 'reduction', 'redox', 'electrons', 'leo ger', 'half-reaction']
     },
     { 
         id: 'endo-exo', 
@@ -153,6 +154,17 @@ export const GamesCatalog =[
         path: 'games/chemistry/advanced/thermochemical-trials/index.html', 
         isNoModal: true,
         keywords:['thermochemical', 'thermochemistry', 'enthalpy', 'hess', 'calorimetry', 'activation energy', 'exothermic', 'endothermic']
+    },
+    { 
+        id: 'quantum-architect', 
+        title: 'Quantum Architect (Atomic Structure)', 
+        subject: 'chemistry', 
+        category: 'Advanced Chemistry Topics', 
+        desc: 'Reconstruct atomic and ionic structures from experimental evidence like spectra and ionization energies.', 
+        play: 'Analyze the evidence panel, build the correct electron configuration, and identify the element on the periodic table.', 
+        path: 'games/chemistry/advanced/quantum-architect/index.html', 
+        isNoModal: true,
+        keywords:['quantum', 'atom', 'spectra', 'ionization', 'electron configuration', 'bohr', 'orbitals']
     },
     { 
         id: 'covalent-props', 
