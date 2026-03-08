@@ -1,5 +1,5 @@
 import { BaseGame } from '/games/shared/base-game.js';
-import { db, doc, getDoc, setDoc } from '/js/firebase-init.js';
+import { db, doc, getDoc } from '/js/firebase-init.js';
 import { StateManager } from '/js/state-manager.js';
 
 class SovereigntyStandoff extends BaseGame {
@@ -52,67 +52,7 @@ class SovereigntyStandoff extends BaseGame {
             if (docSnap.exists()) {
                 this.questionBank = docSnap.data().crises;
             } else {
-                promptDisplay.innerHTML = "First-time setup: Uploading default dossier to secure server...";
-                
-                const defaultCrises =[
-                    {
-                        prompt: "SUBJECT: ARCTIC RESOURCE CORRIDOR\n\nTwo rival nations claim overlapping Exclusive Economic Zones in the newly thawed Arctic. A skirmish has broken out between coast guards over a newly discovered oil reserve.",
-                        answer: "Propose a joint-custody resource extraction treaty under UNCLOS arbitration.",
-                        wrongOptions:[
-                            "Deploy naval strike groups to enforce unilateral sovereignty.",
-                            "Completely abandon the claim to appease the rival nation.",
-                            "Fund a proxy rebel group in the rival's capital to distract them."
-                        ]
-                    },
-                    {
-                        prompt: "SUBJECT: COLLAPSING CEASEFIRE\n\nA fragile ceasefire in a resource-rich region is breaking down after a leaked communiqué revealed unauthorized troop movements by the leading military faction.",
-                        answer: "Dispatch international peacekeeping observers while freezing targeted assets of violating generals.",
-                        wrongOptions:[
-                            "Immediately launch preemptive airstrikes on suspected military buildups.",
-                            "Ignore the intelligence and continue funding the regional government unconditionally.",
-                            "Withdraw all diplomatic staff and close borders to all refugees fleeing the area."
-                        ]
-                    },
-                    {
-                        prompt: "SUBJECT: REFUGEE EMERGENCY\n\nA sudden regime collapse has pushed 500,000 refugees to your heavily militarized border. Winter is approaching rapidly, and resources are critically low.",
-                        answer: "Establish UNHCR-managed humanitarian corridors while processing asylum claims sequentially.",
-                        wrongOptions:[
-                            "Seal the border completely using military force to protect domestic stability.",
-                            "Detain all incoming populations in indefinite holding facilities without processing.",
-                            "Deport all refugees back into the active conflict zone immediately."
-                        ]
-                    },
-                    {
-                        prompt: "SUBJECT: SOVEREIGNTY VS INTERVENTION\n\nA sovereign state is accused of severe human rights violations against an ethnic minority. The state claims these internal matters are protected by absolute sovereignty.",
-                        answer: "Invoke the Responsibility to Protect (R2P) doctrine to push for targeted Security Council sanctions.",
-                        wrongOptions:[
-                            "Invade the country unilaterally without a UN mandate.",
-                            "Publicly support the state's right to absolute sovereignty regardless of actions.",
-                            "Cut off all global internet and civilian trade access to the region."
-                        ]
-                    },
-                    {
-                        prompt: "SUBJECT: PANDEMIC NATIONALISM\n\nA highly infectious new virus has emerged. Your nation holds the only patent for an effective vaccine, while developing nations face a massive health collapse.",
-                        answer: "Waive intellectual property rights temporarily to allow global generic manufacturing.",
-                        wrongOptions:[
-                            "Hoard all supplies for your own population, ignoring the global outbreak.",
-                            "Sell the vaccine at a 500% markup to the highest bidding nations only.",
-                            "Seize all medical shipments crossing through your international airspace."
-                        ]
-                    },
-                    {
-                        prompt: "SUBJECT: CYBER ELECTION INTERFERENCE\n\nIntelligence agencies confirm a foreign superpower has launched a massive misinformation cyber-campaign to destabilize your upcoming democratic elections.",
-                        answer: "Publicly declassify the evidence and impose coordinated multilateral economic sanctions.",
-                        wrongOptions:[
-                            "Launch a destructive retaliatory cyber-attack on their civilian power grid.",
-                            "Cancel the democratic elections indefinitely for 'national security'.",
-                            "Cover up the interference to prevent public panic."
-                        ]
-                    }
-                ];
-
-                await setDoc(docRef, { crises: defaultCrises });
-                this.questionBank = defaultCrises;
+                throw new Error("Question bank not found in database.");
             }
         } catch (error) {
             console.error("Error loading questions:", error);
