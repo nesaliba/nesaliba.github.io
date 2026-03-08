@@ -403,8 +403,18 @@ export const GamesCatalog =[
         path: 'games/english/rhetoric-royale/index.html', 
         isNoModal: true,
         keywords:['english', 'rhetoric', 'debate', 'persuasion', 'fallacies', 'sophist', 'appeals', 'logos', 'ethos', 'pathos']
-    }
+    },
     
     // --- SOCIAL STUDIES ---
-
+    { 
+        id: 'sovereignty-standoff', 
+        title: 'Sovereignty Standoff (Global Crises)', 
+        subject: 'social', 
+        category: 'Advanced Social Studies Topics', 
+        desc: 'Navigate high-stakes international crises. Balance national self-interest against international obligations in this political decision-making game.', 
+        play: 'Read the declassified crisis dossier. Select the policy action that best stabilizes the region and adheres to international law without triggering a global conflict.', 
+        path: 'games/social/advanced/sovereignty-standoff/index.html', 
+        isNoModal: true,
+        keywords:['social studies', 'politics', 'geopolitics', 'sovereignty', 'crisis', 'un', 'international law', 'humanitarian']
+    }
 ];
