@@ -1,10 +1,23 @@
 import { BaseGame } from '/games/shared/base-game.js';
 import { StateManager } from '/js/state-manager.js';
 
+function loadMathLive() {
+    if (customElements.get('math-field')) return Promise.resolve(); // already loaded
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/mathlive';
+        script.defer = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
 class FunctionFactory extends BaseGame {
     constructor() {
         super("Function Factory");
-        this.initDOM(); // Initialize DOM before looking up the canvas
+        this.mathLiveReady = loadMathLive(); // kick off load immediately, non-blocking
+        this.initDOM();
         
         this.mode = 'practice';
         this.score = 0;
@@ -202,36 +215,37 @@ class FunctionFactory extends BaseGame {
                 this.generateTarget();
             }
         } else if (mode === 'challenge') {
-            controls.innerHTML = `
-                <div class="math-field-container">
-                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">Enter Equation:</label>
-                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--text-dark);">
-                        y = <math-field id="math-input" style="flex: 1;"></math-field>
+            this.mathLiveReady.then(() => {
+                controls.innerHTML = `
+                    <div class="math-field-container">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">Enter Equation:</label>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--text-dark);">
+                            y = <math-field id="math-input" style="flex: 1;"></math-field>
+                        </div>
                     </div>
-                </div>
-                <button id="btn-submit-math" class="btn-action primary" style="width:100%;">Verify Equation</button>
-            `;
-            
-            const mf = document.getElementById('math-input');
-            mf.addEventListener('input', () => {
-                this.currentExpression = mf.getValue('ascii-math');
-                this.updateGraph();
-            });
+                    <button id="btn-submit-math" class="btn-action primary" style="width:100%;">Verify Equation</button>
+                `;
 
-            // Trigger Verify Equation smoothly on 'Enter' keyup
-            mf.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
+                const mf = document.getElementById('math-input');
+                mf.addEventListener('input', () => {
+                    this.currentExpression = mf.getValue('ascii-math');
+                    this.updateGraph();
+                });
+
+                mf.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        this.initAudio();
+                        this.checkChallenge();
+                    }
+                });
+
+                document.getElementById('btn-submit-math').addEventListener('click', () => {
                     this.initAudio();
                     this.checkChallenge();
-                }
+                });
+
+                this.generateTarget();
             });
-            
-            document.getElementById('btn-submit-math').addEventListener('click', () => {
-                this.initAudio();
-                this.checkChallenge();
-            });
-            
-            this.generateTarget();
         }
     }
 
