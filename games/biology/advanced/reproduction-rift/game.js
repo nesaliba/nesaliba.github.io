@@ -8,16 +8,44 @@ class ReproductionRift extends BaseGame {
         this.levelAttempts = 0;
         this.totalMistakes = 0;
         this.isGameOver = false;
-        
         this.currentQuestion = null;
-        this.selectedWord = null; // For fill-in-the-blank
+        this.selectedWord = null;
         
+        this.initDOM();
+
         if (this.settings.timer === 'on') {
-            document.getElementById('game-timer').style.display = 'block';
             this.startTimer('game-timer');
         }
         
         this.loadLevel();
+    }
+    
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box-rift" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="rift-header">
+                <a href="/Biology.html" class="back-btn glow-btn">← Back to Menu</a>
+                <h1 class="glow-text-teal">Reproduction Rift</h1>
+                <div class="game-stats-rift">
+                    <div class="stat-box-rift" id="level-display">Level 1 / 5</div>
+                    ${timerHTML}
+                    <div class="stat-box-rift stars" id="stars-container">★★★</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </header>
+            <main class="rift-container" id="rift-main">
+                <div class="rift-healing-overlay" id="rift-animation"><div class="healing-core"></div></div>
+                <div class="scenario-panel-rift">
+                    <h2 id="scenario-title" class="glow-text-magenta">Scenario Title</h2>
+                    <p id="scenario-desc" class="scenario-text">Stimulus description goes here.</p>
+                    <div id="feedback-msg" class="feedback-msg-rift"></div>
+                </div>
+                <div class="interactive-area-rift" id="interactive-area"></div>
+            </main>
+        `;
     }
 
     // --- PROCEDURAL GENERATORS & QUESTION POOLS ---

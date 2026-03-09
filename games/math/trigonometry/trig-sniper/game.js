@@ -3,8 +3,10 @@ import { TrigQuestionBank, UNIT_CIRCLE } from './questions.js';
 import { StateManager } from '/js/state-manager.js';
 
 class TrigSniper extends BaseGame {
-    constructor() {
+constructor() {
         super("Trig Sniper");
+        this.initDOM(); // Initialize DOM before looking up the canvas
+        
         this.canvas = document.getElementById('sniper-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width;
@@ -32,6 +34,56 @@ class TrigSniper extends BaseGame {
         this.initUI();
         this.drawCanvas();
         this.startRenderLoop();
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let globalTimerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Math.html" class="back-btn">← Back to Menu</a>
+                <h1>Trig Sniper</h1>
+                <p>Target the correct points on the unit circle based on the trigonometric prompts!</p>
+                <div class="game-stats">
+                    <div id="mode-display" class="stat-box">Mode: Rookie</div>
+                    <div id="timer-display" class="stat-box">Time: 60</div>
+                    <div id="score-display" class="stat-box">Hits: 0</div>
+                    <div id="accuracy-display" class="stat-box">Accuracy: 100%</div>
+                    ${globalTimerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <h3>Game Mode</h3>
+                        <div class="mode-buttons">
+                            <button id="btn-rookie" class="btn-mode active">Rookie</button>
+                            <button id="btn-marksman" class="btn-mode">Marksman</button>
+                            <button id="btn-sniper" class="btn-mode">Sniper</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>Controls</h3>
+                        <button id="btn-start" class="btn-action primary" style="width: 100%; margin-bottom: 1rem;">Start Game</button>
+                    </div>
+                </div>
+                <div class="graph-panel">
+                    <div class="prompt-container" id="prompt-container"><div id="prompt-display">\\( \\text{Press Start to begin!} \\)</div></div>
+                    <div class="canvas-container"><canvas id="sniper-canvas" width="600" height="600"></canvas></div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                        <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (this.settings.timer === 'on') this.startTimer('game-timer');
     }
 
     playFinished() {

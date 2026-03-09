@@ -3,8 +3,10 @@ import { generateFieldMissions } from './levels.js';
 import { StateManager } from '/js/state-manager.js';
 
 class FieldCommander extends BaseGame {
-    constructor() {
+constructor() {
         super("Field Commander");
+        this.initDOM(); // Initialize DOM before looking up the canvas
+        
         this.canvas = document.getElementById('field-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width;
@@ -13,20 +15,75 @@ class FieldCommander extends BaseGame {
         this.missions = generateFieldMissions ? generateFieldMissions(10) :[];
         this.currentMissionIndex = 0;
         this.mistakes = 0;
-        
         this.simulating = false;
         this.animationFrame = null;
-        
         this.particle = { x: 0, y: 0, vx: 0, vy: 0, q: 1, m: 1 };
         this.trail =[];
         this.Ey = 0; 
         this.Bz = 0;
-        
         this._crashResetPending = false;
         
         this.initUI();
         this.loadMission(this.currentMissionIndex);
         this.draw();
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Physics.html" class="back-btn">← Back to Menu</a>
+                <h1>Field Commander</h1>
+                <p>Deploy and manipulate E and B fields to guide charged particles to their targets!</p>
+                <div class="game-stats">
+                    <div id="mission-display" class="stat-box">Mission: 1 / 5</div>
+                    <div id="mistakes-display" class="stat-box">Mistakes: 0</div>
+                    ${timerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <h3>Tactical Readout</h3>
+                        <div class="readout-box" id="mission-briefing">Loading mission parameters...</div>
+                    </div>
+                    <div class="control-group">
+                        <h3>Field Controls</h3>
+                        <div class="slider-container" id="container-e">
+                            <label>Electric Field (E_y): <span id="val-e">0</span> N/C</label>
+                            <input type="range" id="slider-e" min="-300" max="300" step="5" value="0">
+                        </div>
+                        <div class="slider-container" id="container-b">
+                            <label>Magnetic Field (B_z): <span id="val-b">0</span> T</label>
+                            <input type="range" id="slider-b" min="-5" max="5" step="0.5" value="0">
+                        </div>
+                    </div>
+                    <div class="control-group action-buttons" style="flex-direction: column; gap: 0.75rem;">
+                        <button id="btn-launch" class="btn-action primary" style="width: 100%;">Launch Particle</button>
+                        <button id="btn-reset" class="btn-action" style="width: 100%;">Reset Simulation</button>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="toggle-vectors" checked> Show Field Vectors
+                        </label>
+                    </div>
+                </div>
+                <div class="graph-panel">
+                    <div class="canvas-container"><canvas id="field-canvas" width="600" height="600"></canvas></div>
+                    <div id="feedback-message" class="feedback-msg"></div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                        <a href="/Physics.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (this.settings.timer === 'on') this.startTimer('game-timer');
     }
 
     playLaunch() { this.playTone(300, 'sine', 0.2); }

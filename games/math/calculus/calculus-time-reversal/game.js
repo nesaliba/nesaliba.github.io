@@ -14,6 +14,7 @@ class CalculusTimeReversal extends BaseGame {
     }
 
     initUI() {
+        this.initDOM();
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
@@ -28,6 +29,50 @@ class CalculusTimeReversal extends BaseGame {
             });
         }
         this.resetGame();
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Math.html" class="back-btn">← Back to Menu</a>
+                <h1>Calculus Time Reversal</h1>
+                <p>Compute precise instantaneous rates of change and critical points to reverse systemic failures and save the timeline!</p>
+                <div class="game-stats">
+                    <div id="integrity-display" class="stat-box hp-box">Timeline Integrity: ⏳⏳⏳</div>
+                    <div id="score-display" class="stat-box">Anomalies Fixed: 0 / 10</div>
+                    ${timerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="arena-panel">
+                    <div class="timeline-container" id="timeline-container">
+                        <div class="anomaly-warning" id="anomaly-warning">ANOMALY DETECTED</div>
+                        <div class="reactor-core" id="reactor-core"><div class="core-pulse"></div></div>
+                        <div class="status-text" id="status-text">System destabilizing...</div>
+                    </div>
+                </div>
+                <div class="battle-panel">
+                    <div class="prompt-container" id="prompt-container"><div id="prompt-display">\\( \\text{Initializing Time Reversal Protocol...} \\)</div></div>
+                    <div class="options-grid" id="options-grid">
+                        <button class="btn-option" id="btn-opt-0"></button><button class="btn-option" id="btn-opt-1"></button>
+                        <button class="btn-option" id="btn-opt-2"></button><button class="btn-option" id="btn-opt-3"></button>
+                    </div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                        <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (this.settings.timer === 'on') this.startTimer('game-timer');
     }
 
     resetGame() {

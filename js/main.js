@@ -21,13 +21,13 @@ function setupHeroCanvas() {
     resize();
 
     // Six dots — one per subject (chem, bio, phys, math, eng, soc)
-    const circles = [
-        { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'  }, // chem – blue
-        { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'   }, // bio  – green
-        { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'   }, // phys – purple
-        { x: width * 0.8,  y: height * 0.65, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5,  color: 'rgba(153, 27, 27, 0.12)'   }, // math – red
-        { x: width * 0.15, y: height * 0.75, r: Math.max(90,  width * 0.09), vx: 0.35, vy: -0.3, color: 'rgba(133, 77, 14, 0.13)'   }, // eng  – amber
-        { x: width * 0.45, y: height * 0.35, r: Math.max(85,  width * 0.08), vx: -0.4, vy: 0.2,  color: 'rgba(13, 148, 136, 0.14)'  }  // soc  – teal
+    const circles =[
+        { x: width * 0.2,  y: height * 0.3,  r: Math.max(80,  width * 0.08), vx: 0.5,  vy: 0.3,  color: 'rgba(30, 64, 175, 0.15)'  }, 
+        { x: width * 0.75, y: height * 0.25, r: Math.max(70,  width * 0.07), vx: -0.3, vy: 0.4,  color: 'rgba(22, 101, 52, 0.15)'   }, 
+        { x: width * 0.5,  y: height * 0.7,  r: Math.max(60,  width * 0.06), vx: 0.6,  vy: -0.4, color: 'rgba(88, 28, 135, 0.15)'   }, 
+        { x: width * 0.8,  y: height * 0.65, r: Math.max(120, width * 0.12), vx: -0.4, vy: 0.5,  color: 'rgba(153, 27, 27, 0.12)'   }, 
+        { x: width * 0.15, y: height * 0.75, r: Math.max(90,  width * 0.09), vx: 0.35, vy: -0.3, color: 'rgba(133, 77, 14, 0.13)'   }, 
+        { x: width * 0.45, y: height * 0.35, r: Math.max(85,  width * 0.08), vx: -0.4, vy: 0.2,  color: 'rgba(13, 148, 136, 0.14)'  }  
     ];
 
     function animate() {
@@ -71,7 +71,7 @@ function renderCatalog() {
         html += `<details><summary>${category}</summary><div class="details-content">`;
         games.forEach(g => {
             html += `
-                <a href="${g.path}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
+                <a href="game.html?id=${g.id}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span>${g.title}</span>
                         <button class="info-btn" data-game="${g.id}" title="Game Info">
@@ -251,16 +251,16 @@ function setupGameSettingsModal() {
             sessionStorage.setItem('expandedDetails_' + pageName, pendingDetailsIndex);
         }
         
-        const params = new URLSearchParams();
-        params.set('timer', settings.timer);
-        params.set('timerVisible', settings.timerVisible);
-        params.set('tileMode', settings.tileMode);
-        params.set('maxMistakes', settings.maxMistakes);
-        params.set('mute', settings.muteSounds);
-        params.set('theme', settings.darkMode ? 'dark' : 'light');
+        const url = new URL(pendingGameUrl, window.location.href);
+        url.searchParams.set('timer', settings.timer);
+        url.searchParams.set('timerVisible', settings.timerVisible);
+        url.searchParams.set('tileMode', settings.tileMode);
+        url.searchParams.set('maxMistakes', settings.maxMistakes);
+        url.searchParams.set('mute', settings.muteSounds);
+        url.searchParams.set('theme', settings.darkMode ? 'dark' : 'light');
         
         document.body.classList.remove('no-scroll');
-        window.location.href = pendingGameUrl + '?' + params.toString();
+        window.location.href = url.toString();
     });
     
     gameLinks.forEach(link => {
@@ -286,9 +286,6 @@ function setupGameSettingsModal() {
                 pendingGameUrl = href;
                 pendingDetailsIndex = detailsIndex;
                 
-                // Always seed the sounds toggle from the global mute state first,
-                // so anonymous users and users whose settings haven't loaded yet see
-                // a toggle that reflects their actual preference rather than the HTML default.
                 document.getElementById('setting-mute-sounds').checked = !StateManager.getMuteState();
 
                 if (StateManager.userSettings) {

@@ -150,6 +150,34 @@ class CellSignalScramble extends BaseGame {
     }
 
     initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Biology.html" class="back-btn">← Back to Menu</a>
+                <h1>Cell Signal Scramble</h1>
+                <div class="game-stats">
+                    <div class="stat-box" id="level-display">Level 1</div>
+                    ${timerHTML}
+                    <div class="stat-box" id="game-mistakes">Mistakes: 0 / 5</div>
+                </div>
+            </header>
+            <main class="arena-container">
+                <div class="scenario-panel">
+                    <h2 id="scenario-title">Scenario Title</h2>
+                    <p id="scenario-desc">Stimulus description goes here.</p>
+                    <div id="action-prompt" class="action-prompt">Action prompt goes here.</div>
+                    <div id="feedback-msg" class="feedback-msg"></div>
+                </div>
+                <div class="interactive-area">
+                    <div class="graph-panel" id="graph-panel-container">
+                        <h3 id="graph-title">Concentration Graph</h3>
+                        <svg id="graph-svg" width="100%" height="250"></svg>
+                    </div>
+                    <div class="board-panel" id="board-panel"></div>
+                </div>
+            </main>
+        `;
         document.getElementById('level-display').textContent = `Level 1 / ${SCENARIOS.length}`;
     }
 

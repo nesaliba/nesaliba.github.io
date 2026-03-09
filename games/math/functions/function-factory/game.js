@@ -4,6 +4,7 @@ import { StateManager } from '/js/state-manager.js';
 class FunctionFactory extends BaseGame {
     constructor() {
         super("Function Factory");
+        this.initDOM(); // Initialize DOM before looking up the canvas
         
         this.mode = 'practice';
         this.score = 0;
@@ -21,6 +22,54 @@ class FunctionFactory extends BaseGame {
         
         this.initUI();
         this.setMode('practice');
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        // The global timer is kept distinct from the game's internal countdown
+        let globalTimerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Math.html" class="back-btn">← Back to Menu</a>
+                <h1>Function Factory</h1>
+                <p>Master function transformations through Practice, Timed Orders, and Challenge modes!</p>
+                <div class="game-stats">
+                    <div id="mode-display" class="stat-box">Mode: Practice</div>
+                    <div id="score-display" class="stat-box">Score: 0</div>
+                    <div id="timer-display" class="stat-box" style="display:none;">Time: 60s</div>
+                    <div id="mistakes-display" class="stat-box" style="display:none;">Mistakes: 0 / 10</div>
+                    ${globalTimerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <h3>Select Mode</h3>
+                        <div class="mode-buttons">
+                            <button id="btn-practice" class="btn-mode active">Practice</button>
+                            <button id="btn-orders" class="btn-mode">Timed Orders</button>
+                            <button id="btn-challenge" class="btn-mode">Challenge</button>
+                        </div>
+                    </div>
+                    <div class="control-group" id="game-controls"></div>
+                </div>
+                <div class="graph-panel">
+                    <div class="canvas-container"><canvas id="graph-canvas" width="600" height="600"></canvas></div>
+                    <div id="feedback-message" class="feedback-msg"></div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                        <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (this.settings.timer === 'on') this.startTimer('game-timer');
     }
 
     initUI() {

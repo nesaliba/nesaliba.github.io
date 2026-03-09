@@ -24,14 +24,13 @@ class RhetoricRoyale extends BaseGame {
     }
 
     async initUI() {
+        this.initDOM();
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
-
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.resetGame();
         });
-
         for (let i = 0; i < 4; i++) {
             const btn = document.getElementById(`btn-opt-${i}`);
             btn.addEventListener('click', () => {
@@ -39,9 +38,53 @@ class RhetoricRoyale extends BaseGame {
                 this.checkAnswer(btn, btn.dataset.correct === 'true');
             });
         }
-
         await this.loadQuestions();
         this.resetGame();
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/English.html" class="back-btn">← Back to Menu</a>
+                <h1>Rhetoric Royale</h1>
+                <p>Construct persuasive arguments, identify fallacies, and dismantle your opponents!</p>
+                <div class="game-stats">
+                    <div id="player-hp-display" class="stat-box hp-box">Player Credibility: ❤️❤️❤️</div>
+                    <div id="score-display" class="stat-box">Score: 0</div>
+                    ${timerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="arena-panel">
+                    <div class="enemy-container" id="enemy-container">
+                        <div class="enemy-name" id="enemy-name">Loading...</div>
+                        <div class="enemy-subtitle" id="enemy-subtitle">Preparing Argument</div>
+                        <div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemy-hp-fill"></div></div>
+                        <div class="enemy-sprite" id="enemy-sprite">🗣️</div>
+                    </div>
+                </div>
+                <div class="battle-panel">
+                    <div class="prompt-container" id="prompt-container"><div id="prompt-display">Prepare for the debate!</div></div>
+                    <div class="options-grid" id="options-grid">
+                        <button class="btn-option" id="btn-opt-0"></button><button class="btn-option" id="btn-opt-1"></button>
+                        <button class="btn-option" id="btn-opt-2"></button><button class="btn-option" id="btn-opt-3"></button>
+                    </div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Debate Again</button>
+                        <a href="/English.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (this.settings.timer === 'on') this.startTimer('game-timer');
     }
 
     async loadQuestions() {

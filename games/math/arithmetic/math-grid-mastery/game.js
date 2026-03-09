@@ -19,6 +19,7 @@ class MathGridMastery extends BaseGame {
     }
 
     initUI() {
+        this.initDOM();
         if (this.settings.timer !== 'on') {
             const timerContainer = document.getElementById('timer-container');
             if (timerContainer) timerContainer.style.display = 'none';
@@ -26,21 +27,61 @@ class MathGridMastery extends BaseGame {
             const timerVal = document.getElementById('timer-val');
             if (timerVal) timerVal.style.visibility = 'hidden';
         }
-
         document.getElementById('mistakes-display').innerText = `Mistakes: 0 / ${this.maxMistakes}`;
-
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
         
         document.getElementById('btn-start').addEventListener('click', () => {
             this.initAudio();
             this.startGame();
         });
-
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.startGame();
         });
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/Math.html" class="back-btn">← Back to Menu</a>
+                <h1>Math Grid Mastery</h1>
+                <p>Master arithmetic and order of operations in an interactive grid!</p>
+                <div class="game-stats">
+                    <div class="stat-box" id="timer-container">Time: <span id="timer-val">00:00</span></div>
+                    <div id="mistakes-display" class="stat-box hp-box">Mistakes: 0 / 10</div>
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <label>Operator Mode:</label>
+                        <select id="operator-select" class="game-select"><option value="+">Addition (+)</option><option value="-">Subtraction (−)</option><option value="*">Multiplication (×)</option><option value="/">Division (÷)</option><option value="bedmas">Mixed / BEDMAS</option></select>
+                    </div>
+                    <div class="control-group">
+                        <label>Difficulty:</label>
+                        <select id="difficulty-select" class="game-select"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+                    </div>
+                    <div class="control-group">
+                        <label>Game Mode:</label>
+                        <select id="mode-select" class="game-select"><option value="all">All Tiles Visible</option><option value="one">One Tile at a Time</option></select>
+                    </div>
+                    <button id="btn-start" class="btn-action primary">Start Game</button>
+                </div>
+                <div class="grid-panel"><div id="grid-board" class="math-grid"></div></div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">Play Again</button>
+                        <a href="/Math.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     rand(min, max) {

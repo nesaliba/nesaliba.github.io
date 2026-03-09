@@ -1,0 +1,67 @@
+import{BaseGame as v}from"./base-game-CS9j8eWU.js";import"./state-manager-DvNmcDpL.js";import"./firebase-init-ZMan-bHY.js";import"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";import"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";import"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";const p=[{name:"Methyl Orange",lowPH:3.1,highPH:4.4,lowColor:[255,0,0],highColor:[255,255,0]},{name:"Bromocresol Green",lowPH:3.8,highPH:5.4,lowColor:[255,255,0],highColor:[0,0,255]},{name:"Methyl Red",lowPH:4.4,highPH:6.2,lowColor:[255,0,0],highColor:[255,255,0]},{name:"Bromothymol Blue",lowPH:6,highPH:7.6,lowColor:[255,255,0],highColor:[0,0,255]},{name:"Phenol Red",lowPH:6.4,highPH:8,lowColor:[255,255,0],highColor:[255,0,0]},{name:"Phenolphthalein",lowPH:8.2,highPH:10,lowColor:[200,200,200],highColor:[255,0,255]}],f=[{type:"strong",name:"Strong Acid (e.g., HCl)",protons:1,pKa:[-2]},{type:"weak",name:"Weak Acid (e.g., Acetic Acid)",protons:1,pKa:[4.74]},{type:"polyprotic",name:"Polyprotic Acid (Diprotic)",protons:2,pKa:[3,8]}];class b extends v{constructor(){super("Titration Tower"),this.floor=1,this.maxFloors=9,this.integrity=100,this.score=0,this.hintsUsed=0,this.graphData=[],this.currentVb=0,this.currentPH=7,this.initDOM(),this.settings.timer==="on"&&this.startTimer("game-timer"),window.addEventListener("resize",()=>this.resizeCanvas()),this.nextFloor()}initDOM(){const t=document.getElementById("game-mount");let e=this.settings.timer==="on"?`<div class="stat-box" id="game-timer" style="${this.settings.timerVisible==="hidden"?"visibility:hidden;":""}">00:00</div>`:"";t.innerHTML=`
+            <header class="game-header">
+                <a href="/Chemistry.html" class="back-btn">← Back to Menu</a>
+                <h1>TITRATION TOWER</h1>
+                <div class="game-stats">
+                    ${e}
+                    <div class="stat-box" id="health-box">Structural Integrity: 100%</div>
+                    <div class="stat-box" id="wave-box">Floor: 1/9</div>
+                </div>
+            </header>
+            <main class="game-container titration-tower" id="tower-main">
+                <div class="tower-panel">
+                    
+                    <div class="diagnostic-overlay" id="diagnostic-overlay">
+                        <div class="diagnostic-title" id="diag-title">⚠️ Protocol Breach</div>
+                        <div class="diagnostic-message" id="diagnostic-msg">Error Details</div>
+                        <button class="btn-submit primary" id="btn-dismiss-diag" style="padding: 0.5rem 1.5rem; max-width: 200px;">Acknowledge</button>
+                    </div>
+
+                    <div class="tower-header">🔬 Laboratory Operation</div>
+                    
+                    <div class="tower-ui">
+                        <div class="monitor-panel">
+                            <div class="crt-overlay"></div>
+                            <canvas id="curve-canvas"></canvas>
+                            <div class="monitor-text">LIVE TELEMETRY: TITRATION CURVE</div>
+                        </div>
+
+                        <div class="bench-panel">
+                            <div class="controls-panel">
+                                <div class="info-readout" id="info-readout">Loading Floor...</div>
+                                
+                                <div class="titrant-buttons">
+                                    <button class="btn-add" data-vol="0.1">+0.1 mL</button>
+                                    <button class="btn-add" data-vol="1.0">+1.0 mL</button>
+                                    <button class="btn-add" data-vol="5.0">+5.0 mL</button>
+                                </div>
+                                
+                                <div class="submit-section">
+                                    <input type="number" id="input-ca" class="input-ca" step="0.001" placeholder="Acid Concentration (M)">
+                                    <button id="btn-submit" class="btn-submit">Submit Neutralization</button>
+                                </div>
+
+                                <button id="btn-hint" class="btn-hint">Request Diagnostic Hint (-50 pts)</button>
+                                <div class="hint-display" id="hint-display"></div>
+                            </div>
+
+                            <div class="vials-container" id="vials-container"></div>
+                            
+                            <div class="flask-assembly">
+                                <div class="flask-neck"></div>
+                                <div class="flask-glass">
+                                    <div class="flask-liquid" id="flask-liquid"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        `,this.canvas=document.getElementById("curve-canvas"),this.ctx=this.canvas.getContext("2d"),document.querySelectorAll(".btn-add").forEach(s=>{s.addEventListener("click",()=>this.addTitrant(parseFloat(s.dataset.vol)))}),document.getElementById("btn-submit").addEventListener("click",()=>this.checkNeutralization()),document.getElementById("btn-hint").addEventListener("click",()=>this.requestHint()),document.getElementById("btn-dismiss-diag").addEventListener("click",()=>{document.getElementById("diagnostic-overlay").classList.remove("active")}),this.resizeCanvas()}resizeCanvas(){this.canvas&&(this.canvas.width=this.canvas.parentElement.clientWidth-20,this.canvas.height=300,this.drawGraph())}getPH(t,e,s,l,a){const i=s*e,o=l*t,h=e+t;if(a.type==="strong")if(i>o){let n=(i-o)/h;return n<1e-7&&(n=1e-7),-Math.log10(n)}else{let n=(o-i)/h;return n<1e-7&&(n=1e-7),14+Math.log10(n)}else if(a.type==="weak"){const n=Math.pow(10,-a.pKa[0]);if(o<=0)return-Math.log10(Math.sqrt(n*s));if(o<i){let r=i-o;r<1e-5&&(r=1e-5);let c=a.pKa[0]+Math.log10(o/r),u=14+Math.log10(Math.sqrt(1e-14/n*(i/h)));return Math.min(c,u)}else{if(Math.abs(i-o)<1e-5)return 14+Math.log10(Math.sqrt(1e-14/n*(i/h)));{let r=(o-i)/h,c=Math.sqrt(1e-14/n*(i/h));return r=Math.max(r,c),r<1e-7&&(r=1e-7),14+Math.log10(r)}}}else if(a.type==="polyprotic"){const n=a.pKa[0],r=a.pKa[1],c=Math.pow(10,-n),u=Math.pow(10,-r);if(o<=0)return-Math.log10(Math.sqrt(c*s));if(o<i){let d=i-o;d<1e-5&&(d=1e-5);let m=n+Math.log10(o/d),g=(n+r)/2;return Math.min(m,g)}else if(o<2*i){let d=2*i-o;d<1e-5&&(d=1e-5);let m=r+Math.log10((o-i)/d),g=14+Math.log10(Math.sqrt(1e-14/u*(i/h)));return Math.min(Math.max(m,(n+r)/2),g)}else{let d=(o-2*i)/h,m=Math.sqrt(1e-14/u*(i/h));return d=Math.max(d,m),d<1e-7&&(d=1e-7),14+Math.log10(d)}}}nextFloor(){document.getElementById("wave-box").innerText=`Floor: ${this.floor}/${this.maxFloors}`,this.hintsUsed=0,document.getElementById("hint-display").innerText="",document.getElementById("input-ca").value="";let t=Math.floor((this.floor-1)/3);t>2&&(t=2),this.acidProfile=f[t],this.Ca=(Math.floor(Math.random()*15)+5)/100,this.Va=25,this.Cb=.1,this.currentIndicators=[...p].sort(()=>Math.random()-.5).slice(0,3),this.currentVb=0,this.currentPH=this.getPH(0,this.Va,this.Ca,this.Cb,this.acidProfile),this.graphData=[{v:0,ph:this.currentPH}];let e=`<span>Type:</span> ${this.acidProfile.name}<br>`;e+=`<span>Sample Vol:</span> ${this.Va.toFixed(1)} mL<br>`,e+=`<span>Titrant:</span> ${this.Cb.toFixed(3)} M NaOH<br>`,this.acidProfile.protons>1&&(e+="<span>Target:</span> Final Equivalence Point"),document.getElementById("info-readout").innerHTML=e,this.buildVials(),this.enableControls(!0),this.updateUI()}buildVials(){const t=document.getElementById("vials-container");t.innerHTML="",this.currentIndicators.forEach((e,s)=>{t.innerHTML+=`
+                <div class="vial-wrapper">
+                    <div class="vial-label">${e.name}</div>
+                    <div class="vial-glass">
+                        <div class="vial-liquid" id="vial-liquid-${s}"></div>
+                    </div>
+                </div>
+            `})}enableControls(t){document.querySelectorAll(".btn-add").forEach(e=>e.disabled=!t),document.getElementById("btn-submit").disabled=!t,document.getElementById("btn-hint").disabled=!t||this.hintsUsed>=3}addTitrant(t){if(this.currentVb>=60)return;this.initAudio();const e=Math.round(t/.1);for(let s=0;s<e;s++){if(this.currentVb=Math.round((this.currentVb+.1)*10)/10,this.currentVb>60){this.currentVb=60;break}this.currentPH=this.getPH(this.currentVb,this.Va,this.Ca,this.Cb,this.acidProfile),this.graphData.push({v:this.currentVb,ph:this.currentPH})}this.updateUI()}interpolateColor(t,e,s){return[Math.round(t[0]+s*(e[0]-t[0])),Math.round(t[1]+s*(e[1]-t[1])),Math.round(t[2]+s*(e[2]-t[2]))]}getIndicatorColor(t,e){if(e<=t.lowPH)return t.lowColor;if(e>=t.highPH)return t.highColor;const s=(e-t.lowPH)/(t.highPH-t.lowPH);return this.interpolateColor(t.lowColor,t.highColor,s)}updateUI(){this.currentIndicators.forEach((t,e)=>{const s=this.getIndicatorColor(t,this.currentPH),l=`rgba(${s[0]}, ${s[1]}, ${s[2]}, 0.8)`,a=document.getElementById(`vial-liquid-${e}`);a&&(a.style.backgroundColor=l),e===0&&(document.getElementById("flask-liquid").style.backgroundColor=l)}),this.drawGraph()}drawGraph(){if(!this.ctx)return;const t=this.canvas.width,e=this.canvas.height;this.ctx.clearRect(0,0,t,e);const s="#39ff14",l="#0d220d";this.ctx.strokeStyle=l,this.ctx.fillStyle=l,this.ctx.font='10px "Share Tech Mono"',this.ctx.lineWidth=1;for(let a=0;a<=60;a+=10){let i=30+a/60*(t-40);this.ctx.beginPath(),this.ctx.moveTo(i,10),this.ctx.lineTo(i,e-20),this.ctx.stroke(),this.ctx.fillText(a,i-5,e-5)}for(let a=0;a<=14;a+=2){let i=e-20-a/14*(e-30);this.ctx.beginPath(),this.ctx.moveTo(30,i),this.ctx.lineTo(t-10,i),this.ctx.stroke(),this.ctx.fillText(a,5,i+3)}if(this.ctx.strokeStyle=s,this.ctx.beginPath(),this.ctx.moveTo(30,10),this.ctx.lineTo(30,e-20),this.ctx.lineTo(t-10,e-20),this.ctx.stroke(),this.graphData.length!==0){this.ctx.shadowBlur=6,this.ctx.shadowColor=s,this.ctx.lineWidth=2,this.ctx.beginPath();for(let a=0;a<this.graphData.length;a++){let i=this.graphData[a],o=30+i.v/60*(t-40),h=e-20-i.ph/14*(e-30);a===0?this.ctx.moveTo(o,h):this.ctx.lineTo(o,h)}this.ctx.stroke(),this.ctx.shadowBlur=0}}requestHint(){if(this.hintsUsed>=3)return;this.hintsUsed++,this.score-=50;let t="";this.hintsUsed===1?t=`Look at the ${this.currentIndicators[0].name} indicator. Its color shifts between pH ${this.currentIndicators[0].lowPH} and ${this.currentIndicators[0].highPH}.`:this.hintsUsed===2?t=`Use the titration formula: ${this.acidProfile.protons===1?"[Acid] × V_acid = [Base] × V_base":`${this.acidProfile.protons} × [Acid] × V_acid =[Base] × V_base`}. Find the steep jump on the graph to get V_base.`:this.hintsUsed===3&&(t=`The true equivalence point volume is exactly ${(this.acidProfile.protons*this.Ca*this.Va/this.Cb).toFixed(1)} mL.`),document.getElementById("hint-display").innerText=t,this.hintsUsed>=3&&(document.getElementById("btn-hint").disabled=!0)}showDiagnostic(t,e,s=!1){const l=document.getElementById("diagnostic-overlay"),a=document.getElementById("diag-title"),i=document.getElementById("diagnostic-msg"),o=document.getElementById("btn-dismiss-diag");a.innerText=e?"⚠️ Protocol Breach":"✅ Floor Stabilized",a.style.color=e?"var(--danger)":"var(--success)",i.innerHTML=t,o.style.display=s?"inline-block":"none",l.classList.add("active")}checkNeutralization(){this.initAudio();const t=parseFloat(document.getElementById("input-ca").value);if(isNaN(t)){this.playMiss(),this.showDiagnostic("Error: No concentration entered. Please calculate the acid concentration.",!0,!0);return}this.enableControls(!1);const e=this.acidProfile.protons*this.Ca*this.Va/this.Cb,s=Math.abs(this.currentVb-e);let l=0;s>1.5?l=25:s>.5&&(l=10);const a=Math.abs(t-this.Ca)/this.Ca;let i=0;a>.15?i=20:a>.05&&(i=10);const o=l+i;if(this.integrity-=o,document.getElementById("health-box").innerText=`Structural Integrity: ${Math.max(0,this.integrity)}%`,o===0)this.playHit(),this.score+=1e3,this.showDiagnostic("Perfect Neutralization! Structural integrity maintained.",!1,!1);else{this.playMiss(),this.score+=Math.max(0,500-o*10);const h=document.getElementById("tower-main"),n=document.querySelector(".flask-glass");h.classList.add("shake-tower"),s>1.5&&n.classList.add("flash-flask"),setTimeout(()=>{h.classList.remove("shake-tower"),n.classList.remove("flash-flask")},500);let r=`Suboptimal Neutralization. Took ${o}% structural damage.<br>`;l>0&&(r+=`<br>- Titrant volume was off by ${s.toFixed(1)} mL.`),i>0&&(r+="<br>- Calculated concentration was inaccurate."),this.showDiagnostic(r,!0,!1)}this.integrity<=0?setTimeout(()=>this.endGame(!1),2500):setTimeout(()=>{document.getElementById("diagnostic-overlay").classList.remove("active"),this.floor++,this.floor>this.maxFloors?this.endGame(!0):this.nextFloor()},3500)}endGame(t){this.stopTimer();const e=document.querySelector("game-report-modal");let s=this.settings.timer==="on"?`<br><br><strong>Time:</strong> ${Math.floor(this.elapsedSeconds/60)}m ${this.elapsedSeconds%60}s`:"";const l=t?`Laboratory Secured! You flawlessly navigated complex titration environments. Total Score: ${this.score}${s}`:"Laboratory Collapse! Molar calculation errors compromised the facility. Review your titration reasoning and try again.";e.show(t?"Tower Conquered!":"Structural Failure!",l,t,"/Chemistry.html"),t?(this.playVictory(),this.saveProgress(100-Math.max(0,this.integrity))):this.playGameOver()}}window.addEventListener("DOMContentLoaded",()=>new b);

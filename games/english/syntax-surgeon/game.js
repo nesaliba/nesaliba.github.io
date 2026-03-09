@@ -19,8 +19,8 @@ class SyntaxSurgeon extends BaseGame {
     playFinished() { this.playVictory(); }
 
     initUI() {
+        this.initDOM();
         document.body.addEventListener('pointerdown', () => this.initAudio(), { once: true });
-
         const modes =['novice', 'resident', 'attending'];
         modes.forEach(mode => {
             document.getElementById(`btn-${mode}`).addEventListener('click', (e) => {
@@ -32,18 +32,15 @@ class SyntaxSurgeon extends BaseGame {
                 document.getElementById('mode-display').innerText = `Ward: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
             });
         });
-
         document.getElementById('btn-start').addEventListener('click', () => {
             this.initAudio();
             this.startGame();
         });
-
         document.getElementById('btn-play-again').addEventListener('click', () => {
             this.initAudio();
             document.getElementById('report-modal').style.display = 'none';
             this.resetGameReady();
         });
-
         for (let i = 0; i < 4; i++) {
             const btn = document.getElementById(`btn-opt-${i}`);
             btn.addEventListener('click', () => {
@@ -51,8 +48,65 @@ class SyntaxSurgeon extends BaseGame {
                 this.checkAnswer(btn, btn.dataset.correct === 'true');
             });
         }
-
         this.loadQuestions();
+    }
+
+    initDOM() {
+        const mount = document.getElementById('game-mount');
+        let timerHTML = this.settings.timer === 'on' ? `<div class="stat-box" id="game-timer" style="${this.settings.timerVisible === 'hidden' ? 'visibility:hidden;' : ''}">00:00</div>` : '';
+        mount.innerHTML = `
+            <header class="game-header">
+                <a href="/English.html" class="back-btn">← Back to Menu</a>
+                <h1>Syntax Surgeon</h1>
+                <p>Operate on flawed sentences under pressure. Improve flow, fix errors, and save the paragraph!</p>
+                <div class="game-stats">
+                    <div id="mode-display" class="stat-box">Ward: Novice</div>
+                    <div id="timer-display" class="stat-box">Time: 60</div>
+                    <div id="score-display" class="stat-box">Repairs: 0</div>
+                    <div id="accuracy-display" class="stat-box">Vitals: Stable</div>
+                    ${timerHTML}
+                </div>
+            </header>
+            <main class="game-container">
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <h3>Select Ward</h3>
+                        <div class="mode-buttons">
+                            <button id="btn-novice" class="btn-mode active">Novice (Grammar & Punctuation)</button>
+                            <button id="btn-resident" class="btn-mode">Resident (Modifiers & Structure)</button>
+                            <button id="btn-attending" class="btn-mode">Attending (Style & Conciseness)</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>Operation Tools</h3>
+                        <button id="btn-start" class="btn-action primary" style="width: 100%; margin-bottom: 1rem;">Start Operation</button>
+                        <p id="instruction-text" style="font-size: 0.95rem; color: var(--text-dark);">Click <strong>Start Operation</strong> to begin. Select the most accurate revision.</p>
+                    </div>
+                </div>
+                <div class="battle-panel">
+                    <div class="monitor-container" id="monitor-container">
+                        <div class="scan-line"></div>
+                        <div id="prompt-display">Waiting for patient... Press Start Operation.</div>
+                    </div>
+                    <div class="options-grid" id="options-grid">
+                        <button class="btn-option" id="btn-opt-0" disabled>Tool 1</button>
+                        <button class="btn-option" id="btn-opt-1" disabled>Tool 2</button>
+                        <button class="btn-option" id="btn-opt-2" disabled>Tool 3</button>
+                        <button class="btn-option" id="btn-opt-3" disabled>Tool 4</button>
+                    </div>
+                </div>
+            </main>
+            <div class="modal-overlay" id="report-modal" style="display:none;">
+                <div class="modal-content">
+                    <h2 id="report-title"></h2>
+                    <div id="report-details" style="margin: 1.5rem 0; font-size: 1.1rem; text-align: left; background: var(--details-bg); padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button id="btn-play-again" class="btn-action primary" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 6px; margin: 0;">New Patient</button>
+                        <a href="/English.html" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; text-decoration: none; font-size: 1rem; border-radius: 6px; margin: 0;">Return to Menu</a>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     async loadQuestions() {

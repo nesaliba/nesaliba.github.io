@@ -91,13 +91,11 @@ class SiteNavbar extends HTMLElement {
                 if (nav.classList.contains('nav-active')) {
                     closeMenu();
                 } else {
-                    // Open menu
                     nav.classList.add('nav-active');
                     if (overlay) overlay.classList.add('active');
                     document.body.classList.add('no-scroll');
                     hamburger.classList.add('toggle');
 
-                    // Animate Links
                     navLinks.forEach((link, index) => {
                         link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
                     });
@@ -147,7 +145,7 @@ class SiteNavbar extends HTMLElement {
 
             if (matches.length > 0) {
                 searchResults.innerHTML = matches.map(game => `
-                    <a href="${game.path}" class="search-result-item">
+                    <a href="game.html?id=${game.id}" class="search-result-item">
                         <span class="search-result-title">${game.title}</span>
                         <span class="search-result-desc">${game.desc}</span>
                     </a>
@@ -173,7 +171,6 @@ class SiteNavbar extends HTMLElement {
             }
         });
 
-        // Hide results when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.querySelector('.search-container').contains(e.target)) {
                 searchResults.classList.remove('show');

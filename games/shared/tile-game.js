@@ -45,7 +45,12 @@ export class ScitriadTileGame {
         this.currentTileData = null;
         this.upcomingTileData = null;
         
-        window.addEventListener('DOMContentLoaded', () => this.initDOM());
+        // FIX: Check if DOM is already loaded (handles dynamic imports)
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', () => this.initDOM());
+        } else {
+            this.initDOM();
+        }
     }
 
     initAudio() {
@@ -367,3 +372,6 @@ export class ScitriadTileGame {
         }
     }
 }
+
+// Expose to window to allow the router to instantiate it via native dynamic imports
+window.ScitriadTileGame = ScitriadTileGame;

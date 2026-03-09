@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Simulation... | Scitriad</title>
+    <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Share+Tech+Mono&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/arena-game.css">
+    
+    <script>
+        (function() {
+            if (localStorage.getItem('scitriad_theme') === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+    
+    <!-- Required dependencies for advanced math/science modes -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'],['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer src="https://unpkg.com/mathlive"></script>
+</head>
+<body>
+    <div id="game-mount">
+        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center;">
+            <div class="auth-spinner" style="border-top-color: var(--primary-blue); margin-bottom: 1rem;"></div>
+            <h2 style="color:var(--text-dark);">Initializing Simulation...</h2>
+        </div>
+    </div>
+    
+    <game-report-modal></game-report-modal>
+
+    <script type="module" src="/js/firebase-init.js"></script>
+    <script type="module" src="/js/auth-modal.js"></script>
+    <script type="module" src="/js/game-report-modal.js"></script>
+    <script type="module" src="/js/game-loader.js"></script>
+</body>
+</html>
