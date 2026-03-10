@@ -1,12 +1,15 @@
-.carousel-container { width: 100%; overflow: hidden; padding: 1rem 0; white-space: nowrap; position: relative; }
-.carousel-track { display: flex; width: max-content; animation: scrollCarousel 25s linear infinite; }
-.carousel-track:hover { animation-play-state: paused; }
-.carousel-group { display: flex; gap: 2rem; padding-right: 2rem; }
+.cards-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 2rem; 
+    padding: 1rem 0; 
+    width: 100%; 
+}
 
 .card {
     background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.3s, box-shadow 0.3s; text-decoration: none; color: inherit; display: flex;
-    flex-direction: column; width: 300px; flex-shrink: 0; white-space: normal; 
+    flex-direction: column; height: 100%;
 }
 .card:hover { transform: translateY(-5px); }
 
@@ -18,7 +21,7 @@
 .card.soc:hover  { box-shadow: 0 10px 25px rgba(var(--soc-rgb),  0.4); }
 
 .card-header { height: 120px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: bold; }
-.card-body { padding: 1.5rem; }
+.card-body { padding: 1.5rem; flex-grow: 1; }
 .card-body h3 { margin-bottom: 0.5rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); }
 
 .card.chem .card-header { background-color: var(--chem-color); }
@@ -27,5 +30,3 @@
 .card.math .card-header { background-color: var(--math-color); }
 .card.eng .card-header { background-color: var(--eng-color); }
 .card.soc  .card-header { background-color: var(--soc-color);  }
-
-@keyframes scrollCarousel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
