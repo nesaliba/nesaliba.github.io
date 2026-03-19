@@ -58,7 +58,16 @@ function renderCatalog() {
     if (!container) return;
 
     const subject = container.getAttribute('data-subject');
-    const filteredGames = GamesCatalog.filter(g => g.subject === subject);
+    
+    // Check if legacy games should be shown
+    const showLegacy = StateManager.getLegacyState ? StateManager.getLegacyState() : (localStorage.getItem('scitriad_legacy') === 'true');
+    
+    // Filter games by subject AND legacy status
+    const filteredGames = GamesCatalog.filter(g => {
+        if (g.subject !== subject) return false;
+        if (g.type === 'unity-legacy' && !showLegacy) return false;
+        return true;
+    });
     
     const categories = {};
     filteredGames.forEach(g => {
@@ -70,10 +79,14 @@ function renderCatalog() {
     for (const [category, games] of Object.entries(categories)) {
         html += `<details><summary>${category}</summary><div class="details-content">`;
         games.forEach(g => {
+            // Dynamically set the URL depending on game type
+            const targetUrl = g.type === 'unity-legacy' ? 'legacy-game.html' : 'game.html';
+            
             html += `
-                <a href="game.html?id=${g.id}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
+                <a href="${targetUrl}?id=${g.id}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span>${g.title}</span>
+                        ${g.type === 'unity-legacy' ? '<span style="font-size: 0.7rem; background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px;">CLASSIC</span>' : ''}
                         <button class="info-btn" data-game="${g.id}" title="Game Info">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         </button>

@@ -45,6 +45,13 @@ const accountModalHTML = `
                     <span class="toggle-slider"></span>
                 </label>
             </div>
+            <div class="toggle-row" style="margin-top: 1.1rem; margin-bottom: 0;">
+                <span class="toggle-label" style="color: #f59e0b;">Show Legacy Games (Unity)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="account-legacy-games">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
         </div>
         <div style="text-align: left; margin-bottom: 1rem;">
             <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-dark);">Change Email</label>
@@ -164,6 +171,7 @@ if (btnAccountSettings) {
         document.getElementById('account-status-msg').style.display = 'none';
         document.getElementById('account-dark-mode').checked = StateManager.userSettings?.darkMode || false;
         document.getElementById('account-mute-sounds').checked = StateManager.userSettings?.muteSounds || false;
+        document.getElementById('account-legacy-games').checked = StateManager.getLegacyState();
     });
 }
 
@@ -199,6 +207,21 @@ document.getElementById('account-mute-sounds').addEventListener('change', async 
     const settings = StateManager.userSettings || {};
     settings.muteSounds = e.target.checked;
     await authService.saveSettings(settings);
+});
+
+document.getElementById('account-legacy-games').addEventListener('change', async (e) => {
+    const isLegacy = e.target.checked;
+    localStorage.setItem('scitriad_legacy', isLegacy ? 'true' : 'false');
+    
+    if (StateManager.userSettings) {
+        StateManager.userSettings.showLegacyGames = isLegacy;
+        await authService.saveSettings(StateManager.userSettings);
+    }
+    
+    // If we are on a subject page, reload so the games magically appear!
+    if (document.getElementById('catalog-container')) {
+        window.location.reload();
+    }
 });
 
 function showAccountStatus(msg) {
