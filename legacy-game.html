@@ -6,7 +6,7 @@
     <title>Classic Simulation | Scitriad</title>
     <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     
     <style>
         body {
@@ -116,8 +116,10 @@
             const backLink = document.getElementById('back-link');
             backLink.href = `${gameDef.subject.charAt(0).toUpperCase() + gameDef.subject.slice(1)}.html`;
 
-            // Load the unity index.html into the iframe
-            document.getElementById('game-iframe').src = gameDef.path;
+            // Load the unity index.html into the iframe (removing leading slash if present)
+            let iframePath = gameDef.path;
+            if (iframePath.startsWith('/')) iframePath = iframePath.substring(1);
+            document.getElementById('game-iframe').src = iframePath;
         }
     </script>
 </body>
