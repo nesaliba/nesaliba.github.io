@@ -89,24 +89,24 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="/js/firebase-init.js"></script>
-    <script type="module" src="/js/auth-modal.js"></script>
-    <script src="/js/navbar.js"></script>
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/auth-modal.js"></script>
+    <script src="js/navbar.js"></script>
     
     <script type="module">
-        import { GamesCatalog } from '/js/games-catalog.js';
+        import { GamesCatalog } from './js/games-catalog.js';
 
-        // 1. Get the game ID from the URL
+        // Get the game ID from the URL
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get('id');
         
         const gameDef = GamesCatalog.find(g => g.id === gameId);
 
-        // 2. Validate it's a legacy game
+        // Validate it's a legacy game
         if (!gameDef || gameDef.type !== 'unity-legacy') {
-            window.location.href = '/index.html'; // Redirect if invalid
+            window.location.href = 'index.html'; // Redirect if invalid
         } else {
-            // 3. Apply themes and set iframe source
+            // Apply themes and set iframe source
             document.title = `${gameDef.title} | Scitriad Classic`;
             document.body.classList.add(`theme-${gameDef.subject}`);
             
@@ -114,7 +114,7 @@
             
             // Set dynamic back button based on subject
             const backLink = document.getElementById('back-link');
-            backLink.href = `/${gameDef.subject.charAt(0).toUpperCase() + gameDef.subject.slice(1)}.html`;
+            backLink.href = `${gameDef.subject.charAt(0).toUpperCase() + gameDef.subject.slice(1)}.html`;
 
             // Load the unity index.html into the iframe
             document.getElementById('game-iframe').src = gameDef.path;
