@@ -6,7 +6,6 @@
     --da-border: #cbd5e1;
     --da-shadow: 0 4px 6px rgba(0,0,0,0.1);
     
-    /* Bind custom theme colors back to the global arena-game.css */
     --subject-primary: var(--da-primary);
     --subject-hover: #0369a1;
 }
@@ -22,7 +21,6 @@ body.dark-theme {
     --subject-hover: #0ea5e9;
 }
 
-/* Difficulty Overrides pushed to the body tag so it bubbles to header */
 body.theme-beginner { --da-primary: #10b981; --subject-primary: #10b981; --subject-hover: #059669; }
 body.theme-intermediate { --da-primary: #3b82f6; --subject-primary: #3b82f6; --subject-hover: #2563eb; }
 body.theme-advanced { --da-primary: #8b5cf6; --subject-primary: #8b5cf6; --subject-hover: #7c3aed; }
@@ -59,6 +57,19 @@ body { background-color: var(--da-bg); }
 .da-mode-card:hover { transform: translateY(-5px); box-shadow: var(--da-shadow); }
 .da-mode-card.active { border-color: var(--da-primary); background: rgba(2, 132, 199, 0.05); }
 
+.da-options-container {
+    display: flex; justify-content: center; margin-bottom: 2rem;
+}
+
+.da-checkbox-label {
+    display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    font-weight: 600; color: var(--da-text); font-size: 1.1rem;
+}
+
+.da-checkbox-label input {
+    width: 20px; height: 20px; accent-color: var(--da-primary); cursor: pointer;
+}
+
 .da-difficulty-grid {
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
 }
@@ -69,6 +80,7 @@ body { background-color: var(--da-bg); }
     font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
 .da-btn:hover { background: var(--da-primary); color: white; }
+.da-btn:disabled { opacity: 0.6; cursor: not-allowed; background: transparent; color: var(--da-text); }
 
 /* In-Game Styles */
 .da-target-banner {
@@ -134,7 +146,6 @@ body { background-color: var(--da-bg); }
 
 .da-domino.disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Visual indicator for a highly valid play */
 .playable-glow {
     animation: pulse-glow 2s infinite;
 }
@@ -144,7 +155,6 @@ body { background-color: var(--da-bg); }
     100% { box-shadow: 0 0 5px var(--da-primary); border-color: var(--da-primary); }
 }
 
-/* Clear dropzone target indicator */
 .da-domino.placeholder {
     background: transparent; border: 3px dashed var(--da-primary);
     cursor: default; opacity: 0.8; justify-content: center; align-items: center;
@@ -170,7 +180,7 @@ body { background-color: var(--da-bg); }
     flex: 1; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; font-weight: bold; color: var(--da-text);
     padding: 0.5rem; text-align: center; line-height: 1.2; word-break: break-word;
-    pointer-events: none; /* Allows dropping smoothly */
+    pointer-events: none; 
 }
 
 .da-line {
@@ -178,12 +188,10 @@ body { background-color: var(--da-bg); }
     pointer-events: none;
 }
 
-/* Visual cancellation strike-through */
 .da-bottom.cancelled {
     text-decoration: line-through; color: #ef4444; opacity: 0.7;
 }
 
-/* Shake animation for errors */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }

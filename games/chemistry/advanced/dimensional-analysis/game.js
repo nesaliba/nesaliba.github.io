@@ -32,6 +32,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.mode = null; 
         this.difficulty = null; 
+        this.hintsEnabled = true;
         
         this.currentLevel = 0;
         this.chain = [];
@@ -77,6 +78,14 @@ export class DimensionalAnalysisGame extends BaseGame {
                         </div>
                     </div>
                     
+                    <h2 class="da-title" style="margin-top: 1rem;">Game Options</h2>
+                    <div class="da-options-container">
+                        <label class="da-checkbox-label">
+                            <input type="checkbox" id="toggle-hints" checked>
+                            Enable Visual Hints (Glowing Playable Dominoes)
+                        </label>
+                    </div>
+
                     <h2 class="da-title" style="margin-top: 2rem;">Select Complexity</h2>
                     <div class="da-difficulty-grid">
                         <button class="da-btn da-diff-btn" data-diff="beginner">Beginner (Shapes)</button>
@@ -108,16 +117,15 @@ export class DimensionalAnalysisGame extends BaseGame {
             </main>
         `;
 
-        // Bind difficulty selection
         document.querySelectorAll('.da-diff-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.mode = document.querySelector('input[name="da-mode"]:checked').value;
                 this.difficulty = e.target.getAttribute('data-diff');
+                this.hintsEnabled = document.getElementById('toggle-hints').checked;
                 this.startGame();
             });
         });
         
-        // Mode card active styling
         document.querySelectorAll('.da-mode-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.da-mode-card').forEach(c => c.classList.remove('active'));
@@ -161,7 +169,20 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
     
     getUnit(str) {
-        return str.replace(/^[0-9\.\s×eE\+\-²³]+/, '').trim();
+        // Strip numbers, decimals, sci notation, and spaces at the start
+        let unit = str.replace(/^[0-9\.\s×eE\+\-²³]+/, '').trim().toLowerCase();
+        
+        // Normalize synonyms and plurals so matching works flawlessly
+        if (unit === 'days') return 'day';
+        if (unit === 'seconds' || unit === 'sec') return 's';
+        if (unit === 'minutes') return 'min';
+        if (unit === 'hours' || unit === 'hr') return 'h';
+        if (unit === 'molecules') return 'molecule';
+        if (unit === 'atoms') return 'atom';
+        if (unit === 'grams') return 'g';
+        if (unit === 'coulombs') return 'c';
+        
+        return unit;
     }
 
     // --- PUZZLE MODE LOGIC ---
@@ -237,8 +258,25 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.updateFaceoffHUD();
     }
 
+    replenishDeck() {
+        const units = this.difficulty === 'beginner' 
+            ? ['🔴', '▲', '⬛', '⭐', '⬟', '🌙']
+            : (this.difficulty === 'intermediate' 
+                ? ['mm', 'cm', 'm', 'km', 'mi', 'ly'] 
+                : ['g A', 'mol A', 'mol B', 'g B', 'L B', 'atoms B']);
+
+        for (let i = 0; i < 5; i++) {
+            const top = units[Math.floor(Math.random() * units.length)];
+            let bottom = units[Math.floor(Math.random() * units.length)];
+            while(bottom === top) bottom = units[Math.floor(Math.random() * units.length)];
+            this.deck.push({ id: this.generateId(), top, bottom });
+        }
+    }
+
     drawDomino(isPlayer) {
-        if (this.deck.length === 0) return;
+        if (this.deck.length === 0) {
+            this.replenishDeck();
+        }
         
         if (isPlayer && this.isPlayerTurn) {
             this.initAudio();
@@ -246,7 +284,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             this.isPlayerTurn = false;
             this.renderHand();
             this.updateFaceoffHUD();
-            setTimeout(() => this.playAITurn(), 1000);
+            setTimeout(() => this.playAITurn(), 400);
         } else if (!isPlayer) {
             this.aiHand.push(this.deck.pop());
             this.updateFaceoffHUD();
@@ -258,7 +296,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         document.getElementById('ai-card-count').innerText = this.aiHand.length;
         
         const drawBtn = document.getElementById('btn-draw');
-        drawBtn.disabled = !this.isPlayerTurn || this.deck.length === 0;
+        drawBtn.disabled = !this.isPlayerTurn;
         
         const hud = document.getElementById('da-faceoff-hud');
         if (this.isPlayerTurn) {
@@ -305,7 +343,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                         this.currentLevel++;
                         this.loadFaceoff();
                     }
-                }, 2000);
+                }, 800);
                 return;
             }
         } else {
@@ -355,7 +393,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                         this.currentLevel++;
                         this.updateStats();
                         this.loadPuzzle();
-                    }, 1000);
+                    }, 400); // Snappy level transition
                 }
             } else if (this.mode === 'faceoff') {
                 if (this.getUnit(domino.top) === this.getUnit(this.targetUnit)) {
@@ -363,12 +401,12 @@ export class DimensionalAnalysisGame extends BaseGame {
                         this.currentLevel++;
                         this.updateStats();
                         this.loadFaceoff();
-                    }, 1500);
+                    }, 600); // Snappy round win
                 } else {
                     this.isPlayerTurn = false;
                     this.renderHand();
                     this.updateFaceoffHUD();
-                    setTimeout(() => this.playAITurn(), 1000);
+                    setTimeout(() => this.playAITurn(), 400); // Faster AI response
                 }
             }
 
@@ -386,7 +424,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                 this.mistakes++;
                 this.updateStats();
                 if (this.mistakes >= this.maxMistakes) {
-                    setTimeout(() => this.endGame(false), 1000);
+                    setTimeout(() => this.endGame(false), 800);
                 }
             }
         }
@@ -396,11 +434,10 @@ export class DimensionalAnalysisGame extends BaseGame {
         const area = document.getElementById('da-chain-area');
         area.innerHTML = '';
         
-        // Start block modeled as an actual domino over 1
         const startBlock = document.createElement('div');
         startBlock.className = 'da-domino starting-domino';
         startBlock.innerHTML = `
-            <div class="da-top" style="color:var(--da-primary);">${this.startUnit}</div>
+            <div class="da-top" style="color:var(--da-primary); font-size:1.3rem;">${this.startUnit}</div>
             <div class="da-line"></div>
             <div class="da-bottom">1</div>
         `;
@@ -417,7 +454,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             area.appendChild(el);
         });
 
-        // Target Placeholder Drop Zone
         if (this.mode === 'puzzle' || this.isPlayerTurn) {
             const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
             const requiredUnit = this.getUnit(currentLead);
@@ -426,7 +462,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             placeholder.className = 'da-domino placeholder';
             placeholder.innerHTML = `<div class="placeholder-text">Drop Here<br><br>Needs:<br><strong style="color:var(--da-primary); font-size:1.1rem;">${requiredUnit}</strong></div>`;
             
-            // Drag and Drop listeners
             placeholder.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 placeholder.classList.add('drag-over');
@@ -458,13 +493,12 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.hand.forEach(d => {
             const isPlayable = this.getUnit(d.bottom) === requiredUnit;
-            const shouldGlow = isPlayable && this.isPlayerTurn;
+            const shouldGlow = this.hintsEnabled && isPlayable && this.isPlayerTurn;
             
             const el = document.createElement('div');
             el.className = `da-domino ${(!this.isPlayerTurn && this.mode === 'faceoff') ? 'disabled' : ''} ${shouldGlow ? 'playable-glow' : ''}`;
             el.id = `domino-${d.id}`;
             
-            // Setup dragging
             if (this.isPlayerTurn) {
                 el.draggable = true;
                 el.addEventListener('dragstart', (e) => {
