@@ -32,6 +32,9 @@ class SiteNavbar extends HTMLElement {
                 <a href="Social.html">Social Studies</a>
 
                 <div class="auth-container">
+                    <button id="btn-global-settings" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; margin-right: 10px; color: var(--text-dark); display: flex; align-items: center; justify-content: center;" title="Site Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </button>
                     <button id="auth-btn" class="btn-login" style="${isLoggedIn ? 'display: none;' : ''}">Login</button>
                     <div id="user-menu" class="user-menu" style="${isLoggedIn ? 'display: block;' : 'display: none;'}">
                         <div class="avatar" id="user-avatar">${userInitial}</div>
@@ -59,6 +62,15 @@ class SiteNavbar extends HTMLElement {
             this.setupSearch(GamesCatalog);
         } catch (err) {
             console.error('Error loading games catalog for search:', err);
+        }
+
+        const btnGlobalSettings = this.querySelector('#btn-global-settings');
+        if (btnGlobalSettings) {
+            btnGlobalSettings.addEventListener('click', () => {
+                if (window.openSettingsModal) {
+                    window.openSettingsModal();
+                }
+            });
         }
 
         // Hamburger Menu Logic

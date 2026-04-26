@@ -82,11 +82,20 @@ function renderCatalog() {
             // Dynamically set the URL depending on game type
             const targetUrl = g.type === 'unity-legacy' ? 'legacy-game.html' : 'game.html';
             
+            let badgeHTML = '';
+            if (g.type === 'unity-legacy') {
+                badgeHTML = '<span style="font-size: 0.65rem; background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">CLASSIC</span>';
+            } else if (g.type === 'module') {
+                badgeHTML = '<span style="font-size: 0.65rem; background: var(--primary-blue); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">INTERACTIVE</span>';
+            } else if (g.type === 'tile') {
+                badgeHTML = '<span style="font-size: 0.65rem; background: #94a3b8; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">TILE MATCH</span>';
+            }
+            
             html += `
                 <a href="${targetUrl}?id=${g.id}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                         <span>${g.title}</span>
-                        ${g.type === 'unity-legacy' ? '<span style="font-size: 0.7rem; background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px;">CLASSIC</span>' : ''}
+                        ${badgeHTML}
                         <button class="info-btn" data-game="${g.id}" title="Game Info">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         </button>

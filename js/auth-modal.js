@@ -29,7 +29,7 @@ const authModalHTML = `
 const accountModalHTML = `
 <div class="auth-modal-overlay" id="account-modal">
     <div class="auth-modal-content">
-        <h2 style="color: var(--text-dark); margin-bottom: 1.5rem;">Account Settings</h2>
+        <h2 id="settings-modal-title" style="color: var(--text-dark); margin-bottom: 1.5rem;">Account Settings</h2>
         <div style="text-align: left; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
             <div class="toggle-row">
                 <span class="toggle-label">Dark Mode</span>
@@ -53,7 +53,7 @@ const accountModalHTML = `
                 </label>
             </div>
         </div>
-        <div style="text-align: left; margin-bottom: 1rem;">
+        <div id="account-auth-section" style="text-align: left; margin-bottom: 1rem;">
             <label style="font-weight:600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-dark);">Change Email</label>
             <input type="email" id="account-email-input" class="auth-input" placeholder="New Email" />
             <button id="btn-update-email" class="auth-btn-primary" style="margin-bottom: 1.5rem;">Update Email</button>
@@ -161,18 +161,29 @@ window.addEventListener('click', () => {
 
 if (btnLogout) btnLogout.addEventListener('click', () => { dropdownContent.classList.remove('show'); authService.logout(); });
 
-if (btnAccountSettings) {
-    btnAccountSettings.addEventListener('click', () => {
-        dropdownContent.classList.remove('show');
-        document.getElementById('account-modal').style.display = 'flex';
-        document.body.classList.add('no-scroll');
+// Make the settings modal accessible to both logged-in users and guests
+window.openSettingsModal = function() {
+    if (dropdownContent) dropdownContent.classList.remove('show');
+    document.getElementById('account-modal').style.display = 'flex';
+    document.body.classList.add('no-scroll');
+    
+    const isLoggedIn = StateManager.isUserLoggedIn;
+    document.getElementById('settings-modal-title').innerText = isLoggedIn ? "Account Settings" : "Site Settings";
+    document.getElementById('account-auth-section').style.display = isLoggedIn ? 'block' : 'none';
+    
+    if (isLoggedIn) {
         document.getElementById('account-email-input').value = StateManager.userEmail;
         document.getElementById('account-password-input').value = '';
-        document.getElementById('account-status-msg').style.display = 'none';
-        document.getElementById('account-dark-mode').checked = StateManager.userSettings?.darkMode || false;
-        document.getElementById('account-mute-sounds').checked = StateManager.userSettings?.muteSounds || false;
-        document.getElementById('account-legacy-games').checked = StateManager.getLegacyState();
-    });
+    }
+    
+    document.getElementById('account-status-msg').style.display = 'none';
+    document.getElementById('account-dark-mode').checked = localStorage.getItem('scitriad_theme') === 'dark';
+    document.getElementById('account-mute-sounds').checked = StateManager.getMuteState();
+    document.getElementById('account-legacy-games').checked = StateManager.getLegacyState();
+};
+
+if (btnAccountSettings) {
+    btnAccountSettings.addEventListener('click', window.openSettingsModal);
 }
 
 document.getElementById('account-close-btn').addEventListener('click', () => {
@@ -198,24 +209,46 @@ document.getElementById('btn-update-password').addEventListener('click', async (
 });
 
 document.getElementById('account-dark-mode').addEventListener('change', async (e) => {
-    const settings = StateManager.userSettings || {};
-    settings.darkMode = e.target.checked;
-    await authService.saveSettings(settings);
+    const isDark = e.target.checked;
+    
+    // Apply locally first for immediate effect
+    if (isDark) {
+        document.documentElement.classList.add('dark-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('scitriad_theme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark-theme');
+        document.body.classList.remove('dark-theme');
+        localStorage.setItem('scitriad_theme', 'light');
+    }
+    
+    // Sync to user settings if logged in
+    if (StateManager.isUserLoggedIn) {
+        const settings = StateManager.userSettings || {};
+        settings.darkMode = isDark;
+        await authService.saveSettings(settings);
+    }
 });
 
 document.getElementById('account-mute-sounds').addEventListener('change', async (e) => {
-    const settings = StateManager.userSettings || {};
-    settings.muteSounds = e.target.checked;
-    await authService.saveSettings(settings);
+    const isMuted = e.target.checked;
+    localStorage.setItem('scitriad_mute', isMuted ? 'true' : 'false');
+    
+    if (StateManager.isUserLoggedIn) {
+        const settings = StateManager.userSettings || {};
+        settings.muteSounds = isMuted;
+        await authService.saveSettings(settings);
+    }
 });
 
 document.getElementById('account-legacy-games').addEventListener('change', async (e) => {
     const isLegacy = e.target.checked;
     localStorage.setItem('scitriad_legacy', isLegacy ? 'true' : 'false');
     
-    if (StateManager.userSettings) {
-        StateManager.userSettings.showLegacyGames = isLegacy;
-        await authService.saveSettings(StateManager.userSettings);
+    if (StateManager.isUserLoggedIn) {
+        const settings = StateManager.userSettings || {};
+        settings.showLegacyGames = isLegacy;
+        await authService.saveSettings(settings);
     }
     
     // If we are on a subject page, reload so the games magically appear!
