@@ -6,6 +6,7 @@
     --da-border: #cbd5e1;
     --da-shadow: 0 4px 6px rgba(0,0,0,0.1);
     
+    /* Bind custom theme colors back to the global arena-game.css */
     --subject-primary: var(--da-primary);
     --subject-hover: #0369a1;
 }
@@ -21,6 +22,7 @@ body.dark-theme {
     --subject-hover: #0ea5e9;
 }
 
+/* Difficulty Overrides pushed to the body tag so it bubbles to header */
 body.theme-beginner { --da-primary: #10b981; --subject-primary: #10b981; --subject-hover: #059669; }
 body.theme-intermediate { --da-primary: #3b82f6; --subject-primary: #3b82f6; --subject-hover: #2563eb; }
 body.theme-advanced { --da-primary: #8b5cf6; --subject-primary: #8b5cf6; --subject-hover: #7c3aed; }
@@ -57,19 +59,6 @@ body { background-color: var(--da-bg); }
 .da-mode-card:hover { transform: translateY(-5px); box-shadow: var(--da-shadow); }
 .da-mode-card.active { border-color: var(--da-primary); background: rgba(2, 132, 199, 0.05); }
 
-.da-options-container {
-    display: flex; justify-content: center; margin-bottom: 2rem;
-}
-
-.da-checkbox-label {
-    display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
-    font-weight: 600; color: var(--da-text); font-size: 1.1rem;
-}
-
-.da-checkbox-label input {
-    width: 20px; height: 20px; accent-color: var(--da-primary); cursor: pointer;
-}
-
 .da-difficulty-grid {
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
 }
@@ -79,8 +68,8 @@ body { background-color: var(--da-bg); }
     color: var(--da-text); padding: 1rem; border-radius: 8px;
     font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
-.da-btn:hover { background: var(--da-primary); color: white; }
-.da-btn:disabled { opacity: 0.6; cursor: not-allowed; background: transparent; color: var(--da-text); }
+.da-btn:hover:not(:disabled) { background: var(--da-primary); color: white; }
+.da-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* In-Game Styles */
 .da-target-banner {
@@ -92,13 +81,30 @@ body { background-color: var(--da-bg); }
     border-radius: 8px;
     border: 1px solid var(--da-border);
     color: var(--da-text);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.da-target-banner.completed {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.da-target-banner.failed {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
 }
 
 .target-highlight {
     font-size: 1.8rem;
     color: var(--da-primary);
     margin-left: 10px;
+    transition: color 0.3s;
 }
+
+.da-target-banner.completed .target-highlight { color: #10b981; }
+.da-target-banner.failed .target-highlight { color: #ef4444; }
 
 .da-chain-area {
     display: flex; gap: 1rem; min-height: 180px; padding: 1.5rem;
@@ -110,6 +116,7 @@ body { background-color: var(--da-bg); }
     display: flex; justify-content: space-between; align-items: center;
     padding: 1rem; background: var(--da-bg); border: 2px solid var(--da-border);
     border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold; color: var(--da-text);
+    transition: border-color 0.3s;
 }
 
 .da-hand-header {
@@ -146,6 +153,7 @@ body { background-color: var(--da-bg); }
 
 .da-domino.disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Visual indicator for a highly valid play */
 .playable-glow {
     animation: pulse-glow 2s infinite;
 }
@@ -155,6 +163,17 @@ body { background-color: var(--da-bg); }
     100% { box-shadow: 0 0 5px var(--da-primary); border-color: var(--da-primary); }
 }
 
+/* Animation for placing a domino on the board */
+@keyframes domino-pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.9; }
+}
+.domino-pop {
+    animation: domino-pop 0.4s ease-out forwards;
+}
+
+/* Clear dropzone target indicator */
 .da-domino.placeholder {
     background: transparent; border: 3px dashed var(--da-primary);
     cursor: default; opacity: 0.8; justify-content: center; align-items: center;
@@ -174,13 +193,13 @@ body { background-color: var(--da-bg); }
     z-index: 10; transition: transform 0.2s;
 }
 .da-flip-btn:hover { transform: scale(1.1) rotate(180deg); }
-.played .da-flip-btn, .placeholder .da-flip-btn, .starting-domino .da-flip-btn { display: none; }
+.played .da-flip-btn, .placeholder .da-flip-btn, .starting-domino .da-flip-btn, .disabled .da-flip-btn { display: none; }
 
 .da-top, .da-bottom {
     flex: 1; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; font-weight: bold; color: var(--da-text);
     padding: 0.5rem; text-align: center; line-height: 1.2; word-break: break-word;
-    pointer-events: none; 
+    pointer-events: none; /* Allows dropping smoothly */
 }
 
 .da-line {
@@ -188,10 +207,12 @@ body { background-color: var(--da-bg); }
     pointer-events: none;
 }
 
+/* Visual cancellation strike-through */
 .da-bottom.cancelled {
     text-decoration: line-through; color: #ef4444; opacity: 0.7;
 }
 
+/* Shake animation for errors */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -199,6 +220,48 @@ body { background-color: var(--da-bg); }
     75% { transform: translateX(-5px); }
 }
 .shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; background: #fee2e2 !important; }
+
+/* Toast Notifications */
+.da-toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.da-toast {
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    animation: slide-in-right 0.3s ease-out forwards;
+    pointer-events: auto;
+}
+
+.da-toast.fade-out {
+    animation: fade-out 0.3s ease-out forwards;
+}
+
+.toast-success { background-color: #10b981; border: 1px solid #059669; }
+.toast-error { background-color: #ef4444; border: 1px solid #b91c1c; }
+.toast-info { background-color: var(--da-primary); border: 1px solid var(--subject-hover); }
+.toast-ai { background-color: #8b5cf6; border: 1px solid #6d28d9; } 
+
+@keyframes slide-in-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+}
 
 @media (max-width: 650px) {
     .da-menu-grid, .da-difficulty-grid { grid-template-columns: 1fr; }

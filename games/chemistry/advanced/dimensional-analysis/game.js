@@ -32,13 +32,13 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.mode = null; 
         this.difficulty = null; 
-        this.hintsEnabled = true;
         
         this.currentLevel = 0;
         this.chain = [];
         this.hand = [];
         this.aiHand = [];
         this.deck = [];
+        this.faceoffUnits = [];
         this.isPlayerTurn = true;
         
         this.startUnit = '';
@@ -78,14 +78,6 @@ export class DimensionalAnalysisGame extends BaseGame {
                         </div>
                     </div>
                     
-                    <h2 class="da-title" style="margin-top: 1rem;">Game Options</h2>
-                    <div class="da-options-container">
-                        <label class="da-checkbox-label">
-                            <input type="checkbox" id="toggle-hints" checked>
-                            Enable Visual Hints (Glowing Playable Dominoes)
-                        </label>
-                    </div>
-
                     <h2 class="da-title" style="margin-top: 2rem;">Select Complexity</h2>
                     <div class="da-difficulty-grid">
                         <button class="da-btn da-diff-btn" data-diff="beginner">Beginner (Shapes)</button>
@@ -94,7 +86,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                     </div>
                 </div>
 
-                <div id="da-game" class="da-panel" style="display: none;">
+                <div id="da-game" class="da-panel" style="display: none; position: relative;">
                     
                     <div class="da-target-banner" id="da-target-banner">
                         Objective: Convert to <strong id="da-target-unit" class="target-highlight">cm</strong>
@@ -113,19 +105,22 @@ export class DimensionalAnalysisGame extends BaseGame {
                     <div class="da-hand-area" id="da-hand-area">
                         <!-- Hand dominoes go here -->
                     </div>
+
+                    <div id="da-toast-container" class="da-toast-container"></div>
                 </div>
             </main>
         `;
 
+        // Bind difficulty selection
         document.querySelectorAll('.da-diff-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.mode = document.querySelector('input[name="da-mode"]:checked').value;
                 this.difficulty = e.target.getAttribute('data-diff');
-                this.hintsEnabled = document.getElementById('toggle-hints').checked;
                 this.startGame();
             });
         });
         
+        // Mode card active styling
         document.querySelectorAll('.da-mode-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.da-mode-card').forEach(c => c.classList.remove('active'));
@@ -135,6 +130,20 @@ export class DimensionalAnalysisGame extends BaseGame {
         document.querySelector('.da-mode-card').classList.add('active');
         
         document.getElementById('btn-draw').addEventListener('click', () => this.drawDomino(true));
+    }
+
+    showToast(msg, type = 'info') {
+        const container = document.getElementById('da-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `da-toast toast-${type}`;
+        toast.innerHTML = msg;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
     }
 
     startGame() {
@@ -169,20 +178,7 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
     
     getUnit(str) {
-        // Strip numbers, decimals, sci notation, and spaces at the start
-        let unit = str.replace(/^[0-9\.\s×eE\+\-²³]+/, '').trim().toLowerCase();
-        
-        // Normalize synonyms and plurals so matching works flawlessly
-        if (unit === 'days') return 'day';
-        if (unit === 'seconds' || unit === 'sec') return 's';
-        if (unit === 'minutes') return 'min';
-        if (unit === 'hours' || unit === 'hr') return 'h';
-        if (unit === 'molecules') return 'molecule';
-        if (unit === 'atoms') return 'atom';
-        if (unit === 'grams') return 'g';
-        if (unit === 'coulombs') return 'c';
-        
-        return unit;
+        return str.replace(/^[0-9\.\s×eE\+\-²³]+/, '').trim();
     }
 
     // --- PUZZLE MODE LOGIC ---
@@ -195,6 +191,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         const p = PUZZLES[this.difficulty][this.currentLevel];
         this.chain = [];
         this.hand = [];
+        this.isPlayerTurn = true;
         
         this.startUnit = p.start;
         this.targetUnit = p.target;
@@ -217,6 +214,19 @@ export class DimensionalAnalysisGame extends BaseGame {
 
     // --- FACEOFF MODE LOGIC ---
 
+    fillDeck() {
+        const units = this.faceoffUnits;
+        for (let i = 0; i < units.length - 1; i++) {
+            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
+            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
+        }
+        // Additional sequence skips for dynamic plays
+        this.deck.push({ id: this.generateId(), top: units[3], bottom: units[1] });
+        this.deck.push({ id: this.generateId(), top: units[units.length-1], bottom: units[2] });
+        
+        this.deck.sort(() => Math.random() - 0.5);
+    }
+
     loadFaceoff() {
         if (this.currentLevel >= 3) {
             return this.endGame(true);
@@ -228,25 +238,18 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.deck = [];
         this.isPlayerTurn = true;
 
-        const units = this.difficulty === 'beginner' 
+        this.faceoffUnits = this.difficulty === 'beginner' 
             ? ['🔴', '▲', '⬛', '⭐', '⬟', '🌙']
             : (this.difficulty === 'intermediate' 
                 ? ['mm', 'cm', 'm', 'km', 'mi', 'ly'] 
                 : ['g A', 'mol A', 'mol B', 'g B', 'L B', 'atoms B']);
 
-        this.startUnit = units[0];
-        this.targetUnit = units[units.length - 1];
+        this.startUnit = this.faceoffUnits[0];
+        this.targetUnit = this.faceoffUnits[this.faceoffUnits.length - 1];
 
         document.getElementById('da-target-unit').innerText = this.targetUnit;
 
-        for (let i = 0; i < units.length - 1; i++) {
-            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
-            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
-        }
-        this.deck.push({ id: this.generateId(), top: units[3], bottom: units[1] });
-        this.deck.push({ id: this.generateId(), top: units[units.length-1], bottom: units[2] });
-        
-        this.deck.sort(() => Math.random() - 0.5);
+        this.fillDeck();
 
         for(let i=0; i<5; i++) {
             this.hand.push(this.deck.pop());
@@ -258,25 +261,8 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.updateFaceoffHUD();
     }
 
-    replenishDeck() {
-        const units = this.difficulty === 'beginner' 
-            ? ['🔴', '▲', '⬛', '⭐', '⬟', '🌙']
-            : (this.difficulty === 'intermediate' 
-                ? ['mm', 'cm', 'm', 'km', 'mi', 'ly'] 
-                : ['g A', 'mol A', 'mol B', 'g B', 'L B', 'atoms B']);
-
-        for (let i = 0; i < 5; i++) {
-            const top = units[Math.floor(Math.random() * units.length)];
-            let bottom = units[Math.floor(Math.random() * units.length)];
-            while(bottom === top) bottom = units[Math.floor(Math.random() * units.length)];
-            this.deck.push({ id: this.generateId(), top, bottom });
-        }
-    }
-
     drawDomino(isPlayer) {
-        if (this.deck.length === 0) {
-            this.replenishDeck();
-        }
+        if (this.deck.length === 0) this.fillDeck();
         
         if (isPlayer && this.isPlayerTurn) {
             this.initAudio();
@@ -284,7 +270,8 @@ export class DimensionalAnalysisGame extends BaseGame {
             this.isPlayerTurn = false;
             this.renderHand();
             this.updateFaceoffHUD();
-            setTimeout(() => this.playAITurn(), 400);
+            this.showToast("You drew a card.", "info");
+            setTimeout(() => this.playAITurn(), 1500);
         } else if (!isPlayer) {
             this.aiHand.push(this.deck.pop());
             this.updateFaceoffHUD();
@@ -301,7 +288,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         const hud = document.getElementById('da-faceoff-hud');
         if (this.isPlayerTurn) {
             hud.style.borderColor = 'var(--da-primary)';
-            drawBtn.innerText = `Draw Domino (${this.deck.length} left)`;
+            drawBtn.innerText = `Draw Domino`;
         } else {
             hud.style.borderColor = '#ef4444';
             drawBtn.innerText = "AI is thinking...";
@@ -328,25 +315,34 @@ export class DimensionalAnalysisGame extends BaseGame {
             if (needsFlip) {
                 const temp = d.top; d.top = d.bottom; d.bottom = temp;
             }
+            d.isNew = true; // Trigger animation
             this.chain.push(d);
             this.initAudio();
             this.playHit();
+            this.showToast("AI placed a conversion!", "ai");
             this.renderChain();
             
             if (this.getUnit(d.top) === this.getUnit(this.targetUnit)) {
                 this.playGameOver();
+                this.showToast("AI reached the target first!", "error");
+                
+                const banner = document.getElementById('da-target-banner');
+                if (banner) banner.classList.add('failed');
+
                 this.mistakes++;
                 this.updateStats();
                 setTimeout(() => {
+                    if (banner) banner.classList.remove('failed');
                     if (this.mistakes >= this.maxMistakes) this.endGame(false);
                     else {
                         this.currentLevel++;
                         this.loadFaceoff();
                     }
-                }, 800);
+                }, 3000);
                 return;
             }
         } else {
+            this.showToast("AI drew a card.", "ai");
             this.drawDomino(false);
         }
 
@@ -383,30 +379,47 @@ export class DimensionalAnalysisGame extends BaseGame {
             this.initAudio();
             this.playHit();
             this.hand.splice(dominoIdx, 1);
+            domino.isNew = true; // Trigger animation
             this.chain.push(domino);
             this.renderHand();
             this.renderChain();
 
             if (this.mode === 'puzzle') {
                 if (this.getUnit(domino.top) === this.getUnit(this.targetUnit)) {
+                    this.showToast("Puzzle Complete!", "success");
+                    this.isPlayerTurn = false; // Disable further plays
+                    this.renderHand();
+                    
+                    const banner = document.getElementById('da-target-banner');
+                    if (banner) banner.classList.add('completed');
+
                     setTimeout(() => {
+                        if (banner) banner.classList.remove('completed');
                         this.currentLevel++;
                         this.updateStats();
                         this.loadPuzzle();
-                    }, 400); // Snappy level transition
+                    }, 2000);
                 }
             } else if (this.mode === 'faceoff') {
                 if (this.getUnit(domino.top) === this.getUnit(this.targetUnit)) {
+                    this.showToast("You reached the target first!", "success");
+                    this.isPlayerTurn = false;
+                    this.renderHand();
+                    
+                    const banner = document.getElementById('da-target-banner');
+                    if (banner) banner.classList.add('completed');
+
                     setTimeout(() => {
+                        if (banner) banner.classList.remove('completed');
                         this.currentLevel++;
                         this.updateStats();
                         this.loadFaceoff();
-                    }, 600); // Snappy round win
+                    }, 2500);
                 } else {
                     this.isPlayerTurn = false;
                     this.renderHand();
                     this.updateFaceoffHUD();
-                    setTimeout(() => this.playAITurn(), 400); // Faster AI response
+                    setTimeout(() => this.playAITurn(), 1500);
                 }
             }
 
@@ -424,7 +437,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                 this.mistakes++;
                 this.updateStats();
                 if (this.mistakes >= this.maxMistakes) {
-                    setTimeout(() => this.endGame(false), 800);
+                    setTimeout(() => this.endGame(false), 1000);
                 }
             }
         }
@@ -434,10 +447,11 @@ export class DimensionalAnalysisGame extends BaseGame {
         const area = document.getElementById('da-chain-area');
         area.innerHTML = '';
         
+        // Start block modeled as an actual domino over 1
         const startBlock = document.createElement('div');
         startBlock.className = 'da-domino starting-domino';
         startBlock.innerHTML = `
-            <div class="da-top" style="color:var(--da-primary); font-size:1.3rem;">${this.startUnit}</div>
+            <div class="da-top" style="color:var(--da-primary);">${this.startUnit}</div>
             <div class="da-line"></div>
             <div class="da-bottom">1</div>
         `;
@@ -445,7 +459,12 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.chain.forEach(d => {
             const el = document.createElement('div');
-            el.className = 'da-domino played';
+            let classes = 'da-domino played';
+            if (d.isNew) {
+                classes += ' domino-pop';
+                delete d.isNew;
+            }
+            el.className = classes;
             el.innerHTML = `
                 <div class="da-top">${d.top}</div>
                 <div class="da-line"></div>
@@ -454,7 +473,8 @@ export class DimensionalAnalysisGame extends BaseGame {
             area.appendChild(el);
         });
 
-        if (this.mode === 'puzzle' || this.isPlayerTurn) {
+        // Target Placeholder Drop Zone
+        if (this.isPlayerTurn) {
             const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
             const requiredUnit = this.getUnit(currentLead);
             
@@ -462,6 +482,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             placeholder.className = 'da-domino placeholder';
             placeholder.innerHTML = `<div class="placeholder-text">Drop Here<br><br>Needs:<br><strong style="color:var(--da-primary); font-size:1.1rem;">${requiredUnit}</strong></div>`;
             
+            // Drag and Drop listeners
             placeholder.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 placeholder.classList.add('drag-over');
@@ -493,12 +514,13 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.hand.forEach(d => {
             const isPlayable = this.getUnit(d.bottom) === requiredUnit;
-            const shouldGlow = this.hintsEnabled && isPlayable && this.isPlayerTurn;
+            const shouldGlow = isPlayable && this.isPlayerTurn;
             
             const el = document.createElement('div');
-            el.className = `da-domino ${(!this.isPlayerTurn && this.mode === 'faceoff') ? 'disabled' : ''} ${shouldGlow ? 'playable-glow' : ''}`;
+            el.className = `da-domino ${!this.isPlayerTurn ? 'disabled' : ''} ${shouldGlow ? 'playable-glow' : ''}`;
             el.id = `domino-${d.id}`;
             
+            // Setup dragging
             if (this.isPlayerTurn) {
                 el.draggable = true;
                 el.addEventListener('dragstart', (e) => {
