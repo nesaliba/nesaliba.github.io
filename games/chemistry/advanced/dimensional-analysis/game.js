@@ -40,7 +40,11 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.deck = [];
         this.faceoffUnits = [];
         this.isPlayerTurn = true;
+        this.gameActive = false;
         
+        this.aiTimeout = null;
+        this.levelTransitionTimeout = null;
+
         this.startUnit = '';
         this.targetUnit = '';
 
@@ -88,6 +92,12 @@ export class DimensionalAnalysisGame extends BaseGame {
 
                 <div id="da-game" class="da-panel" style="display: none; position: relative;">
                     
+                    <div style="display: flex; justify-content: flex-start; margin-bottom: 1rem; margin-top: -1rem;">
+                        <button class="da-btn" id="btn-return-menu" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: transparent; border-color: var(--da-border); color: var(--da-text);">
+                            ↩ Change Protocol
+                        </button>
+                    </div>
+
                     <div class="da-target-banner" id="da-target-banner">
                         Objective: Convert to <strong id="da-target-unit" class="target-highlight">cm</strong>
                     </div>
@@ -130,6 +140,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         document.querySelector('.da-mode-card').classList.add('active');
         
         document.getElementById('btn-draw').addEventListener('click', () => this.drawDomino(true));
+        document.getElementById('btn-return-menu').addEventListener('click', () => this.returnToMenu());
     }
 
     showToast(msg, type = 'info') {
@@ -146,7 +157,24 @@ export class DimensionalAnalysisGame extends BaseGame {
         }, 2500);
     }
 
+    returnToMenu() {
+        this.gameActive = false;
+        
+        // Clear any pending timeouts to prevent AI from acting or levels from skipping
+        clearTimeout(this.aiTimeout);
+        clearTimeout(this.levelTransitionTimeout);
+        
+        document.getElementById('da-game').style.display = 'none';
+        document.getElementById('da-menu').style.display = 'flex';
+        document.getElementById('mistakes-box').style.display = 'none';
+        document.getElementById('level-box').style.display = 'none';
+        
+        // Clean up theme overrides from body so selection resets cleanly
+        document.body.classList.remove('theme-beginner', 'theme-intermediate', 'theme-advanced');
+    }
+
     startGame() {
+        this.gameActive = true;
         document.getElementById('da-menu').style.display = 'none';
         document.getElementById('da-game').style.display = 'flex';
         document.getElementById('mistakes-box').style.display = 'block';
@@ -160,6 +188,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.updateStats();
 
         if (this.mode === 'puzzle') {
+            document.getElementById('da-faceoff-hud').style.display = 'none';
             this.loadPuzzle();
         } else {
             document.getElementById('da-faceoff-hud').style.display = 'flex';
@@ -262,6 +291,7 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
 
     drawDomino(isPlayer) {
+        if (!this.gameActive) return;
         if (this.deck.length === 0) this.fillDeck();
         
         if (isPlayer && this.isPlayerTurn) {
@@ -271,7 +301,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             this.renderHand();
             this.updateFaceoffHUD();
             this.showToast("You drew a card.", "info");
-            setTimeout(() => this.playAITurn(), 1500);
+            this.aiTimeout = setTimeout(() => this.playAITurn(), 1500);
         } else if (!isPlayer) {
             this.aiHand.push(this.deck.pop());
             this.updateFaceoffHUD();
@@ -296,7 +326,7 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
 
     playAITurn() {
-        if (this.mode !== 'faceoff') return;
+        if (!this.gameActive || this.mode !== 'faceoff') return;
 
         const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
         const requiredUnit = this.getUnit(currentLead);
@@ -331,7 +361,8 @@ export class DimensionalAnalysisGame extends BaseGame {
 
                 this.mistakes++;
                 this.updateStats();
-                setTimeout(() => {
+                this.levelTransitionTimeout = setTimeout(() => {
+                    if (!this.gameActive) return;
                     if (banner) banner.classList.remove('failed');
                     if (this.mistakes >= this.maxMistakes) this.endGame(false);
                     else {
@@ -366,7 +397,7 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
 
     attemptPlayDomino(id) {
-        if (this.mode === 'faceoff' && !this.isPlayerTurn) return;
+        if (!this.gameActive || (this.mode === 'faceoff' && !this.isPlayerTurn)) return;
 
         const dominoIdx = this.hand.findIndex(d => d.id === id);
         if (dominoIdx === -1) return;
@@ -393,7 +424,8 @@ export class DimensionalAnalysisGame extends BaseGame {
                     const banner = document.getElementById('da-target-banner');
                     if (banner) banner.classList.add('completed');
 
-                    setTimeout(() => {
+                    this.levelTransitionTimeout = setTimeout(() => {
+                        if (!this.gameActive) return;
                         if (banner) banner.classList.remove('completed');
                         this.currentLevel++;
                         this.updateStats();
@@ -409,7 +441,8 @@ export class DimensionalAnalysisGame extends BaseGame {
                     const banner = document.getElementById('da-target-banner');
                     if (banner) banner.classList.add('completed');
 
-                    setTimeout(() => {
+                    this.levelTransitionTimeout = setTimeout(() => {
+                        if (!this.gameActive) return;
                         if (banner) banner.classList.remove('completed');
                         this.currentLevel++;
                         this.updateStats();
@@ -419,7 +452,7 @@ export class DimensionalAnalysisGame extends BaseGame {
                     this.isPlayerTurn = false;
                     this.renderHand();
                     this.updateFaceoffHUD();
-                    setTimeout(() => this.playAITurn(), 1500);
+                    this.aiTimeout = setTimeout(() => this.playAITurn(), 1500);
                 }
             }
 
@@ -437,7 +470,9 @@ export class DimensionalAnalysisGame extends BaseGame {
                 this.mistakes++;
                 this.updateStats();
                 if (this.mistakes >= this.maxMistakes) {
-                    setTimeout(() => this.endGame(false), 1000);
+                    this.levelTransitionTimeout = setTimeout(() => {
+                        if (this.gameActive) this.endGame(false);
+                    }, 1000);
                 }
             }
         }
@@ -554,6 +589,7 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
 
     endGame(win) {
+        this.gameActive = false;
         this.stopTimer();
         const modal = document.querySelector('game-report-modal');
         let timeStr = this.settings.timer === 'on' ? `<br><br><strong>Time:</strong> ${Math.floor(this.elapsedSeconds / 60)}m ${this.elapsedSeconds % 60}s` : '';
