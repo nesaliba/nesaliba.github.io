@@ -9,7 +9,7 @@
     --corner-bg: #fca5a5;
 }
 
-body.dark-theme {
+:root.dark-theme, body.dark-theme {
     --bg-color: #0f172a;
     --panel-bg: #1e293b;
     --border-color: #475569;
@@ -57,7 +57,7 @@ body { background-color: var(--bg-color); }
 }
 
 .grid-header.corner { background: var(--corner-bg); font-size: 1rem; color: var(--text-dark); }
-body.dark-theme .grid-header.corner { color: white; }
+:root.dark-theme .grid-header.corner, body.dark-theme .grid-header.corner { color: white; }
 
 .grid-cell {
     background: var(--cell-bg);
@@ -72,10 +72,12 @@ body.dark-theme .grid-header.corner { color: white; }
     padding: 5px; background: white; color: #1e293b; transition: all 0.2s;
 }
 
-body.dark-theme .grid-cell input { background: #1e293b; color: #f8fafc; border-color: #475569; }
+:root.dark-theme .grid-cell input, body.dark-theme .grid-cell input { background: #1e293b; color: #f8fafc; border-color: #475569; }
 
 .grid-cell input:focus { border-color: var(--subject-primary); }
 .grid-cell input:disabled { background: transparent; color: inherit; border-color: transparent; cursor: default; }
+
+:root.dark-theme .grid-cell input:disabled, body.dark-theme .grid-cell input:disabled { background: transparent; color: inherit; border-color: transparent; cursor: default; }
 
 .active-tile {
     box-shadow: 0 0 15px 4px var(--subject-primary); border-color: var(--subject-primary);
