@@ -1,0 +1,200 @@
+:root {
+    --da-bg: #f8fafc;
+    --da-card: #ffffff;
+    --da-text: #1e293b;
+    --da-primary: #0284c7;
+    --da-border: #cbd5e1;
+    --da-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    
+    /* Bind custom theme colors back to the global arena-game.css */
+    --subject-primary: var(--da-primary);
+    --subject-hover: #0369a1;
+}
+
+body.dark-theme {
+    --da-bg: #0f172a;
+    --da-card: #1e293b;
+    --da-text: #f8fafc;
+    --da-primary: #38bdf8;
+    --da-border: #334155;
+    
+    --subject-primary: var(--da-primary);
+    --subject-hover: #0ea5e9;
+}
+
+/* Difficulty Overrides pushed to the body tag so it bubbles to header */
+body.theme-beginner { --da-primary: #10b981; --subject-primary: #10b981; --subject-hover: #059669; }
+body.theme-intermediate { --da-primary: #3b82f6; --subject-primary: #3b82f6; --subject-hover: #2563eb; }
+body.theme-advanced { --da-primary: #8b5cf6; --subject-primary: #8b5cf6; --subject-hover: #7c3aed; }
+
+body { background-color: var(--da-bg); }
+
+.da-container {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; padding: 2rem 1rem; 
+    max-width: 1000px; margin: 0 auto; width: 100%;
+}
+
+.da-panel {
+    background: var(--da-card); padding: 2rem; border-radius: 12px;
+    box-shadow: var(--da-shadow); width: 100%;
+    border: 2px solid var(--da-border);
+    display: flex; flex-direction: column;
+}
+
+.da-title {
+    color: var(--da-primary); text-align: center; margin-bottom: 1.5rem;
+}
+
+/* Menu Styles */
+.da-menu-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+}
+
+.da-mode-card {
+    border: 2px solid var(--da-border); padding: 1.5rem; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s; text-align: center; color: var(--da-text);
+}
+.da-mode-card h3 { color: var(--da-primary); margin-bottom: 0.5rem; }
+.da-mode-card:hover { transform: translateY(-5px); box-shadow: var(--da-shadow); }
+.da-mode-card.active { border-color: var(--da-primary); background: rgba(2, 132, 199, 0.05); }
+
+.da-difficulty-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
+}
+
+.da-btn {
+    background: var(--da-card); border: 2px solid var(--da-primary);
+    color: var(--da-text); padding: 1rem; border-radius: 8px;
+    font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.da-btn:hover { background: var(--da-primary); color: white; }
+
+/* In-Game Styles */
+.da-target-banner {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+    border: 1px solid var(--da-border);
+    color: var(--da-text);
+}
+
+.target-highlight {
+    font-size: 1.8rem;
+    color: var(--da-primary);
+    margin-left: 10px;
+}
+
+.da-chain-area {
+    display: flex; gap: 1rem; min-height: 180px; padding: 1.5rem;
+    background: var(--da-bg); border-radius: 8px; border: 2px dashed var(--da-border);
+    margin-bottom: 3rem; overflow-x: auto; align-items: center;
+}
+
+.da-faceoff-hud {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; background: var(--da-bg); border: 2px solid var(--da-border);
+    border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold; color: var(--da-text);
+}
+
+.da-hand-header {
+    font-weight: bold; color: #64748b; margin-bottom: 0.75rem; font-size: 0.95rem; text-transform: uppercase;
+}
+
+.da-hand-area {
+    display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center;
+    padding: 2rem; background: rgba(0,0,0,0.02); border-radius: 8px;
+    border: 1px solid var(--da-border); min-height: 200px;
+}
+
+/* Domino Styles */
+.da-domino {
+    width: 110px; height: 150px; background: var(--da-card);
+    border: 3px solid var(--da-primary); border-radius: 8px;
+    display: flex; flex-direction: column; position: relative;
+    cursor: grab; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; flex-shrink: 0;
+}
+
+.da-domino:active { cursor: grabbing; }
+
+.da-domino:hover:not(.played):not(.disabled):not(.placeholder):not(.starting-domino) {
+    transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.da-domino.played, .da-domino.starting-domino { 
+    border-color: #64748b; cursor: default; transform: scale(0.95); opacity: 0.9; 
+}
+.da-domino.starting-domino {
+    background: rgba(0,0,0,0.03);
+}
+
+.da-domino.disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Visual indicator for a highly valid play */
+.playable-glow {
+    animation: pulse-glow 2s infinite;
+}
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px var(--da-primary); border-color: var(--da-primary); }
+    50% { box-shadow: 0 0 20px var(--da-primary); border-color: var(--da-primary); }
+    100% { box-shadow: 0 0 5px var(--da-primary); border-color: var(--da-primary); }
+}
+
+/* Clear dropzone target indicator */
+.da-domino.placeholder {
+    background: transparent; border: 3px dashed var(--da-primary);
+    cursor: default; opacity: 0.8; justify-content: center; align-items: center;
+    transition: background 0.2s, transform 0.2s;
+}
+.da-domino.placeholder.drag-over {
+    background: rgba(0, 0, 0, 0.05); transform: scale(1.05); border-style: solid;
+}
+
+.placeholder-text { text-align: center; color: var(--da-text); font-size: 0.9rem; line-height: 1.4; pointer-events: none;}
+
+.da-flip-btn {
+    position: absolute; top: -12px; right: -12px; width: 30px; height: 30px;
+    background: var(--da-primary); color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10; transition: transform 0.2s;
+}
+.da-flip-btn:hover { transform: scale(1.1) rotate(180deg); }
+.played .da-flip-btn, .placeholder .da-flip-btn, .starting-domino .da-flip-btn { display: none; }
+
+.da-top, .da-bottom {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: bold; color: var(--da-text);
+    padding: 0.5rem; text-align: center; line-height: 1.2; word-break: break-word;
+    pointer-events: none; /* Allows dropping smoothly */
+}
+
+.da-line {
+    width: 80%; height: 3px; background: var(--da-border); margin: 0 auto;
+    pointer-events: none;
+}
+
+/* Visual cancellation strike-through */
+.da-bottom.cancelled {
+    text-decoration: line-through; color: #ef4444; opacity: 0.7;
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+.shake { animation: shake 0.3s ease-in-out; border-color: #ef4444 !important; background: #fee2e2 !important; }
+
+@media (max-width: 650px) {
+    .da-menu-grid, .da-difficulty-grid { grid-template-columns: 1fr; }
+    .da-domino, .da-start-block { width: 90px; height: 130px; }
+    .da-top, .da-bottom { font-size: 0.95rem; }
+    .da-hand-area, .da-chain-area { padding: 1rem; }
+}
