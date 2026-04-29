@@ -388,6 +388,55 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.renderHand();
     }
 
+    // --- PUZZLE SOLVABILITY CHECK ---
+
+    isPuzzleSolvable(remainingHand, currentLeadUnit, targetUnit) {
+        // BFS over remaining dominoes treated as a directed graph.
+        // Each domino can be used in either orientation (player can flip).
+        // We need to find any ordering of a subset of dominoes that chains
+        // from currentLeadUnit to targetUnit.
+
+        const visited = new Set([currentLeadUnit]);
+        const queue = [currentLeadUnit];
+
+        while (queue.length > 0) {
+            const unit = queue.shift();
+
+            if (unit === targetUnit) return true;
+
+            for (const d of remainingHand) {
+                const bottomUnit = this.getUnit(d.bottom);
+                const topUnit    = this.getUnit(d.top);
+
+                if (bottomUnit === unit && !visited.has(topUnit)) {
+                    visited.add(topUnit);
+                    queue.push(topUnit);
+                }
+                // Flipped orientation
+                if (topUnit === unit && !visited.has(bottomUnit)) {
+                    visited.add(bottomUnit);
+                    queue.push(bottomUnit);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    checkPuzzleSolvabilityAndReset() {
+        const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
+        const currentLeadUnit = this.getUnit(currentLead);
+        const targetUnit = this.getUnit(this.targetUnit);
+
+        if (!this.isPuzzleSolvable(this.hand, currentLeadUnit, targetUnit)) {
+            this.showToast("No valid path remaining — resetting level!", "error");
+            this.levelTransitionTimeout = setTimeout(() => {
+                if (!this.gameActive) return;
+                this.loadPuzzle();
+            }, 1800);
+        }
+    }
+
     // --- COMMON RENDERING & MECHANICS ---
 
     flipDomino(id) {
@@ -436,6 +485,8 @@ export class DimensionalAnalysisGame extends BaseGame {
                         this.updateStats();
                         this.loadPuzzle();
                     }, 2000);
+                } else {
+                    this.checkPuzzleSolvabilityAndReset();
                 }
             } else if (this.mode === 'faceoff') {
                 if (this.getUnit(domino.top) === this.getUnit(this.targetUnit)) {
