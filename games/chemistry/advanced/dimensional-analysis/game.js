@@ -1,5 +1,3 @@
-// games/chemistry/advanced/dimensional-analysis/game.js
-
 import { BaseGame } from '/games/shared/base-game.js';
 import { PuzzleGenerator } from './generator.js';
 
@@ -25,6 +23,8 @@ export class DimensionalAnalysisGame extends BaseGame {
 
         this.startUnit = '';
         this.targetUnit = '';
+
+        this.hintsEnabled = true;
 
         this.generator = new PuzzleGenerator();
 
@@ -67,6 +67,13 @@ export class DimensionalAnalysisGame extends BaseGame {
                         <button class="da-btn da-diff-btn" data-diff="beginner">Beginner (Shapes)</button>
                         <button class="da-btn da-diff-btn" data-diff="intermediate">Intermediate (Units)</button>
                         <button class="da-btn da-diff-btn" data-diff="advanced">Advanced (Stoich)</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1.75rem;">
+                        <label for="hints-toggle" style="font-weight: 600; color: var(--da-text); cursor: pointer; user-select: none;">
+                            💡 Hint Glow
+                        </label>
+                        <button id="hints-toggle" class="da-btn" style="padding: 0.4rem 1rem; font-size: 0.9rem; min-width: 80px;" aria-pressed="true">ON</button>
                     </div>
                 </div>
 
@@ -119,6 +126,13 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         document.getElementById('btn-draw').addEventListener('click', () => this.drawDomino(true));
         document.getElementById('btn-return-menu').addEventListener('click', () => this.returnToMenu());
+
+        document.getElementById('hints-toggle').addEventListener('click', (e) => {
+            this.hintsEnabled = !this.hintsEnabled;
+            e.target.textContent = this.hintsEnabled ? 'ON' : 'OFF';
+            e.target.setAttribute('aria-pressed', this.hintsEnabled);
+            e.target.style.background = this.hintsEnabled ? '' : 'transparent';
+        });
     }
 
     showToast(msg, type = 'info') {
@@ -483,6 +497,11 @@ export class DimensionalAnalysisGame extends BaseGame {
         area.appendChild(startBlock);
         
         this.chain.forEach(d => {
+            const mult = document.createElement('div');
+            mult.className = 'da-chain-mult';
+            mult.textContent = '×';
+            area.appendChild(mult);
+
             const el = document.createElement('div');
             let classes = 'da-domino played';
             if (d.isNew) {
@@ -502,6 +521,11 @@ export class DimensionalAnalysisGame extends BaseGame {
             const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
             const requiredUnit = this.getUnit(currentLead);
             
+            const multPlaceholder = document.createElement('div');
+            multPlaceholder.className = 'da-chain-mult';
+            multPlaceholder.textContent = '×';
+            area.appendChild(multPlaceholder);
+
             const placeholder = document.createElement('div');
             placeholder.className = 'da-domino placeholder';
             placeholder.innerHTML = `<div class="placeholder-text">Drop Here<br><br>Needs:<br><strong style="color:var(--da-primary); font-size:1.1rem;">${requiredUnit}</strong></div>`;
@@ -537,7 +561,7 @@ export class DimensionalAnalysisGame extends BaseGame {
         
         this.hand.forEach(d => {
             const isPlayable = this.getUnit(d.bottom) === requiredUnit;
-            const shouldGlow = isPlayable && this.isPlayerTurn;
+            const shouldGlow = isPlayable && this.isPlayerTurn && this.hintsEnabled;
             
             const el = document.createElement('div');
             el.className = `da-domino ${!this.isPlayerTurn ? 'disabled' : ''} ${shouldGlow ? 'playable-glow' : ''}`;

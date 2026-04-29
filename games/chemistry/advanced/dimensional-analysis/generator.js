@@ -1,5 +1,3 @@
-// games/chemistry/advanced/dimensional-analysis/generator.js
-
 export class PuzzleGenerator {
     constructor() {
         this.beginnerNodes = ['🔴', '▲', '⬛', '⭐', '⬟', '🌙', '☀️', '🌊', '🌿'];
