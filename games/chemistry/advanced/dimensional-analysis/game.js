@@ -1,80 +1,7 @@
+// games/chemistry/advanced/dimensional-analysis/game.js
+
 import { BaseGame } from '/games/shared/base-game.js';
-
-const PUZZLES = {
-    beginner: [
-        { start: '🔴', target: '⬛', hand: [{t:'⬛', b:'🔴'}], distractors: [{t:'▲', b:'⭐'}] },
-        { start: '▲', target: '⭐', hand: [{t:'🔴', b:'▲'}, {t:'⭐', b:'🔴'}], distractors: [{t:'⬛', b:'🔴'}] },
-        { start: '⬟', target: '🔴', hand: [{t:'▲', b:'⬟'}, {t:'⬛', b:'▲', flipped: true}, {t:'🔴', b:'⬛'}], distractors: [{t:'⭐', b:'▲'}, {t:'🔴', b:'⭐'}] },
-        { start: '⭐', target: '⬟', hand: [{t:'⬛', b:'⭐'}, {t:'🔴', b:'⬛'}, {t:'▲', b:'🔴', flipped: true}, {t:'⬟', b:'▲'}], distractors: [{t:'⭐', b:'⬟'}] },
-        { start: '🔴', target: '▲', hand: [{t:'⭐', b:'🔴'}, {t:'⬛', b:'⭐'}, {t:'⬟', b:'⬛'}, {t:'▲', b:'⬟', flipped: true}], distractors: [{t:'🔴', b:'▲'}] },
-        // L6: Simple 1-step with a flip required
-        { start: '🌙', target: '☀️', hand: [{t:'☀️', b:'🌙', flipped: true}], distractors: [{t:'⭐', b:'🌙'}, {t:'☀️', b:'⭐'}] },
-        // L7: 2-step with new shapes
-        { start: '🌊', target: '🌿', hand: [{t:'🌙', b:'🌊'}, {t:'🌿', b:'🌙'}], distractors: [{t:'🌊', b:'🌿'}, {t:'🌙', b:'🌿'}] },
-        // L8: 3-step with a flip
-        { start: '☀️', target: '🌊', hand: [{t:'⬟', b:'☀️'}, {t:'🌙', b:'⬟', flipped: true}, {t:'🌊', b:'🌙'}], distractors: [{t:'☀️', b:'🌊'}, {t:'⬟', b:'🌙'}] },
-        // L9: 4-step chain — longer path
-        { start: '🌿', target: '⭐', hand: [{t:'▲', b:'🌿'}, {t:'🔴', b:'▲'}, {t:'🌙', b:'🔴', flipped: true}, {t:'⭐', b:'🌙'}], distractors: [{t:'🌿', b:'⭐'}, {t:'⭐', b:'▲'}] },
-        // L10: Tricky — two flipped dominoes
-        { start: '⬛', target: '🌊', hand: [{t:'☀️', b:'⬛', flipped: true}, {t:'🌿', b:'☀️', flipped: true}, {t:'🌊', b:'🌿'}], distractors: [{t:'⬛', b:'🌊'}, {t:'🌙', b:'⬛'}, {t:'🌊', b:'☀️'}] }
-    ],
-
-    intermediate: [
-        { start: 'km', target: 'cm', hand: [{t:'1000 m', b:'1 km'}, {t:'100 cm', b:'1 m'}], distractors: [{t:'1 m', b:'1000 mm'}, {t:'1 km', b:'1000 m'}] },
-        { start: 'days', target: 'seconds', hand: [{t:'24 h', b:'1 day'}, {t:'60 min', b:'1 h'}, {t:'60 s', b:'1 min'}], distractors: [{t:'1 min', b:'60 s', flipped: true}, {t:'3600 s', b:'1 day'}] },
-        { start: 'kg', target: 'mg', hand: [{t:'1000 g', b:'1 kg'}, {t:'1000 mg', b:'1 g'}], distractors: [{t:'1 g', b:'1000 kg'}, {t:'1 kg', b:'1000 mg'}] },
-        { start: 'km/h', target: 'm/s', hand: [{t:'1000 m', b:'1 km'}, {t:'1 h', b:'60 min'}, {t:'1 min', b:'60 s'}], distractors: [{t:'3600 s', b:'1 h'}, {t:'1 m', b:'100 cm'}] },
-        { start: 'L', target: 'cm³', hand: [{t:'1000 mL', b:'1 L'}, {t:'1 cm³', b:'1 mL'}], distractors: [{t:'1 L', b:'1000 mL'}, {t:'1 m³', b:'100 cm³'}] },
-        // L6: Miles to metres
-        { start: 'miles', target: 'm', hand: [{t:'1.609 km', b:'1 mile'}, {t:'1000 m', b:'1 km'}], distractors: [{t:'1 km', b:'1.609 mile', flipped: true}, {t:'100 m', b:'1 km'}] },
-        // L7: Weeks to minutes
-        { start: 'weeks', target: 'min', hand: [{t:'7 days', b:'1 week'}, {t:'24 h', b:'1 day'}, {t:'60 min', b:'1 h'}], distractors: [{t:'1 day', b:'24 h', flipped: true}, {t:'1 h', b:'60 min', flipped: true}, {t:'365 days', b:'1 year'}] },
-        // L8: cm³ to mL to L (backwards thinking — flip required)
-        { start: 'cm³', target: 'L', hand: [{t:'1 mL', b:'1 cm³'}, {t:'1 L', b:'1000 mL'}], distractors: [{t:'1000 mL', b:'1 L'}, {t:'1 cm³', b:'1 mL', flipped: true}] },
-        // L9: Celsius to Fahrenheit steps (conceptual building blocks)
-        { start: 'ft', target: 'mm', hand: [{t:'12 in', b:'1 ft'}, {t:'2.54 cm', b:'1 in'}, {t:'10 mm', b:'1 cm'}], distractors: [{t:'1 m', b:'100 cm'}, {t:'1 in', b:'12 ft', flipped: true}, {t:'1000 mm', b:'1 m'}] },
-        // L10: g/mL to kg/L (density unit conversion)
-        { start: 'g/mL', target: 'kg/L', hand: [{t:'1 kg', b:'1000 g'}, {t:'1000 mL', b:'1 L'}], distractors: [{t:'1000 g', b:'1 kg'}, {t:'1 L', b:'1000 mL', flipped: true}, {t:'1 mL', b:'1 cm³'}] },
-        // L11: mph to m/s
-        { start: 'mph', target: 'm/s', hand: [{t:'1.609 km', b:'1 mile'}, {t:'1000 m', b:'1 km'}, {t:'1 h', b:'3600 s'}], distractors: [{t:'60 s', b:'1 min'}, {t:'3600 s', b:'1 h'}, {t:'1 km', b:'1.609 mile', flipped: true}] },
-        // L12: Pounds to grams
-        { start: 'lbs', target: 'g', hand: [{t:'453.59 g', b:'1 lb'}], distractors: [{t:'1 kg', b:'2.205 lbs', flipped: true}, {t:'1000 g', b:'1 kg'}, {t:'1 lb', b:'453.59 g', flipped: true}] },
-        // L13: Years to seconds (long chain — careful!)
-        { start: 'years', target: 's', hand: [{t:'365 days', b:'1 year'}, {t:'24 h', b:'1 day'}, {t:'3600 s', b:'1 h'}], distractors: [{t:'60 min', b:'1 h'}, {t:'60 s', b:'1 min'}, {t:'1 day', b:'365 year', flipped: true}] },
-        // L14: Gallons to mL
-        { start: 'gal', target: 'mL', hand: [{t:'3.785 L', b:'1 gal'}, {t:'1000 mL', b:'1 L'}], distractors: [{t:'1 L', b:'1000 mL', flipped: true}, {t:'4 qt', b:'1 gal'}, {t:'1 mL', b:'1 cm³'}] },
-        // L15: Tricky density — kg/m³ to g/cm³
-        { start: 'kg/m³', target: 'g/cm³', hand: [{t:'1000 g', b:'1 kg'}, {t:'1 m³', b:'1×10⁶ cm³'}], distractors: [{t:'1 kg', b:'1000 g', flipped: true}, {t:'100 cm', b:'1 m'}, {t:'1×10⁶ cm³', b:'1 m³', flipped: true}] }
-    ],
-
-    advanced: [
-        { start: 'g CH₄', target: 'mol CH₄', hand: [{t:'1 mol CH₄', b:'16.04 g CH₄'}], distractors: [{t:'6.02×10²³ molecules', b:'1 mol'}, {t:'22.4 L', b:'1 mol'}] },
-        { start: 'L NaOH', target: 'mol HCl', hand: [{t:'0.5 mol NaOH', b:'1 L NaOH'}, {t:'1 mol HCl', b:'1 mol NaOH'}], distractors: [{t:'36.46 g HCl', b:'1 mol HCl'}, {t:'1 L HCl', b:'0.5 mol NaOH'}] },
-        { start: 'g H₂O', target: 'molecules H₂O', hand: [{t:'1 mol H₂O', b:'18.02 g H₂O'}, {t:'6.02×10²³ molecules', b:'1 mol H₂O'}], distractors: [{t:'18.02 g H₂O', b:'1 mol H₂O'}, {t:'1 L H₂O', b:'1000 g'}] },
-        { start: 'kPa', target: 'atm', hand: [{t:'1 atm', b:'101.325 kPa'}], distractors: [{t:'760 mmHg', b:'1 atm'}, {t:'101.325 kPa', b:'1 atm'}] },
-        { start: 'mol e⁻', target: 'Coulombs', hand: [{t:'96485 C', b:'1 mol e⁻'}], distractors: [{t:'1 A', b:'1 C/s'}, {t:'1 mol e⁻', b:'96485 C'}] },
-        // L6: Grams of CO₂ → molecules CO₂
-        { start: 'g CO₂', target: 'molecules CO₂', hand: [{t:'1 mol CO₂', b:'44.01 g CO₂'}, {t:'6.02×10²³ molecules', b:'1 mol CO₂'}], distractors: [{t:'44.01 g CO₂', b:'1 mol CO₂', flipped: true}, {t:'22.4 L CO₂', b:'1 mol CO₂'}, {t:'1 mol', b:'6.02×10²³ molecules', flipped: true}] },
-        // L7: Titration — volume of acid to grams of base
-        { start: 'mL HCl', target: 'g NaOH', hand: [{t:'1 L HCl', b:'1000 mL HCl'}, {t:'0.1 mol HCl', b:'1 L HCl'}, {t:'1 mol NaOH', b:'1 mol HCl'}, {t:'40.00 g NaOH', b:'1 mol NaOH'}], distractors: [{t:'1 mol HCl', b:'36.46 g HCl'}, {t:'1000 mL HCl', b:'1 L HCl', flipped: true}, {t:'1 mol NaOH', b:'22.99 g NaOH'}] },
-        // L8: Molarity problem — mol/L → molecules
-        { start: 'L glucose', target: 'molecules glucose', hand: [{t:'0.5 mol glucose', b:'1 L glucose'}, {t:'6.02×10²³ molecules', b:'1 mol glucose'}], distractors: [{t:'180.16 g glucose', b:'1 mol glucose'}, {t:'1 mol glucose', b:'0.5 L glucose', flipped: true}] },
-        // L9: Electrochemistry — Amps and time to moles of electrons
-        { start: 'seconds', target: 'mol e⁻', hand: [{t:'2.5 A', b:'1 s', flipped: true}, {t:'1 C', b:'1 A·s'}, {t:'1 mol e⁻', b:'96485 C'}], distractors: [{t:'96485 C', b:'1 mol e⁻', flipped: true}, {t:'1 A', b:'1 C/s'}, {t:'1 mol', b:'6.02×10²³'}] },
-        // L10: Gas law — L at STP → grams of O₂
-        { start: 'L O₂', target: 'g O₂', hand: [{t:'1 mol O₂', b:'22.4 L O₂'}, {t:'32.00 g O₂', b:'1 mol O₂'}], distractors: [{t:'22.4 L O₂', b:'1 mol O₂', flipped: true}, {t:'16.00 g O', b:'1 mol O'}, {t:'1 mol O₂', b:'32.00 g O₂', flipped: true}] },
-        // L11: Photon energy — nm to J using E=hc/λ building blocks
-        { start: 'nm', target: 'J', hand: [{t:'1×10⁻⁹ m', b:'1 nm'}, {t:'1 photon energy', b:'1 m', flipped: true}, {t:'hc/λ J', b:'1 photon energy'}], distractors: [{t:'1 nm', b:'1×10⁻⁹ m', flipped: true}, {t:'6.626×10⁻³⁴ J·s', b:'h'}, {t:'3×10⁸ m/s', b:'c'}] },
-        // L12: Molality → osmotic pressure building blocks
-        { start: 'g KCl', target: 'mol KCl', hand: [{t:'1 mol KCl', b:'74.55 g KCl'}], distractors: [{t:'74.55 g KCl', b:'1 mol KCl', flipped: true}, {t:'1 mol K⁺', b:'1 mol KCl'}, {t:'1 mol Cl⁻', b:'1 mol KCl'}] },
-        // L13: Reaction stoichiometry — grams of H₂ → grams of H₂O (2H₂ + O₂ → 2H₂O)
-        { start: 'g H₂', target: 'g H₂O', hand: [{t:'1 mol H₂', b:'2.02 g H₂'}, {t:'2 mol H₂O', b:'2 mol H₂'}, {t:'18.02 g H₂O', b:'1 mol H₂O'}], distractors: [{t:'1 mol O₂', b:'2 mol H₂O', flipped: true}, {t:'2 mol H₂', b:'2 mol H₂O', flipped: true}, {t:'32.00 g O₂', b:'1 mol O₂'}] },
-        // L14: Nuclear/radiation — curies to decays per second
-        { start: 'Ci', target: 'decays/s', hand: [{t:'3.7×10¹⁰ Bq', b:'1 Ci'}, {t:'1 decay/s', b:'1 Bq'}], distractors: [{t:'1 Ci', b:'3.7×10¹⁰ Bq', flipped: true}, {t:'1 Gy', b:'1 J/kg'}, {t:'1 Sv', b:'1 J/kg'}] },
-        // L15: Pharmacology — mg/kg dose → total mg for a patient
-        { start: 'kg body mass', target: 'mg drug', hand: [{t:'5 mg drug', b:'1 kg body mass'}], distractors: [{t:'1 kg', b:'1000 g'}, {t:'1000 mg', b:'1 g'}, {t:'1 kg body mass', b:'5 mg drug', flipped: true}] }
-    ]
-};
+import { PuzzleGenerator } from './generator.js';
 
 export class DimensionalAnalysisGame extends BaseGame {
     constructor() {
@@ -90,7 +17,6 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.hand = [];
         this.aiHand = [];
         this.deck = [];
-        this.faceoffUnits = [];
         this.isPlayerTurn = true;
         this.gameActive = false;
         
@@ -99,6 +25,8 @@ export class DimensionalAnalysisGame extends BaseGame {
 
         this.startUnit = '';
         this.targetUnit = '';
+
+        this.generator = new PuzzleGenerator();
 
         this.initDOM();
         if (this.settings.timer === 'on') this.startTimer('game-timer');
@@ -173,7 +101,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             </main>
         `;
 
-        // Bind difficulty selection
         document.querySelectorAll('.da-diff-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.mode = document.querySelector('input[name="da-mode"]:checked').value;
@@ -182,7 +109,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             });
         });
         
-        // Mode card active styling
         document.querySelectorAll('.da-mode-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.da-mode-card').forEach(c => c.classList.remove('active'));
@@ -212,7 +138,6 @@ export class DimensionalAnalysisGame extends BaseGame {
     returnToMenu() {
         this.gameActive = false;
         
-        // Clear any pending timeouts to prevent AI from acting or levels from skipping
         clearTimeout(this.aiTimeout);
         clearTimeout(this.levelTransitionTimeout);
         
@@ -221,7 +146,6 @@ export class DimensionalAnalysisGame extends BaseGame {
         document.getElementById('mistakes-box').style.display = 'none';
         document.getElementById('level-box').style.display = 'none';
         
-        // Clean up theme overrides from body so selection resets cleanly
         document.body.classList.remove('theme-beginner', 'theme-intermediate', 'theme-advanced');
     }
 
@@ -259,17 +183,23 @@ export class DimensionalAnalysisGame extends BaseGame {
     }
     
     getUnit(str) {
-        return str.replace(/^[0-9\.\s×eE\+\-²³]+/, '').trim();
+        return str.replace(/^[0-9\.\s×eE\+\-⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+/, '').trim();
+    }
+
+    generatePuzzleData() {
+        if (this.difficulty === 'beginner') return this.generator.genBeginner(this.currentLevel);
+        if (this.difficulty === 'intermediate') return this.generator.genIntermediate(this.currentLevel);
+        return this.generator.genAdvanced(this.currentLevel);
     }
 
     // --- PUZZLE MODE LOGIC ---
     
     loadPuzzle() {
-        if (this.currentLevel >= PUZZLES[this.difficulty].length) {
+        if (this.currentLevel >= 10) {
             return this.endGame(true);
         }
 
-        const p = PUZZLES[this.difficulty][this.currentLevel];
+        const p = this.generatePuzzleData();
         this.chain = [];
         this.hand = [];
         this.isPlayerTurn = true;
@@ -295,19 +225,6 @@ export class DimensionalAnalysisGame extends BaseGame {
 
     // --- FACEOFF MODE LOGIC ---
 
-    fillDeck() {
-        const units = this.faceoffUnits;
-        for (let i = 0; i < units.length - 1; i++) {
-            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
-            this.deck.push({ id: this.generateId(), top: units[i+1], bottom: units[i] });
-        }
-        // Additional sequence skips for dynamic plays
-        this.deck.push({ id: this.generateId(), top: units[3], bottom: units[1] });
-        this.deck.push({ id: this.generateId(), top: units[units.length-1], bottom: units[2] });
-        
-        this.deck.sort(() => Math.random() - 0.5);
-    }
-
     loadFaceoff() {
         if (this.currentLevel >= 3) {
             return this.endGame(true);
@@ -319,14 +236,12 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.deck = [];
         this.isPlayerTurn = true;
 
-        this.faceoffUnits = this.difficulty === 'beginner' 
-            ? ['🔴', '▲', '⬛', '⭐', '⬟', '🌙']
-            : (this.difficulty === 'intermediate' 
-                ? ['mm', 'cm', 'm', 'km', 'mi', 'ly'] 
-                : ['g A', 'mol A', 'mol B', 'g B', 'L B', 'atoms B']);
-
-        this.startUnit = this.faceoffUnits[0];
-        this.targetUnit = this.faceoffUnits[this.faceoffUnits.length - 1];
+        const p = this.generatePuzzleData();
+        
+        this.startUnit = p.start;
+        this.targetUnit = p.target;
+        this.faceoffPath = p.hand;
+        this.faceoffDistractors = p.distractors;
 
         document.getElementById('da-target-unit').innerText = this.targetUnit;
 
@@ -340,6 +255,30 @@ export class DimensionalAnalysisGame extends BaseGame {
         this.renderChain();
         this.renderHand();
         this.updateFaceoffHUD();
+    }
+
+    fillDeck() {
+        for (let i = 0; i < 3; i++) {
+            this.faceoffPath.forEach(step => {
+                let top = step.t;
+                let bottom = step.b;
+                if (step.flipped) { top = step.b; bottom = step.t; }
+                this.deck.push({ id: this.generateId(), top, bottom });
+            });
+        }
+        
+        if (this.faceoffDistractors) {
+            for (let i = 0; i < 2; i++) {
+                this.faceoffDistractors.forEach(dist => {
+                    let top = dist.t;
+                    let bottom = dist.b;
+                    if (dist.flipped) { top = dist.b; bottom = dist.t; }
+                    this.deck.push({ id: this.generateId(), top, bottom });
+                });
+            }
+        }
+        
+        this.deck.sort(() => Math.random() - 0.5);
     }
 
     drawDomino(isPlayer) {
@@ -397,7 +336,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             if (needsFlip) {
                 const temp = d.top; d.top = d.bottom; d.bottom = temp;
             }
-            d.isNew = true; // Trigger animation
+            d.isNew = true; 
             this.chain.push(d);
             this.initAudio();
             this.playHit();
@@ -462,7 +401,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             this.initAudio();
             this.playHit();
             this.hand.splice(dominoIdx, 1);
-            domino.isNew = true; // Trigger animation
+            domino.isNew = true; 
             this.chain.push(domino);
             this.renderHand();
             this.renderChain();
@@ -470,7 +409,7 @@ export class DimensionalAnalysisGame extends BaseGame {
             if (this.mode === 'puzzle') {
                 if (this.getUnit(domino.top) === this.getUnit(this.targetUnit)) {
                     this.showToast("Puzzle Complete!", "success");
-                    this.isPlayerTurn = false; // Disable further plays
+                    this.isPlayerTurn = false; 
                     this.renderHand();
                     
                     const banner = document.getElementById('da-target-banner');
@@ -534,7 +473,6 @@ export class DimensionalAnalysisGame extends BaseGame {
         const area = document.getElementById('da-chain-area');
         area.innerHTML = '';
         
-        // Start block modeled as an actual domino over 1
         const startBlock = document.createElement('div');
         startBlock.className = 'da-domino starting-domino';
         startBlock.innerHTML = `
@@ -560,7 +498,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             area.appendChild(el);
         });
 
-        // Target Placeholder Drop Zone
         if (this.isPlayerTurn) {
             const currentLead = this.chain.length === 0 ? this.startUnit : this.chain[this.chain.length - 1].top;
             const requiredUnit = this.getUnit(currentLead);
@@ -569,7 +506,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             placeholder.className = 'da-domino placeholder';
             placeholder.innerHTML = `<div class="placeholder-text">Drop Here<br><br>Needs:<br><strong style="color:var(--da-primary); font-size:1.1rem;">${requiredUnit}</strong></div>`;
             
-            // Drag and Drop listeners
             placeholder.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 placeholder.classList.add('drag-over');
@@ -607,7 +543,6 @@ export class DimensionalAnalysisGame extends BaseGame {
             el.className = `da-domino ${!this.isPlayerTurn ? 'disabled' : ''} ${shouldGlow ? 'playable-glow' : ''}`;
             el.id = `domino-${d.id}`;
             
-            // Setup dragging
             if (this.isPlayerTurn) {
                 el.draggable = true;
                 el.addEventListener('dragstart', (e) => {
