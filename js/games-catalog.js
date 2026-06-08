@@ -39,6 +39,19 @@ export const GamesCatalog = [
     { id: 'covalent-props-b', title: 'Advanced Covalent Bonding Properties (Part B)', subject: 'chemistry', category: 'Advanced Chemistry Topics', desc: 'Analyze a second set of advanced covalent molecules and their properties.', play: 'Match steric numbers, pi/sigma bonds, hybridization, and VSEPR shapes for the given molecules.', type: 'tile', data: '/games/chemistry/advanced/covalent-bonding-part-b/data.js', isNoModal: false, keywords: ['covalent', 'bonding', 'steric', 'pi', 'sigma', 'hybridization', 'vsepr'] },
     { id: 'titration-tower', title: 'Titration Tower (Acid-Base Mastery)', subject: 'chemistry', category: 'Advanced Chemistry Topics', desc: 'Prevent a laboratory collapse by performing precise titrations. Analyze live titration curves and indicator colors to neutralize unknown solutions.', play: 'Add titrant carefully to find the equivalence point. Use the curve and indicator colors to calculate the unknown molar concentration before submitting your answer.', type: 'module', script: '/games/chemistry/advanced/titration-tower/game.js', style: '/games/chemistry/advanced/titration-tower/style.css', isNoModal: true, keywords: ['titration', 'acid', 'base', 'ph', 'curve', 'indicators', 'polyprotic', 'equivalence', 'neutralization'] },
     { id: 'equilibrium-engine', title: 'Equilibrium Engine (Le Chatelier)', subject: 'chemistry', category: 'Advanced Chemistry Topics', desc: 'Manage live chemical reactors. Manipulate concentration, temperature, and pressure to apply Le Chatelier\'s Principle and maintain equilibrium.', play: 'Analyze the Q vs. K gauges and system stresses. Select the correct intervention to shift equilibrium, maximize yield, and stabilize the reactor.', type: 'module', script: '/games/chemistry/advanced/equilibrium-engine/game.js', style: '/games/chemistry/advanced/equilibrium-engine/style.css', isNoModal: true, keywords: ['equilibrium', 'le chatelier', 'q vs k', 'temperature', 'pressure', 'concentration', 'reactor', 'haber process'] },
+    { 
+        id: 'compound-cracker', 
+        title: 'Compound Cracker & Reaction Classifier', 
+        subject: 'chemistry', 
+        category: 'Advanced Chemistry Topics', 
+        desc: 'Hack chemical locks by decoding organic structures, naming IUPAC compounds, and classifying Reaction Pathways (Addition, Substitution, Elimination, Combustion).', 
+        play: 'Identify organic naming conventions in Phase 1. Classify reactions and justify chemical bonds in Phase 2. Solve full organic pathways in Phase 3, and survive the Rapid-Fire Bonus Round in Phase 4!', 
+        type: 'module', 
+        script: '/games/chemistry/advanced/compound-cracker/game.js', 
+        style: '/games/chemistry/advanced/compound-cracker/style.css', 
+        isNoModal: true, 
+        keywords: ['organic chemistry', 'naming', 'alkanes', 'alkenes', 'alkynes', 'esters', 'alcohols', 'reaction classification', 'addition', 'substitution', 'elimination', 'combustion', 'chemistry 30'] 
+    },
 
     // --- BIOLOGY ---
     { id: 'photosynthesis-respiration', title: 'Photosynthesis vs. Cellular Respiration', subject: 'biology', category: 'Introductory Biology Topics', desc: 'A tile-matching game comparing the processes of photosynthesis and cellular respiration.', play: 'Place property tiles (such as organelles, energy changes, and chemical equations) into the correct columns.', type: 'tile', data: '/games/biology/intro/photosynthesis-vs-cellular-respiration/data.js', isNoModal: false, keywords: ['photosynthesis', 'cellular respiration', 'chloroplast', 'mitochondria', 'energy', 'glucose'] },
