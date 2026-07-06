@@ -21,9 +21,9 @@ export class ScitriadTileGame {
         
         // Apply Global Theme robustly avoiding FOUC
         if (this.settings.theme === 'dark') {
-            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.add('dark', 'dark-theme');
             if (document.body) {
-                document.body.classList.add('dark-theme');
+                document.body.classList.add('dark', 'dark-theme');
             }
         }
         
@@ -145,7 +145,7 @@ export class ScitriadTileGame {
                 <div class="table-wrapper">
                     <div class="grid-board" id="gameBoard" style="grid-template-columns: ${gridCols}; min-width: ${this.config.minWidth}px;"></div>
                 </div>
-                <div class="tile-bank-container" id="tileBankContainer">
+                <div class="tile-bank-container" id="tileBankContainer" style="margin-top: 1.5rem;">
                     <h2>Property Tiles</h2>
                     <div class="tile-bank" id="tileBank"></div>
                 </div>

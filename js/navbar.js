@@ -1,7 +1,7 @@
 // Synchronously apply theme before the DOM fully parses to prevent FOUC
 (function() {
     if (localStorage.getItem('scitriad_theme') === 'dark') {
-        document.documentElement.classList.add('dark-theme');
+        document.documentElement.classList.add('dark', 'dark-theme');
     }
 })();
 

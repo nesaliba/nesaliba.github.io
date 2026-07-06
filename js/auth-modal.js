@@ -213,12 +213,12 @@ document.getElementById('account-dark-mode').addEventListener('change', async (e
     
     // Apply locally first for immediate effect
     if (isDark) {
-        document.documentElement.classList.add('dark-theme');
-        document.body.classList.add('dark-theme');
+        document.documentElement.classList.add('dark', 'dark-theme');
+        document.body.classList.add('dark', 'dark-theme');
         localStorage.setItem('scitriad_theme', 'dark');
     } else {
-        document.documentElement.classList.remove('dark-theme');
-        document.body.classList.remove('dark-theme');
+        document.documentElement.classList.remove('dark', 'dark-theme');
+        document.body.classList.remove('dark', 'dark-theme');
         localStorage.setItem('scitriad_theme', 'light');
     }
     

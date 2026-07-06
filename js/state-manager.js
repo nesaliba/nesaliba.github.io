@@ -27,12 +27,12 @@ export const StateManager = {
             : localStorage.getItem('scitriad_theme') === 'dark';
 
         if (isDark) {
-            document.documentElement.classList.add('dark-theme');
-            if (document.body) document.body.classList.add('dark-theme');
+            document.documentElement.classList.add('dark', 'dark-theme');
+            if (document.body) document.body.classList.add('dark', 'dark-theme');
             localStorage.setItem('scitriad_theme', 'dark');
         } else {
-            document.documentElement.classList.remove('dark-theme');
-            if (document.body) document.body.classList.remove('dark-theme');
+            document.documentElement.classList.remove('dark', 'dark-theme');
+            if (document.body) document.body.classList.remove('dark', 'dark-theme');
             localStorage.setItem('scitriad_theme', 'light');
         }
 
