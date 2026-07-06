@@ -7,6 +7,11 @@ window.scrollToContent = function() {
     if(element) element.scrollIntoView({ behavior: "smooth" });
 }
 
+window.scrollToExplore = function() {
+    const element = document.getElementById("catalog-container");
+    if(element) element.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function setupHeroCanvas() {
     const canvas = document.getElementById('heroCanvas');
     if (!canvas) return;
@@ -43,15 +48,18 @@ function setupHeroCanvas() {
             if (c.y > height + c.r) c.y = -c.r;
             
             ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+            ctx.arc(c.x, c.y, c.r || 5, 0, Math.PI * 2);
             ctx.fillStyle = c.color;
             ctx.fill();
         });
-        
+
         requestAnimationFrame(animate);
     }
     animate();
 }
+
+// Maintain active accordion state globally
+let activeAccordionId = null;
 
 function renderCatalog() {
     const container = document.getElementById('catalog-container');
@@ -69,45 +77,178 @@ function renderCatalog() {
         return true;
     });
     
-    const categories = {};
-    filteredGames.forEach(g => {
-        if (!categories[g.category]) categories[g.category] = [];
-        categories[g.category].push(g);
-    });
+    const uniqueCategories = [...new Set(filteredGames.map(g => g.category))];
+    const filterContainer = document.getElementById('category-filters');
 
-    let html = '';
-    for (const [category, games] of Object.entries(categories)) {
-        html += `<details><summary>${category}</summary><div class="details-content">`;
-        games.forEach(g => {
-            // Dynamically set the URL depending on game type
-            const targetUrl = g.type === 'unity-legacy' ? 'legacy-game.html' : 'game.html';
-            
-            let badgeHTML = '';
-            if (g.type === 'unity-legacy') {
-                badgeHTML = '<span style="font-size: 0.65rem; background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">CLASSIC</span>';
-            } else if (g.type === 'module') {
-                badgeHTML = '<span style="font-size: 0.65rem; background: var(--primary-blue); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">INTERACTIVE</span>';
-            } else if (g.type === 'tile') {
-                badgeHTML = '<span style="font-size: 0.65rem; background: #94a3b8; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; white-space: nowrap;">TILE MATCH</span>';
-            }
-            
-            html += `
-                <a href="${targetUrl}?id=${g.id}" class="game-link" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                        <span>${g.title}</span>
-                        ${badgeHTML}
-                        <button class="info-btn" data-game="${g.id}" title="Game Info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        </button>
-                    </div>
-                    <span class="game-icon">➜</span>
-                </a>
+    if (filterContainer && filterContainer.children.length === 0) {
+        let filterHTML = '';
+        uniqueCategories.forEach((cat, idx) => {
+            const safeId = `cat-check-${idx}`;
+            filterHTML += `
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="${safeId}" data-category="${cat}" checked class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600">
+                    <span class="text-xs text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">${cat}</span>
+                </label>
             `;
         });
-        html += `</div></details>`;
+        filterContainer.innerHTML = filterHTML;
+
+        // Setup filter listeners
+        filterContainer.querySelectorAll('input').forEach(checkbox => {
+            checkbox.addEventListener('change', () => filterAndRender());
+        });
+
+        const searchInput = document.getElementById('catalog-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => filterAndRender());
+        }
     }
-    container.innerHTML = html;
+
+    function filterAndRender() {
+        const searchInput = document.getElementById('catalog-search');
+        const searchText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        const activeCategories = [];
+        if (filterContainer) {
+            filterContainer.querySelectorAll('input').forEach(cb => {
+                if (cb.checked) activeCategories.push(cb.getAttribute('data-category'));
+            });
+        } else {
+            activeCategories.push(...uniqueCategories);
+        }
+
+        const displayGames = filteredGames.filter(g => {
+            const matchesCategory = activeCategories.includes(g.category);
+            const matchesSearch = g.title.toLowerCase().includes(searchText) || g.desc.toLowerCase().includes(searchText);
+            return matchesCategory && matchesSearch;
+        });
+
+        const categories = {};
+        displayGames.forEach(g => {
+            if (!categories[g.category]) categories[g.category] = [];
+            categories[g.category].push(g);
+        });
+
+        if (Object.keys(categories).length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-sm">
+                    No games found matching your criteria.
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        Object.entries(categories).forEach(([category, games], catIdx) => {
+            const accordionId = `accordion-${catIdx}`;
+            const isActive = activeAccordionId === accordionId || (activeAccordionId === null && catIdx === 0);
+            if (activeAccordionId === null && catIdx === 0) {
+                activeAccordionId = accordionId;
+            }
+
+            let gamesListHTML = '';
+            games.forEach(g => {
+                const targetUrl = g.type === 'unity-legacy' ? 'legacy-game.html' : 'game.html';
+                
+                let badgeHTML = '';
+                if (g.type === 'unity-legacy') {
+                    badgeHTML = '<span class="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">Classic</span>';
+                } else if (g.type === 'module') {
+                    badgeHTML = '<span class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2 animate-pulse">Interactive</span>';
+                } else if (g.type === 'tile') {
+                    badgeHTML = '<span class="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">Tile Match</span>';
+                }
+
+                gamesListHTML += `
+                    <div class="group/row p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
+                        <div class="flex items-center justify-between p-3">
+                            <a href="${targetUrl}?id=${g.id}" class="game-link flex-grow flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors" ${g.isNoModal ? 'data-no-modal="true"' : ''}>
+                                <span class="material-symbols-outlined text-slate-400 group-hover/row:text-blue-500 transition-colors">play_circle</span>
+                                <span class="text-sm md:text-base">${g.title}</span>
+                                ${badgeHTML}
+                            </a>
+                            <button class="info-btn p-1 text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex-shrink-0" data-game="${g.id}" title="Game Info">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let catIcon = "science";
+            if (subject === "math") catIcon = "calculate";
+            else if (subject === "english") catIcon = "book";
+            else if (subject === "social") catIcon = "public";
+            else if (subject === "physics") catIcon = "bolt";
+            else if (subject === "biology") catIcon = "genetics"; // Fixed dna icon mapping
+
+            html += `
+                <div id="${accordionId}" class="accordion-item border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all duration-300 ${isActive ? 'active' : ''}">
+                    <button class="w-full flex items-center justify-between p-5 text-left group" onclick="window.toggleAccordion('${accordionId}')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                <span class="material-symbols-outlined text-2xl">${catIdx % 2 === 0 ? catIcon : 'analytics'}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors text-sm md:text-base">${category}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">${games.length} ${games.length === 1 ? 'Module' : 'Modules'}</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined accordion-chevron transition-transform duration-300 text-slate-400">expand_more</span>
+                    </button>
+                    <div class="accordion-content bg-slate-50/50 dark:bg-slate-950/20" style="${isActive ? 'max-height: 1000px; opacity: 1;' : 'max-height: 0; opacity: 0; overflow: hidden;'}">
+                        <div class="p-4 space-y-2 border-t border-slate-200 dark:border-slate-700">
+                            ${gamesListHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        setupGameSettingsModal();
+        setupInfoModal();
+        setupGameCounter();
+    }
+
+    filterAndRender();
 }
+
+window.toggleAccordion = function(accordionId) {
+    const activeEl = document.getElementById(activeAccordionId);
+    const targetEl = document.getElementById(accordionId);
+
+    if (activeAccordionId === accordionId) {
+        if (targetEl) {
+            targetEl.classList.remove('active');
+            const content = targetEl.querySelector('.accordion-content');
+            if (content) {
+                content.style.maxHeight = '0';
+                content.style.opacity = '0';
+            }
+        }
+        activeAccordionId = null;
+    } else {
+        if (activeEl) {
+            activeEl.classList.remove('active');
+            const activeContent = activeEl.querySelector('.accordion-content');
+            if (activeContent) {
+                activeContent.style.maxHeight = '0';
+                activeContent.style.opacity = '0';
+            }
+        }
+        if (targetEl) {
+            targetEl.classList.add('active');
+            const content = targetEl.querySelector('.accordion-content');
+            if (content) {
+                content.style.maxHeight = '1000px';
+                content.style.opacity = '1';
+            }
+        }
+        activeAccordionId = accordionId;
+    }
+};
 
 function setupInfoModal() {
     const modalHTML = `
@@ -135,10 +276,13 @@ function setupInfoModal() {
     const descEl = document.getElementById('info-modal-desc');
     const playEl = document.getElementById('info-modal-play');
 
-    btnCloseInfo.addEventListener('click', () => {
-        infoModal.style.display = 'none';
-        document.body.classList.remove('no-scroll');
-    });
+    if (btnCloseInfo) {
+        btnCloseInfo.replaceWith(btnCloseInfo.cloneNode(true));
+        document.getElementById('btn-close-info').addEventListener('click', () => {
+            infoModal.style.display = 'none';
+            document.body.classList.remove('no-scroll');
+        });
+    }
 
     document.querySelectorAll('.info-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -165,72 +309,70 @@ function setupGameSettingsModal() {
     const gameLinks = document.querySelectorAll('.game-link');
     if (gameLinks.length === 0) return;
 
-    const modalHTML = `
-        <div class="modal-overlay" id="settingsModal" style="z-index: 2000;">
-            <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
-                <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">Game Settings</h2>
-                
-                <div class="toggle-row">
-                    <span class="toggle-label">Timer</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="setting-timer">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+    if (!document.getElementById('settingsModal')) {
+        const modalHTML = `
+            <div class="modal-overlay" id="settingsModal" style="z-index: 2000;">
+                <div class="modal-content" style="max-width: 400px; width: 90%; text-align: left; background: var(--modal-bg); border: 1px solid var(--border-color);">
+                    <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">Game Settings</h2>
+                    
+                    <div class="toggle-row">
+                        <span class="toggle-label">Timer</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-timer">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-                <div class="toggle-row" id="timer-visible-row">
-                    <span class="toggle-label">Show Timer</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="setting-timer-visible" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+                    <div class="toggle-row" id="timer-visible-row">
+                        <span class="toggle-label">Show Timer</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-timer-visible" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-                <div class="toggle-row">
-                    <span class="toggle-label">Sounds</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="setting-mute-sounds">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+                    <div class="toggle-row">
+                        <span class="toggle-label">Sounds</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-mute-sounds">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-                <hr class="settings-divider">
+                    <hr class="settings-divider">
 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Tile Mode</label>
-                    <select id="setting-tile-mode" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--input-border); background: var(--card-bg); color: var(--text-dark);">
-                        <option value="all">All Tiles Visible</option>
-                        <option value="one">One Tile At A Time</option>
-                    </select>
-                </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Tile Mode</label>
+                        <input type="hidden" id="setting-tile-mode" value="all">
+                        <select id="tile-mode-select" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm">
+                            <option value="all">Standard All Tiles</option>
+                            <option value="one">One Tile At A Time</option>
+                        </select>
+                    </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Max Wrong Placements: <span id="mistakes-val">10</span></label>
-                    <input type="range" id="setting-mistakes" min="0" max="10" value="10" style="width: 100%; accent-color: #60a5fa;">
-                </div>
-                
-                <div id="save-default-container" style="margin-bottom: 1.5rem; display: none; align-items: center; gap: 0.5rem;">
-                    <input type="checkbox" id="setting-save-default" style="cursor: pointer; width: 16px; height: 16px;">
-                    <label for="setting-save-default" style="font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--primary-blue);">Save as my default settings</label>
-                </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">Mistake Buffer Limit</label>
+                        <select id="mistake-limit-select" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm">
+                            <option value="5">Tight Security (5 mistakes)</option>
+                            <option value="10" selected>Standard Safe (10 mistakes)</option>
+                            <option value="20">Casual Lab (20 mistakes)</option>
+                        </select>
+                    </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button id="btn-cancel-settings" class="btn-secondary" style="margin-top: 0; padding: 0.5rem 1rem;">Cancel</button>
-                    <button id="btn-start-game" style="margin-top: 0; padding: 0.5rem 1rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Start Game</button>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1.75rem;">
+                        <button id="btn-lock-settings" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg text-sm w-full">Apply Parameters</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
     
     const settingsModal = document.getElementById('settingsModal');
-    const mistakesInput = document.getElementById('setting-mistakes');
-    const mistakesVal = document.getElementById('mistakes-val');
-    const btnCancel = document.getElementById('btn-cancel-settings');
-    const btnStart = document.getElementById('btn-start-game');
     const timerToggle = document.getElementById('setting-timer');
     const timerVisibleToggle = document.getElementById('setting-timer-visible');
     const timerVisibleRow = document.getElementById('timer-visible-row');
+    const btnLock = document.getElementById('btn-lock-settings');
     
     let pendingGameUrl = '';
     let pendingDetailsIndex = -1;
@@ -243,47 +385,32 @@ function setupGameSettingsModal() {
     timerToggle.addEventListener('change', syncTimerVisibility);
     syncTimerVisibility();
     
-    mistakesInput.addEventListener('input', (e) => {
-        mistakesVal.textContent = e.target.value;
-    });
-    
-    btnCancel.addEventListener('click', () => {
-        settingsModal.style.display = 'none';
-        document.body.classList.remove('no-scroll');
-    });
-    
-    btnStart.addEventListener('click', () => {
-        const settings = {
-            timer: timerToggle.checked ? 'on' : 'off',
-            timerVisible: timerVisibleToggle.checked ? 'visible' : 'hidden',
-            tileMode: document.getElementById('setting-tile-mode').value,
-            maxMistakes: mistakesInput.value,
-            muteSounds: !document.getElementById('setting-mute-sounds').checked,
-            darkMode: document.body.classList.contains('dark-theme')
-        };
-
-        if (document.getElementById('setting-save-default').checked) {
-            import('./auth-service.js').then(({ authService }) => {
-                authService.saveSettings(settings);
-            });
-        }
-
-        if (pendingDetailsIndex !== -1) {
-            const pageName = window.location.pathname.split('/').pop() || 'index.html';
-            sessionStorage.setItem('expandedDetails_' + pageName, pendingDetailsIndex);
-        }
-        
-        const url = new URL(pendingGameUrl, window.location.href);
-        url.searchParams.set('timer', settings.timer);
-        url.searchParams.set('timerVisible', settings.timerVisible);
-        url.searchParams.set('tileMode', settings.tileMode);
-        url.searchParams.set('maxMistakes', settings.maxMistakes);
-        url.searchParams.set('mute', settings.muteSounds);
-        url.searchParams.set('theme', settings.darkMode ? 'dark' : 'light');
-        
-        document.body.classList.remove('no-scroll');
-        window.location.href = url.toString();
-    });
+    if (btnLock) {
+        btnLock.replaceWith(btnLock.cloneNode(true));
+        document.getElementById('btn-lock-settings').addEventListener('click', () => {
+            const settings = {
+                timer: timerToggle.checked ? 'on' : 'off',
+                timerVisible: timerVisibleToggle.checked ? 'visible' : 'hidden',
+                tileMode: document.getElementById('tile-mode-select').value,
+                maxMistakes: document.getElementById('mistake-limit-select').value,
+                mute: document.getElementById('setting-mute-sounds') ? document.getElementById('setting-mute-sounds').checked : StateManager.getMuteState()
+            };
+            
+            settingsModal.style.display = 'none';
+            document.body.classList.remove('no-scroll');
+            
+            const url = new URL(pendingGameUrl, window.location.href);
+            url.searchParams.set('timer', settings.timer);
+            url.searchParams.set('timerVisible', settings.timerVisible);
+            url.searchParams.set('tileMode', settings.tileMode);
+            url.searchParams.set('maxMistakes', settings.maxMistakes);
+            url.searchParams.set('mute', settings.muteSounds);
+            url.searchParams.set('theme', settings.darkMode ? 'dark' : 'light');
+            
+            document.body.classList.remove('no-scroll');
+            window.location.href = url.toString();
+        });
+    }
     
     gameLinks.forEach(link => {
         link.addEventListener('click', (e) => {

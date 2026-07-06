@@ -1,23 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="scroll-smooth" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics | Scitriad</title>
-    <link rel="icon" href="icons/phys.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Physics | Scitriad Games</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/navbar.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class"
+        }
+    </script>
+    <style>
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .accordion-item.active .accordion-content {
+            max-height: 1000px;
+            opacity: 1;
+        }
+        .accordion-item.active .accordion-chevron {
+            transform: rotate(180deg);
+        }
+    </style>
 </head>
-<body class="theme-phys">
+<body class="theme-phys bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex flex-col min-h-screen">
     <site-navbar></site-navbar>
-    <header class="hero hero-small theme-phys">
-        <h1>Physics</h1>
-        <p>Understand the forces that shape our universe.</p>
-    </header>
-    <main class="container" id="explore">
-        <div id="catalog-container" data-subject="physics"></div>
+    
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-950 to-purple-900 py-16 px-6 md:px-12 text-white">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <nav class="flex items-center gap-2 mb-4 text-white/60 text-xs">
+                    <a class="hover:text-white transition-colors" href="index.html">Library</a>
+                    <span class="material-symbols-outlined text-xs">chevron_right</span>
+                    <span class="text-white font-semibold">Physics</span>
+                </nav>
+                <h1 class="font-display text-4xl md:text-5xl font-extrabold tracking-tight mb-3">Physics</h1>
+                <p class="text-sm md:text-base text-white/80 max-w-2xl leading-relaxed">
+                    Understand the forces that shape our universe. Build calculations on dynamics, kinematics, and electromagnetism.
+                </p>
+            </div>
+        </section>
+
+        <!-- Catalog Content -->
+        <section class="py-12 px-6 md:px-12 max-w-7xl mx-auto" id="explore">
+            <div class="grid lg:grid-cols-12 gap-8">
+                <!-- Sidebar Navigation (Filters/Quick Access) -->
+                <aside class="lg:col-span-3 space-y-6">
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Filter by Category</h3>
+                        <div class="space-y-2" id="category-filters">
+                            <!-- Filled dynamically via JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Daily Challenge -->
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h4 class="text-base font-bold text-slate-800 dark:text-white mb-2">Daily Challenge</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mb-4">Complete a session with 0 mistakes to earn an elite achievement badge!</p>
+                        <button onclick="window.scrollToExplore()" class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-purple-600 dark:hover:bg-purple-500 text-white py-2 rounded-lg text-xs font-semibold transition-colors">Explore Labs</button>
+                    </div>
+                </aside>
+
+                <!-- Accordion List & Search -->
+                <div class="lg:col-span-9 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-white">Game Catalog</h2>
+                        <div class="relative max-w-xs w-full">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                            <input id="catalog-search" class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs text-slate-800 dark:text-slate-200" placeholder="Search simulations..." type="text">
+                        </div>
+                    </div>
+                    
+                    <!-- Catalog Container -->
+                    <div class="space-y-4" id="catalog-container" data-subject="physics">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
     <footer>Scitriad | Free Interactive Learning Games</footer>
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth-modal.js"></script>
