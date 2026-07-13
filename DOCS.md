@@ -76,6 +76,30 @@ All custom JS games extend this class. It provides out-of-the-box functionality 
 
 ---
 
+## 🧪 Detailed Chemistry Custom Game Workings
+The Chemistry modules feature procedurally-generated interactive engines that bring physical properties to life:
+
+*   **Titration Tower (`games/chemistry/advanced/titration-tower/`):**
+    Simulates real-world laboratory titrations. Features dynamic visual feedback representing indicator color shifts (e.g., Phenolphthalein, Bromothymol Blue) mapped mathematically through pH ranges, plotted on a custom Canvas-rendered telemetry grid. Cations and anions calculate equivalence points dynamically.
+
+*   **Equilibrium Engine (`games/chemistry/advanced/equilibrium-engine/`):**
+    Utilizes an animated particle collision core system on HTML5 canvas. Temperature, pressure, and concentration modifications dynamically affect particle velocities, visual states, and shifting Q/K gauges based on Le Chatelier's Principle.
+
+*   **Dimensional Analysis 2.0 (`games/chemistry/advanced/dimensional-analysis/`):**
+    Implements a custom visual domino-chaining mechanic. Features a Breadth-First Search (BFS) graph engine that verifies if a player's hand contains a mathematically viable conversion path, automatically resetting the board if the puzzle becomes unsolvable.
+
+---
+
+## 🎨 Styling & Theming System
+Theming is controlled dynamically via subject attributes and classes managed in the `StateManager` (`js/state-manager.js`).
+
+*   **CSS Custom Properties (`css/variables.css`):**
+    Subject-specific colors (e.g., `--chem-color`, `--bio-color`, `--phys-color`) have matching RGB triplet variables (e.g., `--chem-rgb`) to allow smooth Alpha blending and glowing effects.
+*   **Tailwind Override Guard:**
+    Tailwind resets standard inputs, stripping styling in Tailwind-enabled subject pages. Avoid overriding `.search-input` directly with simple classes; always enforce specificity by targeting `input.search-input, input[type='text'].search-input` alongside `!important` tags to maintain round boundaries and alignment across pages.
+
+---
+
 ## ➕ How to Add a New Game
 
 ### Scenario A: Adding a new "Tile/Matching" Game
